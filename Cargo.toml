@@ -1,0 +1,15 @@
+[package]
+name = "map_view"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+shapefile = "0.3.0"
+tui = "0.18.0"
+serde_derive = "1.0.141"
+serde = "1.0.141"
+toml = "0.5.9"
+geo-types = "0.7.6"
+crossterm = "0.24.0"
