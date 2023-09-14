@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 use geo_types::Polygon;
 use shapefile::{Reader, dbase, Shape, PolygonRing};
 use serde_derive::Serialize;
-use tui::{widgets::canvas::Painter, style::Color};
+use ratatui::{widgets::canvas::Painter, style::Color};
 use std::fs;
 
 pub struct CountryData {

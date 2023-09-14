@@ -14,7 +14,7 @@ use std::{
     io,
     time::{Duration, Instant},
 };
-use tui::{
+use ratatui::{
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
@@ -99,7 +99,8 @@ impl App {
     }
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     let low = countries_from_shapefile("ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")?;
     let med = countries_from_shapefile("ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")?;
     let high = countries_from_shapefile("ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp")?;
@@ -219,7 +220,10 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
                 }
             }
 
+            // Paint geolocated lines
+
             // Paint additional countries
+            /*
             let paint_queue = vec!["USA", "FRA", "BRA", "RUS", "CHN", "NGA"];
 
             for tag in paint_queue {
@@ -256,6 +260,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
 
                 }
             }
+            */
         
             
         })

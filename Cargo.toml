@@ -7,10 +7,12 @@ edition = "2021"
 
 [dependencies]
 shapefile = "0.3.0"
-tui = "0.18.0"
 serde_derive = "1.0.141"
 serde = "1.0.141"
 toml = "0.5.9"
 geo-types = "0.7.4"
 crossterm = "0.24.0"
 itertools = "0.10.3"
+ratatui = "0.23.0"
+procfs = "0.15.1"
+tokio = { version = "1.32.0", features = ["full"] }
