@@ -7,7 +7,6 @@ use serde_derive::Serialize;
 use tui::{widgets::canvas::Painter, style::Color};
 use std::fs;
 
-#[derive(Debug, Serialize)]
 pub struct CountryData {
     pub tag: String,
     pub name: String,
@@ -23,9 +22,17 @@ pub struct CountryData {
     pub subregion: String,
 }
 
+pub struct CountryStyle {
+    pub label: String,
+    pub label_x: f64, 
+    pub label_y: f64,
+    //pub color: ?
+}
+
 pub struct Country {
     pub data: CountryData,
-    pub shape: Vec<(f64, f64)>,
+    pub style: CountryStyle,
+    pub shapes: Vec<Vec<(f64, f64)>>,
 }
 
 pub fn countries_from_shapefile(path: &str) -> Result<BTreeMap<String, Country>, Box<dyn Error>> {
@@ -35,12 +42,12 @@ pub fn countries_from_shapefile(path: &str) -> Result<BTreeMap<String, Country>,
     for shape_record in reader.iter_shapes_and_records() {
         let (shape, record) = shape_record?;
 
-        let points = points_from_shape(&shape);
+        let shapes = collect_shapes(&shape);
 
-        let data = parse_country_data(record);
+        let (data, style) = parse_country_data(record);
         let tag = data.tag.clone();
 
-        let country = Country{ data, shape: points};
+        let country = Country{ data, shapes, style };
         countries.insert(tag, country);
     }
 
@@ -67,77 +74,87 @@ pub fn countries_from_shapefile(path: &str) -> Result<BTreeMap<String, Country>,
     Ok(countries)
 }
 
-macro_rules! get_entry {
+macro_rules! get_char_entry {
     ($attr:literal, $record:ident) => {
         if let Some(dbase::FieldValue::Character(Some(entry))) = $record.get($attr) {
-            entry
+            entry.to_owned()
         } else {
             //eprintln!("Failed to read attribute {}.", $attr);
-            "unknown"
+            "unknown".to_owned()
         }
     };
 }
 
-fn points_from_shape(shape: &Shape) -> Vec<(f64, f64)> {
-    let mut points = Vec::<(f64, f64)>::new();
+macro_rules! get_numeric_entry {
+    ($attr:literal, $record:ident) => {
+        if let Some(dbase::FieldValue::Numeric(Some(entry))) = $record.get($attr) {
+            *entry
+        } else {
+            0.0f64
+        }
+    };
+}
+
+fn collect_shapes(shape: &Shape) -> Vec<Vec<(f64, f64)>> {
+    let mut shapes = Vec::new();
     let polygon = if let Shape::Polygon(p) = shape { p } else { panic!("non polygon") };
     let rings = polygon.rings();
     for ring in rings {
         let ringvec = match ring {
             PolygonRing::Outer(rv) => rv,
             PolygonRing::Inner(rv) => rv,
-        }.iter().map(|vp| { (vp.x, vp.y) });
-        points.extend(ringvec);
+        }.iter().map(|vp| { (vp.x, vp.y) }).collect();
+        shapes.push(ringvec);
     }
-    points
+    shapes
 }
 
-fn parse_country_data(record: dbase::Record) -> CountryData {
-        let tag = get_entry!("GU_A3", record).to_owned();
-        let name = get_entry!("GEOUNIT", record).to_owned();
-        let name_short = get_entry!("ABBREV", record).to_owned();
-        let mut name_long = get_entry!("FORMAL_EN", record).to_owned();
-        if name_long == "unknown" { 
-            //eprintln!("Substituting for {}", name);
-            name_long = name.clone() 
-        }
-        let adm_type = get_entry!("TYPE", record).to_owned();
-        let adm_name = get_entry!("SOVEREIGNT", record).to_owned();
-        let economy = get_entry!("ECONOMY", record).to_owned();
-        let income_group = get_entry!("INCOME_GRP", record).to_owned();
-        let subregion = get_entry!("SUBREGION", record).to_owned();
-        let continent = get_entry!("CONTINENT", record).to_owned();
+fn parse_country_data(record: dbase::Record) -> (CountryData, CountryStyle) {
+    let tag = get_char_entry!("GU_A3", record);
+    let name = get_char_entry!("GEOUNIT", record);
+    let name_short = get_char_entry!("ABBREV", record);
+    let mut name_long = get_char_entry!("FORMAL_EN", record);
+    if name_long == "unknown" { 
+        //eprintln!("Substituting for {}", name);
+        name_long = name.clone() 
+    }
+    let adm_type = get_char_entry!("TYPE", record);
+    let adm_name = get_char_entry!("SOVEREIGNT", record);
+    let economy = get_char_entry!("ECONOMY", record);
+    let income_group = get_char_entry!("INCOME_GRP", record);
+    let subregion = get_char_entry!("SUBREGION", record);
+    let continent = get_char_entry!("CONTINENT", record);
 
-        let population = if let Some(dbase::FieldValue::Numeric(Some(entry))) = record.get("POP_EST") {
-            *entry as u64
-        } else {
-            eprintln!("Failed to read attribute POP_EST for {}", name);
-            0
-        };
+    let population = get_numeric_entry!("POP_EST", record) as u64;
+    let gdp = get_numeric_entry!("GDP_MD", record) as i64;
 
-        let gdp = if let Some(dbase::FieldValue::Numeric(Some(entry))) = record.get("GDP_MD") {
-            (*entry as i64) * 1_000_000
-        } else {
-            eprintln!("Failed to read attribute GDP_MD for {}", name);
-            0
-        };
+    let label_x = get_numeric_entry!("LABEL_X", record);
+    let label_y = get_numeric_entry!("LABEL_Y", record);
+    let label = name.to_owned();
 
-        CountryData {
-            tag,
-            name,
-            name_short,
-            name_long,
-            adm_type,
-            adm_name,
-            economy,
-            income_group,
-            population,
-            gdp,
-            subregion,
-            continent,
-        }
+    ( CountryData {
+        tag,
+        name,
+        name_short,
+        name_long,
+        adm_type,
+        adm_name,
+        economy,
+        income_group,
+        population,
+        gdp,
+        subregion,
+        continent,
+      }, 
+      CountryStyle {
+        label,
+        label_x,
+        label_y,
+      }
+    )
 }
 
+/*
 pub struct StyleCountry<'a> {
     pub country: &'a Country,
     pub style: Color,
@@ -162,3 +179,4 @@ impl tui::widgets::canvas::Shape for StyleCountry <'_> {
         }
     }
 }
+*/
