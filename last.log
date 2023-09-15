@@ -1,0 +1,246 @@
+[00:00:05.479] (7f57c84521c0) DEBUG  Imani: Mutex { data: <locked> }
+[00:00:07.177] (7f57c551a700) DEBUG  agent waker listening on 127.0.0.1:36556
+[00:00:07.385] (7f57c551a700) DEBUG  agent_thread; port=36556
+[00:00:07.385] (7f57c5319700) TRACE  -> agent_thread;
+[00:00:07.386] (7f57c5319700) DEBUG  agent took 209.027964ms to start up
+[00:00:07.386] (7f57c551a700) INFO   sending request
+[00:00:07.386] (7f57c551a700) DEBUG  send_async; method=GET uri=http://ip-api.com/json/10.46.57.117
+[00:00:07.386] (7f57c551a700) TRACE  -> send_async;
+[00:00:07.386] (7f57c551a700) DEBUG  handler;
+[00:00:07.387] (7f57c5319700) TRACE  -> handler;
+[00:00:07.387] (7f57c551a700) TRACE  <- send_async;
+[00:00:07.387] (7f57c5319700) DEBUG  handler; id=0
+[00:00:07.387] (7f57c5319700) TRACE  <- handler;
+[00:00:07.387] (7f57c5319700) TRACE  -> handler;
+[00:00:07.387] (7f57c5319700) DEBUG  processing: http://ip-api.com/json/10.46.57.117
+[00:00:07.387] (7f57c5319700) TRACE  <- handler;
+[00:00:07.449] (7f57c5319700) TRACE  -> handler;
+[00:00:07.449] (7f57c5319700) DEBUG    Trying 208.95.112.1:80...
+[00:00:07.449] (7f57c5319700) TRACE  <- handler;
+[00:00:07.481] (7f57c5319700) TRACE  -> handler;
+[00:00:07.481] (7f57c5319700) DEBUG  Connected to ip-api.com (208.95.112.1) port 80
+[00:00:07.481] (7f57c5319700) TRACE  <- handler;
+[00:00:07.482] (7f57c5319700) TRACE  -> handler;
+[00:00:07.482] (7f57c5319700) TRACE  <- handler;
+[00:00:07.513] (7f57c5319700) TRACE  -> handler;
+[00:00:07.513] (7f57c5319700) TRACE  <- handler;
+[00:00:07.513] (7f57c5319700) TRACE  -> handler;
+[00:00:07.514] (7f57c5319700) TRACE  <- handler;
+[00:00:07.515] (7f57c5319700) TRACE  -> handler;
+[00:00:07.515] (7f57c5319700) TRACE  <- handler;
+[00:00:07.515] (7f57c5319700) TRACE  -> handler;
+[00:00:07.515] (7f57c5319700) TRACE  <- handler;
+[00:00:07.515] (7f57c5319700) TRACE  -> handler;
+[00:00:07.515] (7f57c5319700) TRACE  <- handler;
+[00:00:07.515] (7f57c5319700) TRACE  -> handler;
+[00:00:07.515] (7f57c5319700) TRACE  <- handler;
+[00:00:07.515] (7f57c5319700) TRACE  -> handler;
+[00:00:07.515] (7f57c5319700) TRACE  <- handler;
+[00:00:07.515] (7f57c5319700) TRACE  -> handler;
+[00:00:07.515] (7f57c5319700) TRACE  <- handler;
+[00:00:07.515] (7f57c5319700) TRACE  -> handler;
+[00:00:07.515] (7f57c5319700) TRACE  <- handler;
+[00:00:07.515] (7f57c5319700) TRACE  -> handler;
+[00:00:07.516] (7f57c5319700) DEBUG  Connection #0 to host ip-api.com left intact
+[00:00:07.516] (7f57c551a700) TRACE  -> send_async;
+[00:00:07.516] (7f57c5319700) TRACE  <- handler;
+[00:00:07.516] (7f57c551a700) TRACE  <- send_async;
+[00:00:07.516] (7f57c551a700) TRACE  -- send_async;
+[00:00:07.516] (7f57c5319700) TRACE  -- handler;
+[00:00:07.516] (7f57c551a700) INFO   request completed
+[00:00:10.543] (7f57c84521c0) DEBUG  Imani: Mutex { data: None }
+[00:00:10.595] (7f57c551a700) INFO   sending request
+[00:00:10.596] (7f57c551a700) DEBUG  send_async; method=GET uri=http://ip-api.com/json/10.46.57.117
+[00:00:10.597] (7f57c551a700) TRACE  -> send_async;
+[00:00:10.597] (7f57c551a700) DEBUG  handler;
+[00:00:10.597] (7f57c551a700) TRACE  <- send_async;
+[00:00:10.597] (7f57c5319700) TRACE  -> handler;
+[00:00:10.597] (7f57c5319700) DEBUG  handler; id=0
+[00:00:10.597] (7f57c5319700) TRACE  <- handler;
+[00:00:10.597] (7f57c5319700) TRACE  -> handler;
+[00:00:10.597] (7f57c5319700) DEBUG  processing: http://ip-api.com/json/10.46.57.117
+[00:00:10.597] (7f57c5319700) TRACE  <- handler;
+[00:00:10.597] (7f57c5319700) TRACE  -> handler;
+[00:00:10.597] (7f57c5319700) DEBUG  Found bundle for host: 0x7f5794006f90 [serially]
+[00:00:10.599] (7f57c5319700) TRACE  <- handler;
+[00:00:10.599] (7f57c5319700) TRACE  -> handler;
+[00:00:10.599] (7f57c5319700) DEBUG  Can not multiplex, even if we wanted to
+[00:00:10.599] (7f57c5319700) TRACE  <- handler;
+[00:00:10.599] (7f57c5319700) TRACE  -> handler;
+[00:00:10.599] (7f57c5319700) DEBUG  Re-using existing connection with host ip-api.com
+[00:00:10.599] (7f57c5319700) TRACE  <- handler;
+[00:00:10.599] (7f57c5319700) TRACE  -> handler;
+[00:00:10.599] (7f57c5319700) TRACE  <- handler;
+[00:00:10.630] (7f57c5319700) TRACE  -> handler;
+[00:00:10.630] (7f57c5319700) TRACE  <- handler;
+[00:00:10.630] (7f57c5319700) TRACE  -> handler;
+[00:00:10.631] (7f57c5319700) TRACE  <- handler;
+[00:00:10.631] (7f57c5319700) TRACE  -> handler;
+[00:00:10.631] (7f57c5319700) TRACE  <- handler;
+[00:00:10.631] (7f57c5319700) TRACE  -> handler;
+[00:00:10.631] (7f57c5319700) TRACE  <- handler;
+[00:00:10.631] (7f57c5319700) TRACE  -> handler;
+[00:00:10.631] (7f57c5319700) TRACE  <- handler;
+[00:00:10.632] (7f57c5319700) TRACE  -> handler;
+[00:00:10.632] (7f57c5319700) TRACE  <- handler;
+[00:00:10.632] (7f57c5319700) TRACE  -> handler;
+[00:00:10.632] (7f57c5319700) TRACE  <- handler;
+[00:00:10.632] (7f57c5319700) TRACE  -> handler;
+[00:00:10.632] (7f57c5319700) TRACE  <- handler;
+[00:00:10.632] (7f57c5319700) TRACE  -> handler;
+[00:00:10.632] (7f57c5319700) TRACE  <- handler;
+[00:00:10.632] (7f57c5319700) TRACE  -> handler;
+[00:00:10.632] (7f57c5319700) DEBUG  Connection #0 to host ip-api.com left intact
+[00:00:10.632] (7f57c5319700) TRACE  <- handler;
+[00:00:10.633] (7f57c5319700) TRACE  -- handler;
+[00:00:10.633] (7f57c551a700) TRACE  -> send_async;
+[00:00:10.633] (7f57c551a700) TRACE  <- send_async;
+[00:00:10.633] (7f57c551a700) TRACE  -- send_async;
+[00:00:10.633] (7f57c551a700) INFO   request completed
+[00:00:15.559] (7f57c84521c0) DEBUG  Imani: Mutex { data: None }
+[00:00:15.610] (7f57c551a700) INFO   sending request
+[00:00:15.610] (7f57c551a700) DEBUG  send_async; method=GET uri=http://ip-api.com/json/10.46.57.117
+[00:00:15.611] (7f57c551a700) TRACE  -> send_async;
+[00:00:15.611] (7f57c551a700) DEBUG  handler;
+[00:00:15.611] (7f57c551a700) TRACE  <- send_async;
+[00:00:15.611] (7f57c5319700) TRACE  -> handler;
+[00:00:15.611] (7f57c5319700) DEBUG  handler; id=0
+[00:00:15.611] (7f57c5319700) TRACE  <- handler;
+[00:00:15.611] (7f57c5319700) TRACE  -> handler;
+[00:00:15.612] (7f57c5319700) DEBUG  processing: http://ip-api.com/json/10.46.57.117
+[00:00:15.612] (7f57c5319700) TRACE  <- handler;
+[00:00:15.612] (7f57c5319700) TRACE  -> handler;
+[00:00:15.612] (7f57c5319700) DEBUG  Found bundle for host: 0x7f5794006f90 [serially]
+[00:00:15.612] (7f57c5319700) TRACE  <- handler;
+[00:00:15.613] (7f57c5319700) TRACE  -> handler;
+[00:00:15.613] (7f57c5319700) DEBUG  Can not multiplex, even if we wanted to
+[00:00:15.613] (7f57c5319700) TRACE  <- handler;
+[00:00:15.613] (7f57c5319700) TRACE  -> handler;
+[00:00:15.613] (7f57c5319700) DEBUG  Re-using existing connection with host ip-api.com
+[00:00:15.613] (7f57c5319700) TRACE  <- handler;
+[00:00:15.613] (7f57c5319700) TRACE  -> handler;
+[00:00:15.613] (7f57c5319700) TRACE  <- handler;
+[00:00:15.644] (7f57c5319700) TRACE  -> handler;
+[00:00:15.644] (7f57c5319700) TRACE  <- handler;
+[00:00:15.645] (7f57c5319700) TRACE  -> handler;
+[00:00:15.646] (7f57c5319700) TRACE  <- handler;
+[00:00:15.646] (7f57c5319700) TRACE  -> handler;
+[00:00:15.646] (7f57c5319700) TRACE  <- handler;
+[00:00:15.646] (7f57c5319700) TRACE  -> handler;
+[00:00:15.646] (7f57c5319700) TRACE  <- handler;
+[00:00:15.646] (7f57c5319700) TRACE  -> handler;
+[00:00:15.646] (7f57c5319700) TRACE  <- handler;
+[00:00:15.646] (7f57c5319700) TRACE  -> handler;
+[00:00:15.646] (7f57c5319700) TRACE  <- handler;
+[00:00:15.646] (7f57c5319700) TRACE  -> handler;
+[00:00:15.646] (7f57c5319700) TRACE  <- handler;
+[00:00:15.646] (7f57c5319700) TRACE  -> handler;
+[00:00:15.646] (7f57c5319700) TRACE  <- handler;
+[00:00:15.646] (7f57c5319700) TRACE  -> handler;
+[00:00:15.646] (7f57c5319700) TRACE  <- handler;
+[00:00:15.647] (7f57c5319700) TRACE  -> handler;
+[00:00:15.647] (7f57c551a700) TRACE  -> send_async;
+[00:00:15.647] (7f57c5319700) DEBUG  Connection #0 to host ip-api.com left intact
+[00:00:15.647] (7f57c5319700) TRACE  <- handler;
+[00:00:15.647] (7f57c551a700) TRACE  <- send_async;
+[00:00:15.648] (7f57c551a700) TRACE  -- send_async;
+[00:00:15.648] (7f57c5319700) TRACE  -- handler;
+[00:00:15.648] (7f57c551a700) INFO   request completed
+[00:00:20.579] (7f57c84521c0) DEBUG  Imani: Mutex { data: None }
+[00:00:20.630] (7f57c551a700) INFO   sending request
+[00:00:20.630] (7f57c551a700) DEBUG  send_async; method=GET uri=http://ip-api.com/json/10.46.57.117
+[00:00:20.631] (7f57c551a700) TRACE  -> send_async;
+[00:00:20.631] (7f57c551a700) DEBUG  handler;
+[00:00:20.631] (7f57c551a700) TRACE  <- send_async;
+[00:00:20.631] (7f57c5319700) TRACE  -> handler;
+[00:00:20.631] (7f57c5319700) DEBUG  handler; id=0
+[00:00:20.631] (7f57c5319700) TRACE  <- handler;
+[00:00:20.632] (7f57c5319700) TRACE  -> handler;
+[00:00:20.632] (7f57c5319700) DEBUG  processing: http://ip-api.com/json/10.46.57.117
+[00:00:20.632] (7f57c5319700) TRACE  <- handler;
+[00:00:20.632] (7f57c5319700) TRACE  -> handler;
+[00:00:20.632] (7f57c5319700) DEBUG  Found bundle for host: 0x7f5794006f90 [serially]
+[00:00:20.632] (7f57c5319700) TRACE  <- handler;
+[00:00:20.632] (7f57c5319700) TRACE  -> handler;
+[00:00:20.633] (7f57c5319700) DEBUG  Can not multiplex, even if we wanted to
+[00:00:20.633] (7f57c5319700) TRACE  <- handler;
+[00:00:20.633] (7f57c5319700) TRACE  -> handler;
+[00:00:20.633] (7f57c5319700) DEBUG  Re-using existing connection with host ip-api.com
+[00:00:20.633] (7f57c5319700) TRACE  <- handler;
+[00:00:20.633] (7f57c5319700) TRACE  -> handler;
+[00:00:20.633] (7f57c5319700) TRACE  <- handler;
+[00:00:20.665] (7f57c5319700) TRACE  -> handler;
+[00:00:20.665] (7f57c5319700) TRACE  <- handler;
+[00:00:20.665] (7f57c5319700) TRACE  -> handler;
+[00:00:20.666] (7f57c5319700) TRACE  <- handler;
+[00:00:20.666] (7f57c5319700) TRACE  -> handler;
+[00:00:20.666] (7f57c5319700) TRACE  <- handler;
+[00:00:20.666] (7f57c5319700) TRACE  -> handler;
+[00:00:20.666] (7f57c5319700) TRACE  <- handler;
+[00:00:20.666] (7f57c5319700) TRACE  -> handler;
+[00:00:20.666] (7f57c5319700) TRACE  <- handler;
+[00:00:20.666] (7f57c5319700) TRACE  -> handler;
+[00:00:20.666] (7f57c5319700) TRACE  <- handler;
+[00:00:20.666] (7f57c5319700) TRACE  -> handler;
+[00:00:20.666] (7f57c5319700) TRACE  <- handler;
+[00:00:20.666] (7f57c5319700) TRACE  -> handler;
+[00:00:20.666] (7f57c5319700) TRACE  <- handler;
+[00:00:20.666] (7f57c5319700) TRACE  -> handler;
+[00:00:20.666] (7f57c5319700) TRACE  <- handler;
+[00:00:20.667] (7f57c5319700) TRACE  -> handler;
+[00:00:20.667] (7f57c5319700) DEBUG  Connection #0 to host ip-api.com left intact
+[00:00:20.667] (7f57c5319700) TRACE  <- handler;
+[00:00:20.667] (7f57c5319700) TRACE  -- handler;
+[00:00:20.668] (7f57c551a700) TRACE  -> send_async;
+[00:00:20.668] (7f57c551a700) TRACE  <- send_async;
+[00:00:20.668] (7f57c551a700) TRACE  -- send_async;
+[00:00:20.668] (7f57c551a700) INFO   request completed
+[00:00:25.584] (7f57c84521c0) DEBUG  Imani: Mutex { data: None }
+[00:00:25.633] (7f57c551a700) INFO   sending request
+[00:00:25.633] (7f57c551a700) DEBUG  send_async; method=GET uri=http://ip-api.com/json/10.46.57.117
+[00:00:25.634] (7f57c551a700) TRACE  -> send_async;
+[00:00:25.635] (7f57c551a700) DEBUG  handler;
+[00:00:25.635] (7f57c551a700) TRACE  <- send_async;
+[00:00:25.635] (7f57c5319700) TRACE  -> handler;
+[00:00:25.635] (7f57c5319700) DEBUG  handler; id=0
+[00:00:25.635] (7f57c5319700) TRACE  <- handler;
+[00:00:25.635] (7f57c5319700) TRACE  -> handler;
+[00:00:25.635] (7f57c5319700) DEBUG  processing: http://ip-api.com/json/10.46.57.117
+[00:00:25.635] (7f57c5319700) TRACE  <- handler;
+[00:00:25.635] (7f57c5319700) TRACE  -> handler;
+[00:00:25.635] (7f57c5319700) DEBUG  Found bundle for host: 0x7f5794006f90 [serially]
+[00:00:25.635] (7f57c5319700) TRACE  <- handler;
+[00:00:25.636] (7f57c5319700) TRACE  -> handler;
+[00:00:25.636] (7f57c5319700) DEBUG  Can not multiplex, even if we wanted to
+[00:00:25.636] (7f57c5319700) TRACE  <- handler;
+[00:00:25.636] (7f57c5319700) TRACE  -> handler;
+[00:00:25.636] (7f57c5319700) DEBUG  Re-using existing connection with host ip-api.com
+[00:00:25.636] (7f57c5319700) TRACE  <- handler;
+[00:00:25.636] (7f57c5319700) TRACE  -> handler;
+[00:00:25.636] (7f57c5319700) TRACE  <- handler;
+[00:00:25.668] (7f57c5319700) TRACE  -> handler;
+[00:00:25.668] (7f57c5319700) TRACE  <- handler;
+[00:00:25.668] (7f57c5319700) TRACE  -> handler;
+[00:00:25.669] (7f57c5319700) TRACE  <- handler;
+[00:00:25.669] (7f57c5319700) TRACE  -> handler;
+[00:00:25.669] (7f57c5319700) TRACE  <- handler;
+[00:00:25.669] (7f57c5319700) TRACE  -> handler;
+[00:00:25.669] (7f57c5319700) TRACE  <- handler;
+[00:00:25.669] (7f57c5319700) TRACE  -> handler;
+[00:00:25.669] (7f57c5319700) TRACE  <- handler;
+[00:00:25.669] (7f57c5319700) TRACE  -> handler;
+[00:00:25.669] (7f57c5319700) TRACE  <- handler;
+[00:00:25.669] (7f57c5319700) TRACE  -> handler;
+[00:00:25.669] (7f57c5319700) TRACE  <- handler;
+[00:00:25.669] (7f57c5319700) TRACE  -> handler;
+[00:00:25.669] (7f57c5319700) TRACE  <- handler;
+[00:00:25.669] (7f57c5319700) TRACE  -> handler;
+[00:00:25.669] (7f57c5319700) TRACE  <- handler;
+[00:00:25.670] (7f57c5319700) TRACE  -> handler;
+[00:00:25.670] (7f57c5319700) DEBUG  Connection #0 to host ip-api.com left intact
+[00:00:25.670] (7f57c5319700) TRACE  <- handler;
+[00:00:25.671] (7f57c551a700) TRACE  -> send_async;
+[00:00:25.671] (7f57c5319700) TRACE  -- handler;
+[00:00:25.671] (7f57c551a700) TRACE  <- send_async;
+[00:00:25.671] (7f57c551a700) TRACE  -- send_async;
+[00:00:25.671] (7f57c551a700) INFO   request completed

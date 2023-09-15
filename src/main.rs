@@ -1,100 +1,47 @@
 #![allow(unused_imports)]
 
+use std::sync::Arc;
 use std::{error::Error, collections::BTreeMap};
 use map_view::map_load::{countries_from_shapefile, Country };
+use map_view::net;
 use itertools::*;
 
-/* Check these later */
-use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
-    execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-};
-use std::{
-    io,
-    time::{Duration, Instant},
-};
-use ratatui::{
-    backend::{Backend, CrosstermBackend},
-    layout::{Constraint, Direction, Layout, Rect},
-    style::{Color, Style},
-    text::Span,
-    widgets::{
-        canvas::{Canvas, Map, MapResolution, Rectangle, Shape, Painter, Line},
-        Block, Borders,
-    },
-    Frame, Terminal,
-};
-/* ================= */
+use crossterm::{event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},execute,terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},};
+use tokio::sync::Mutex;
+use std::{io,time::{Duration, Instant},};
+use ratatui::{backend::{Backend, CrosstermBackend},layout::{Constraint, Direction, Layout, Rect},style::{Color, Style},text::Span,widgets::{canvas::{Canvas, Map, MapResolution, Rectangle, Shape, Painter, Line},Block, Borders,},Frame, Terminal,};
+use ipgeolocate::{Locator, Service};
 
-struct ViewPort {
-    x: f64,
-    y: f64,
-    width: f64,
-    height: f64,
-}
-
-impl ViewPort {
-    fn new(x: f64, y: f64, width: f64, height: f64) -> Self {
-        ViewPort { x, y, width, height }
-    }
-
-    fn zoom_in(&mut self) {
-        self.x += 2.0;
-        self.y += 1.0;
-        self.width -= 4.0;
-        self.height -= 2.0;
-    }
-
-    fn zoom_out(&mut self) {
-        self.x -= 2.0;
-        self.y -= 1.0;
-        self.width += 4.0;
-        self.height += 2.0;
-    }
-
-    fn move_up(&mut self) {
-        self.y += 2.0;
-    }
-
-    fn move_down(&mut self) {
-        self.y -= 2.0;
-    }
-
-    fn move_west(&mut self) {
-        self.x -= 2.0;
-    }
-
-    fn move_east(&mut self) {
-        self.x += 2.0;
-    }
-
-    fn x_bounds(&self) -> [f64; 2] {
-        [self.x, self.x + self.width]
-    }
-
-    fn y_bounds(&self) -> [f64; 2] {
-        [self.y, self.y + self.height]
-    }
+#[derive(Debug)]
+struct GeoLocation {
+    ip: String,
+    lat: f32,
+    long: f32,
 }
 
 struct App {
     countries: [BTreeMap<String, Country>; 3],
-    selected: String,
     viewport: ViewPort,
+    localhost: Arc<Mutex<Option<GeoLocation>>>, 
+    connections: Arc<Mutex<Vec<GeoLocation>>>,
 }
 
 impl App {
     fn new(countries: [BTreeMap<String, Country>; 3]) -> Self {
+
+        let connections = Arc::new(Mutex::new(Vec::new()));
+        let localhost = Arc::new(Mutex::new(None));
+
         App { 
             countries, 
-            selected: "USA".to_string(),
             viewport: ViewPort {
                 x: -180.0,
                 y: -90.0,
                 width: 360.0,
                 height: 180.0,
-            }
+            },
+            localhost,
+            connections,
         }
     }
 }
@@ -108,21 +55,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let countries = [low, med, high];
 
     // set up terminal
-    enable_raw_mode()?;
-    let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
-    let backend = CrosstermBackend::new(stdout);
+    //enable_raw_mode()?;
+    //let mut stdout = io::stdout();
+    //execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
+    //let backend = CrosstermBackend::new(stdout);
     let app = App::new(countries);
-    let mut terminal = Terminal::new(backend)?;
+    //let mut terminal = Terminal::new(backend)?;
 
     // create app and run it
-    let tick_rate = Duration::from_millis(250);
-    let app_return = run_app(&mut terminal, app, tick_rate);
+    let event_tick_rate = Duration::from_millis(250);
+    let ping_tick_rate = Duration::from_millis(1000);
+    let app_return = run_app(/*&mut terminal,*/ app, event_tick_rate, ping_tick_rate);
 
     // restore terminal
-    disable_raw_mode()?;
-    execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
-    terminal.show_cursor()?;
+    //disable_raw_mode()?;
+    //execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
+    //terminal.show_cursor()?;
 
     if let Err(err) = app_return {
         eprintln!("Error: {:?}", err);
@@ -131,17 +79,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn run_app<B: Backend>(
-    terminal: &mut Terminal<B>,
+fn run_app 
+    (
+    //<B: Backend>(terminal: &mut Terminal<B>,
     mut app: App,
-    tick_rate: Duration,
-) -> io::Result<()> {
-    let mut last_tick = Instant::now();
+    event_tick_rate: Duration,
+    ping_tick_rate: Duration,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let start_tick = Instant::now();
+    let mut last_event_tick = start_tick;
+    let mut last_ping_tick = start_tick;
     loop {
-        terminal.draw(|f| ui(f, &app))?;
+        //terminal.draw(|f| ui(f, &app))?;
 
-        let timeout = tick_rate
-            .checked_sub(last_tick.elapsed())
+        let timeout = event_tick_rate
+            .checked_sub(last_event_tick.elapsed())
             .unwrap_or_else(|| Duration::from_secs(0));
 
         if event::poll(timeout)? {
@@ -173,9 +125,21 @@ fn run_app<B: Backend>(
                 }
             }
         }
-        if last_tick.elapsed() >= tick_rate {
+
+        if last_event_tick.elapsed() >= event_tick_rate {
             //app.on_tick();
-            last_tick = Instant::now();
+            last_event_tick = Instant::now();
+        }
+
+        if last_ping_tick.elapsed() >= ping_tick_rate {
+
+            let connections = app.connections.clone();
+            let localhost = app.localhost.clone();
+            tokio::spawn(geolocate_connections(localhost, connections));
+
+            println!("app.localhost: {:?}", app.localhost);
+
+            last_ping_tick = Instant::now();
         }
 
     }
@@ -269,3 +233,88 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
     f.render_widget(canvas, panes[0]);
 }
 
+struct ViewPort {
+    x: f64,
+    y: f64,
+    width: f64,
+    height: f64,
+}
+
+impl ViewPort {
+    fn new(x: f64, y: f64, width: f64, height: f64) -> Self {
+        ViewPort { x, y, width, height }
+    }
+
+    fn zoom_in(&mut self) {
+        self.x += 2.0;
+        self.y += 1.0;
+        self.width -= 4.0;
+        self.height -= 2.0;
+    }
+
+    fn zoom_out(&mut self) {
+        self.x -= 2.0;
+        self.y -= 1.0;
+        self.width += 4.0;
+        self.height += 2.0;
+    }
+
+    fn move_up(&mut self) {
+        self.y += 2.0;
+    }
+
+    fn move_down(&mut self) {
+        self.y -= 2.0;
+    }
+
+    fn move_west(&mut self) {
+        self.x -= 2.0;
+    }
+
+    fn move_east(&mut self) {
+        self.x += 2.0;
+    }
+
+    fn x_bounds(&self) -> [f64; 2] {
+        [self.x, self.x + self.width]
+    }
+
+    fn y_bounds(&self) -> [f64; 2] {
+        [self.y, self.y + self.height]
+    }
+}
+
+async fn geolocate_connections(
+    localhost: Arc<Mutex<Option<GeoLocation>>>,
+    connections: Arc<Mutex<Vec<GeoLocation>>>,
+) -> Result<(), String> {
+    let ips = net::get_tcp().map_err(|e| e.to_string())?;
+
+    let service = Service::IpApi;
+
+    let mut localhost_lock = localhost.lock().await;
+    if localhost_lock.is_none() {
+        if let Some(cnnct) = ips.first() {
+            let ip = &cnnct.local_address;
+            println!("Connection: {ip}");
+            let locate_res = Locator::get(ip, service).await;
+
+            if let Err(e) = locate_res.as_ref() {
+                println!("ERROR: {e}");
+            }
+
+            let geolocate = locate_res.ok()
+                .map(|response| {
+                    GeoLocation {
+                        ip: ip.to_owned(),
+                        lat: response.latitude.parse::<f32>().unwrap(),
+                        long: response.longitude.parse::<f32>().unwrap(),
+                    }
+                });
+            println!("Geolocate: {geolocate:?}");
+            *localhost_lock = geolocate;
+        }
+    }
+
+    Ok(())
+}
