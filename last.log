@@ -1,246 +1,4603 @@
-[00:00:05.479] (7f57c84521c0) DEBUG  Imani: Mutex { data: <locked> }
-[00:00:07.177] (7f57c551a700) DEBUG  agent waker listening on 127.0.0.1:36556
-[00:00:07.385] (7f57c551a700) DEBUG  agent_thread; port=36556
-[00:00:07.385] (7f57c5319700) TRACE  -> agent_thread;
-[00:00:07.386] (7f57c5319700) DEBUG  agent took 209.027964ms to start up
-[00:00:07.386] (7f57c551a700) INFO   sending request
-[00:00:07.386] (7f57c551a700) DEBUG  send_async; method=GET uri=http://ip-api.com/json/10.46.57.117
-[00:00:07.386] (7f57c551a700) TRACE  -> send_async;
-[00:00:07.386] (7f57c551a700) DEBUG  handler;
-[00:00:07.387] (7f57c5319700) TRACE  -> handler;
-[00:00:07.387] (7f57c551a700) TRACE  <- send_async;
-[00:00:07.387] (7f57c5319700) DEBUG  handler; id=0
-[00:00:07.387] (7f57c5319700) TRACE  <- handler;
-[00:00:07.387] (7f57c5319700) TRACE  -> handler;
-[00:00:07.387] (7f57c5319700) DEBUG  processing: http://ip-api.com/json/10.46.57.117
-[00:00:07.387] (7f57c5319700) TRACE  <- handler;
-[00:00:07.449] (7f57c5319700) TRACE  -> handler;
-[00:00:07.449] (7f57c5319700) DEBUG    Trying 208.95.112.1:80...
-[00:00:07.449] (7f57c5319700) TRACE  <- handler;
-[00:00:07.481] (7f57c5319700) TRACE  -> handler;
-[00:00:07.481] (7f57c5319700) DEBUG  Connected to ip-api.com (208.95.112.1) port 80
-[00:00:07.481] (7f57c5319700) TRACE  <- handler;
-[00:00:07.482] (7f57c5319700) TRACE  -> handler;
-[00:00:07.482] (7f57c5319700) TRACE  <- handler;
-[00:00:07.513] (7f57c5319700) TRACE  -> handler;
-[00:00:07.513] (7f57c5319700) TRACE  <- handler;
-[00:00:07.513] (7f57c5319700) TRACE  -> handler;
-[00:00:07.514] (7f57c5319700) TRACE  <- handler;
-[00:00:07.515] (7f57c5319700) TRACE  -> handler;
-[00:00:07.515] (7f57c5319700) TRACE  <- handler;
-[00:00:07.515] (7f57c5319700) TRACE  -> handler;
-[00:00:07.515] (7f57c5319700) TRACE  <- handler;
-[00:00:07.515] (7f57c5319700) TRACE  -> handler;
-[00:00:07.515] (7f57c5319700) TRACE  <- handler;
-[00:00:07.515] (7f57c5319700) TRACE  -> handler;
-[00:00:07.515] (7f57c5319700) TRACE  <- handler;
-[00:00:07.515] (7f57c5319700) TRACE  -> handler;
-[00:00:07.515] (7f57c5319700) TRACE  <- handler;
-[00:00:07.515] (7f57c5319700) TRACE  -> handler;
-[00:00:07.515] (7f57c5319700) TRACE  <- handler;
-[00:00:07.515] (7f57c5319700) TRACE  -> handler;
-[00:00:07.515] (7f57c5319700) TRACE  <- handler;
-[00:00:07.515] (7f57c5319700) TRACE  -> handler;
-[00:00:07.516] (7f57c5319700) DEBUG  Connection #0 to host ip-api.com left intact
-[00:00:07.516] (7f57c551a700) TRACE  -> send_async;
-[00:00:07.516] (7f57c5319700) TRACE  <- handler;
-[00:00:07.516] (7f57c551a700) TRACE  <- send_async;
-[00:00:07.516] (7f57c551a700) TRACE  -- send_async;
-[00:00:07.516] (7f57c5319700) TRACE  -- handler;
-[00:00:07.516] (7f57c551a700) INFO   request completed
-[00:00:10.543] (7f57c84521c0) DEBUG  Imani: Mutex { data: None }
-[00:00:10.595] (7f57c551a700) INFO   sending request
-[00:00:10.596] (7f57c551a700) DEBUG  send_async; method=GET uri=http://ip-api.com/json/10.46.57.117
-[00:00:10.597] (7f57c551a700) TRACE  -> send_async;
-[00:00:10.597] (7f57c551a700) DEBUG  handler;
-[00:00:10.597] (7f57c551a700) TRACE  <- send_async;
-[00:00:10.597] (7f57c5319700) TRACE  -> handler;
-[00:00:10.597] (7f57c5319700) DEBUG  handler; id=0
-[00:00:10.597] (7f57c5319700) TRACE  <- handler;
-[00:00:10.597] (7f57c5319700) TRACE  -> handler;
-[00:00:10.597] (7f57c5319700) DEBUG  processing: http://ip-api.com/json/10.46.57.117
-[00:00:10.597] (7f57c5319700) TRACE  <- handler;
-[00:00:10.597] (7f57c5319700) TRACE  -> handler;
-[00:00:10.597] (7f57c5319700) DEBUG  Found bundle for host: 0x7f5794006f90 [serially]
-[00:00:10.599] (7f57c5319700) TRACE  <- handler;
-[00:00:10.599] (7f57c5319700) TRACE  -> handler;
-[00:00:10.599] (7f57c5319700) DEBUG  Can not multiplex, even if we wanted to
-[00:00:10.599] (7f57c5319700) TRACE  <- handler;
-[00:00:10.599] (7f57c5319700) TRACE  -> handler;
-[00:00:10.599] (7f57c5319700) DEBUG  Re-using existing connection with host ip-api.com
-[00:00:10.599] (7f57c5319700) TRACE  <- handler;
-[00:00:10.599] (7f57c5319700) TRACE  -> handler;
-[00:00:10.599] (7f57c5319700) TRACE  <- handler;
-[00:00:10.630] (7f57c5319700) TRACE  -> handler;
-[00:00:10.630] (7f57c5319700) TRACE  <- handler;
-[00:00:10.630] (7f57c5319700) TRACE  -> handler;
-[00:00:10.631] (7f57c5319700) TRACE  <- handler;
-[00:00:10.631] (7f57c5319700) TRACE  -> handler;
-[00:00:10.631] (7f57c5319700) TRACE  <- handler;
-[00:00:10.631] (7f57c5319700) TRACE  -> handler;
-[00:00:10.631] (7f57c5319700) TRACE  <- handler;
-[00:00:10.631] (7f57c5319700) TRACE  -> handler;
-[00:00:10.631] (7f57c5319700) TRACE  <- handler;
-[00:00:10.632] (7f57c5319700) TRACE  -> handler;
-[00:00:10.632] (7f57c5319700) TRACE  <- handler;
-[00:00:10.632] (7f57c5319700) TRACE  -> handler;
-[00:00:10.632] (7f57c5319700) TRACE  <- handler;
-[00:00:10.632] (7f57c5319700) TRACE  -> handler;
-[00:00:10.632] (7f57c5319700) TRACE  <- handler;
-[00:00:10.632] (7f57c5319700) TRACE  -> handler;
-[00:00:10.632] (7f57c5319700) TRACE  <- handler;
-[00:00:10.632] (7f57c5319700) TRACE  -> handler;
-[00:00:10.632] (7f57c5319700) DEBUG  Connection #0 to host ip-api.com left intact
-[00:00:10.632] (7f57c5319700) TRACE  <- handler;
-[00:00:10.633] (7f57c5319700) TRACE  -- handler;
-[00:00:10.633] (7f57c551a700) TRACE  -> send_async;
-[00:00:10.633] (7f57c551a700) TRACE  <- send_async;
-[00:00:10.633] (7f57c551a700) TRACE  -- send_async;
-[00:00:10.633] (7f57c551a700) INFO   request completed
-[00:00:15.559] (7f57c84521c0) DEBUG  Imani: Mutex { data: None }
-[00:00:15.610] (7f57c551a700) INFO   sending request
-[00:00:15.610] (7f57c551a700) DEBUG  send_async; method=GET uri=http://ip-api.com/json/10.46.57.117
-[00:00:15.611] (7f57c551a700) TRACE  -> send_async;
-[00:00:15.611] (7f57c551a700) DEBUG  handler;
-[00:00:15.611] (7f57c551a700) TRACE  <- send_async;
-[00:00:15.611] (7f57c5319700) TRACE  -> handler;
-[00:00:15.611] (7f57c5319700) DEBUG  handler; id=0
-[00:00:15.611] (7f57c5319700) TRACE  <- handler;
-[00:00:15.611] (7f57c5319700) TRACE  -> handler;
-[00:00:15.612] (7f57c5319700) DEBUG  processing: http://ip-api.com/json/10.46.57.117
-[00:00:15.612] (7f57c5319700) TRACE  <- handler;
-[00:00:15.612] (7f57c5319700) TRACE  -> handler;
-[00:00:15.612] (7f57c5319700) DEBUG  Found bundle for host: 0x7f5794006f90 [serially]
-[00:00:15.612] (7f57c5319700) TRACE  <- handler;
-[00:00:15.613] (7f57c5319700) TRACE  -> handler;
-[00:00:15.613] (7f57c5319700) DEBUG  Can not multiplex, even if we wanted to
-[00:00:15.613] (7f57c5319700) TRACE  <- handler;
-[00:00:15.613] (7f57c5319700) TRACE  -> handler;
-[00:00:15.613] (7f57c5319700) DEBUG  Re-using existing connection with host ip-api.com
-[00:00:15.613] (7f57c5319700) TRACE  <- handler;
-[00:00:15.613] (7f57c5319700) TRACE  -> handler;
-[00:00:15.613] (7f57c5319700) TRACE  <- handler;
-[00:00:15.644] (7f57c5319700) TRACE  -> handler;
-[00:00:15.644] (7f57c5319700) TRACE  <- handler;
-[00:00:15.645] (7f57c5319700) TRACE  -> handler;
-[00:00:15.646] (7f57c5319700) TRACE  <- handler;
-[00:00:15.646] (7f57c5319700) TRACE  -> handler;
-[00:00:15.646] (7f57c5319700) TRACE  <- handler;
-[00:00:15.646] (7f57c5319700) TRACE  -> handler;
-[00:00:15.646] (7f57c5319700) TRACE  <- handler;
-[00:00:15.646] (7f57c5319700) TRACE  -> handler;
-[00:00:15.646] (7f57c5319700) TRACE  <- handler;
-[00:00:15.646] (7f57c5319700) TRACE  -> handler;
-[00:00:15.646] (7f57c5319700) TRACE  <- handler;
-[00:00:15.646] (7f57c5319700) TRACE  -> handler;
-[00:00:15.646] (7f57c5319700) TRACE  <- handler;
-[00:00:15.646] (7f57c5319700) TRACE  -> handler;
-[00:00:15.646] (7f57c5319700) TRACE  <- handler;
-[00:00:15.646] (7f57c5319700) TRACE  -> handler;
-[00:00:15.646] (7f57c5319700) TRACE  <- handler;
-[00:00:15.647] (7f57c5319700) TRACE  -> handler;
-[00:00:15.647] (7f57c551a700) TRACE  -> send_async;
-[00:00:15.647] (7f57c5319700) DEBUG  Connection #0 to host ip-api.com left intact
-[00:00:15.647] (7f57c5319700) TRACE  <- handler;
-[00:00:15.647] (7f57c551a700) TRACE  <- send_async;
-[00:00:15.648] (7f57c551a700) TRACE  -- send_async;
-[00:00:15.648] (7f57c5319700) TRACE  -- handler;
-[00:00:15.648] (7f57c551a700) INFO   request completed
-[00:00:20.579] (7f57c84521c0) DEBUG  Imani: Mutex { data: None }
-[00:00:20.630] (7f57c551a700) INFO   sending request
-[00:00:20.630] (7f57c551a700) DEBUG  send_async; method=GET uri=http://ip-api.com/json/10.46.57.117
-[00:00:20.631] (7f57c551a700) TRACE  -> send_async;
-[00:00:20.631] (7f57c551a700) DEBUG  handler;
-[00:00:20.631] (7f57c551a700) TRACE  <- send_async;
-[00:00:20.631] (7f57c5319700) TRACE  -> handler;
-[00:00:20.631] (7f57c5319700) DEBUG  handler; id=0
-[00:00:20.631] (7f57c5319700) TRACE  <- handler;
-[00:00:20.632] (7f57c5319700) TRACE  -> handler;
-[00:00:20.632] (7f57c5319700) DEBUG  processing: http://ip-api.com/json/10.46.57.117
-[00:00:20.632] (7f57c5319700) TRACE  <- handler;
-[00:00:20.632] (7f57c5319700) TRACE  -> handler;
-[00:00:20.632] (7f57c5319700) DEBUG  Found bundle for host: 0x7f5794006f90 [serially]
-[00:00:20.632] (7f57c5319700) TRACE  <- handler;
-[00:00:20.632] (7f57c5319700) TRACE  -> handler;
-[00:00:20.633] (7f57c5319700) DEBUG  Can not multiplex, even if we wanted to
-[00:00:20.633] (7f57c5319700) TRACE  <- handler;
-[00:00:20.633] (7f57c5319700) TRACE  -> handler;
-[00:00:20.633] (7f57c5319700) DEBUG  Re-using existing connection with host ip-api.com
-[00:00:20.633] (7f57c5319700) TRACE  <- handler;
-[00:00:20.633] (7f57c5319700) TRACE  -> handler;
-[00:00:20.633] (7f57c5319700) TRACE  <- handler;
-[00:00:20.665] (7f57c5319700) TRACE  -> handler;
-[00:00:20.665] (7f57c5319700) TRACE  <- handler;
-[00:00:20.665] (7f57c5319700) TRACE  -> handler;
-[00:00:20.666] (7f57c5319700) TRACE  <- handler;
-[00:00:20.666] (7f57c5319700) TRACE  -> handler;
-[00:00:20.666] (7f57c5319700) TRACE  <- handler;
-[00:00:20.666] (7f57c5319700) TRACE  -> handler;
-[00:00:20.666] (7f57c5319700) TRACE  <- handler;
-[00:00:20.666] (7f57c5319700) TRACE  -> handler;
-[00:00:20.666] (7f57c5319700) TRACE  <- handler;
-[00:00:20.666] (7f57c5319700) TRACE  -> handler;
-[00:00:20.666] (7f57c5319700) TRACE  <- handler;
-[00:00:20.666] (7f57c5319700) TRACE  -> handler;
-[00:00:20.666] (7f57c5319700) TRACE  <- handler;
-[00:00:20.666] (7f57c5319700) TRACE  -> handler;
-[00:00:20.666] (7f57c5319700) TRACE  <- handler;
-[00:00:20.666] (7f57c5319700) TRACE  -> handler;
-[00:00:20.666] (7f57c5319700) TRACE  <- handler;
-[00:00:20.667] (7f57c5319700) TRACE  -> handler;
-[00:00:20.667] (7f57c5319700) DEBUG  Connection #0 to host ip-api.com left intact
-[00:00:20.667] (7f57c5319700) TRACE  <- handler;
-[00:00:20.667] (7f57c5319700) TRACE  -- handler;
-[00:00:20.668] (7f57c551a700) TRACE  -> send_async;
-[00:00:20.668] (7f57c551a700) TRACE  <- send_async;
-[00:00:20.668] (7f57c551a700) TRACE  -- send_async;
-[00:00:20.668] (7f57c551a700) INFO   request completed
-[00:00:25.584] (7f57c84521c0) DEBUG  Imani: Mutex { data: None }
-[00:00:25.633] (7f57c551a700) INFO   sending request
-[00:00:25.633] (7f57c551a700) DEBUG  send_async; method=GET uri=http://ip-api.com/json/10.46.57.117
-[00:00:25.634] (7f57c551a700) TRACE  -> send_async;
-[00:00:25.635] (7f57c551a700) DEBUG  handler;
-[00:00:25.635] (7f57c551a700) TRACE  <- send_async;
-[00:00:25.635] (7f57c5319700) TRACE  -> handler;
-[00:00:25.635] (7f57c5319700) DEBUG  handler; id=0
-[00:00:25.635] (7f57c5319700) TRACE  <- handler;
-[00:00:25.635] (7f57c5319700) TRACE  -> handler;
-[00:00:25.635] (7f57c5319700) DEBUG  processing: http://ip-api.com/json/10.46.57.117
-[00:00:25.635] (7f57c5319700) TRACE  <- handler;
-[00:00:25.635] (7f57c5319700) TRACE  -> handler;
-[00:00:25.635] (7f57c5319700) DEBUG  Found bundle for host: 0x7f5794006f90 [serially]
-[00:00:25.635] (7f57c5319700) TRACE  <- handler;
-[00:00:25.636] (7f57c5319700) TRACE  -> handler;
-[00:00:25.636] (7f57c5319700) DEBUG  Can not multiplex, even if we wanted to
-[00:00:25.636] (7f57c5319700) TRACE  <- handler;
-[00:00:25.636] (7f57c5319700) TRACE  -> handler;
-[00:00:25.636] (7f57c5319700) DEBUG  Re-using existing connection with host ip-api.com
-[00:00:25.636] (7f57c5319700) TRACE  <- handler;
-[00:00:25.636] (7f57c5319700) TRACE  -> handler;
-[00:00:25.636] (7f57c5319700) TRACE  <- handler;
-[00:00:25.668] (7f57c5319700) TRACE  -> handler;
-[00:00:25.668] (7f57c5319700) TRACE  <- handler;
-[00:00:25.668] (7f57c5319700) TRACE  -> handler;
-[00:00:25.669] (7f57c5319700) TRACE  <- handler;
-[00:00:25.669] (7f57c5319700) TRACE  -> handler;
-[00:00:25.669] (7f57c5319700) TRACE  <- handler;
-[00:00:25.669] (7f57c5319700) TRACE  -> handler;
-[00:00:25.669] (7f57c5319700) TRACE  <- handler;
-[00:00:25.669] (7f57c5319700) TRACE  -> handler;
-[00:00:25.669] (7f57c5319700) TRACE  <- handler;
-[00:00:25.669] (7f57c5319700) TRACE  -> handler;
-[00:00:25.669] (7f57c5319700) TRACE  <- handler;
-[00:00:25.669] (7f57c5319700) TRACE  -> handler;
-[00:00:25.669] (7f57c5319700) TRACE  <- handler;
-[00:00:25.669] (7f57c5319700) TRACE  -> handler;
-[00:00:25.669] (7f57c5319700) TRACE  <- handler;
-[00:00:25.669] (7f57c5319700) TRACE  -> handler;
-[00:00:25.669] (7f57c5319700) TRACE  <- handler;
-[00:00:25.670] (7f57c5319700) TRACE  -> handler;
-[00:00:25.670] (7f57c5319700) DEBUG  Connection #0 to host ip-api.com left intact
-[00:00:25.670] (7f57c5319700) TRACE  <- handler;
-[00:00:25.671] (7f57c551a700) TRACE  -> send_async;
-[00:00:25.671] (7f57c5319700) TRACE  -- handler;
-[00:00:25.671] (7f57c551a700) TRACE  <- send_async;
-[00:00:25.671] (7f57c551a700) TRACE  -- send_async;
-[00:00:25.671] (7f57c551a700) INFO   request completed
+warning: unused import: `std::io::Write`
+ --> src/map_load.rs:2:5
+  |
+2 | use std::io::Write;
+  |     ^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused import: `geo_types::Polygon`
+ --> src/map_load.rs:4:5
+  |
+4 | use geo_types::Polygon;
+  |     ^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `serde_derive::Serialize`
+ --> src/map_load.rs:6:5
+  |
+6 | use serde_derive::Serialize;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `style::Color`, `widgets::canvas::Painter`
+ --> src/map_load.rs:7:15
+  |
+7 | use ratatui::{widgets::canvas::Painter, style::Color};
+  |               ^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^
+
+warning: unused import: `std::fs`
+ --> src/map_load.rs:8:5
+  |
+8 | use std::fs;
+  |     ^^^^^^^
+
+warning: unused imports: `Duration`, `Instant`, `io`
+ --> src/net.rs:1:33
+  |
+1 | use std::{collections::HashMap, io, time::{Duration, Instant}};
+  |                                 ^^         ^^^^^^^^  ^^^^^^^
+
+warning: `map_view` (lib) generated 6 warnings (run `cargo fix --lib -p map_view` to apply 6 suggestions)
+   Compiling map_view v0.1.0 (/home/wrhodes2/rust/map_view)
+warning: a method with this name may be added to the standard library in the future
+   --> src/main.rs:350:10
+    |
+350 |         .intersperse(".")
+    |          ^^^^^^^^^^^
+    |
+    = warning: once this associated item is added to the standard library, the ambiguity may cause an error or change in behavior!
+    = note: for more information, see issue #48919 <https://github.com/rust-lang/rust/issues/48919>
+    = help: call with fully qualified syntax `itertools::Itertools::intersperse(...)` to keep using the current method
+    = help: add `#![feature(iter_intersperse)]` to the crate attributes to enable `std::iter::Iterator::intersperse`
+    = note: `#[warn(unstable_name_collisions)]` on by default
+
+warning: field `ip` is never read
+  --> src/main.rs:17:5
+   |
+16 | struct GeoLocation {
+   |        ----------- field in this struct
+17 |     ip: String,
+   |     ^^
+   |
+   = note: `GeoLocation` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` on by default
+
+warning: associated function `new` is never used
+   --> src/main.rs:261:8
+    |
+260 | impl ViewPort {
+    | ------------- associated function in this implementation
+261 |     fn new(x: f64, y: f64, width: f64, height: f64) -> Self {
+    |        ^^^
+
+warning: `map_view` (bin "map_view") generated 3 warnings
+    Finished dev [unoptimized + debuginfo] target(s) in 12.71s
+     Running `target/debug/map_view`
+Last ping tick: 9.250927773s
+Ping tick rate: 10s
+Last ping tick: 9.5024384s
+Ping tick rate: 10s
+Last ping tick: 9.753541193s
+Ping tick rate: 10s
+Last ping tick: 10.004390275s
+Ping tick rate: 10s
+Host location acquired: 35.8974 -83.9425
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 169.207819ms
+Ping tick rate: 10s
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 33.749 -84.388
+Last ping tick: 245.134115ms
+Ping tick rate: 10s
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 35.8974 -83.9425
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 41.5908 -93.6208
+Last ping tick: 404.517113ms
+Ping tick rate: 10s
+Remote location acquired: 43.6532 -79.3832
+Last ping tick: 429.462319ms
+Ping tick rate: 10s
+Remote location acquired: 45.5019 -73.5674
+Last ping tick: 454.263554ms
+Ping tick rate: 10s
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 479.675943ms
+Ping tick rate: 10s
+Last ping tick: 496.070271ms
+Ping tick rate: 10s
+Remote location acquired: 39.0438 -77.4874
+Last ping tick: 503.736441ms
+Ping tick rate: 10s
+Last ping tick: 529.862996ms
+Ping tick rate: 10s
+Remote location acquired: 36.677696 -78.37471
+Last ping tick: 556.300337ms
+Ping tick rate: 10s
+Remote location acquired: 39.0997 -94.5785
+Last ping tick: 582.508184ms
+Ping tick rate: 10s
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 605.413497ms
+Ping tick rate: 10s
+Remote location acquired: 38.6828 -76.1563
+Last ping tick: 629.460275ms
+Ping tick rate: 10s
+Last ping tick: 662.093782ms
+Ping tick rate: 10s
+Last ping tick: 681.196529ms
+Ping tick rate: 10s
+Last ping tick: 709.959287ms
+Ping tick rate: 10s
+Last ping tick: 731.467806ms
+Ping tick rate: 10s
+Last ping tick: 746.903551ms
+Ping tick rate: 10s
+Last ping tick: 756.090093ms
+Ping tick rate: 10s
+Last ping tick: 781.849771ms
+Ping tick rate: 10s
+Last ping tick: 807.850493ms
+Ping tick rate: 10s
+Last ping tick: 833.312771ms
+Ping tick rate: 10s
+Last ping tick: 858.158987ms
+Ping tick rate: 10s
+Last ping tick: 883.527493ms
+Ping tick rate: 10s
+Last ping tick: 908.79117ms
+Ping tick rate: 10s
+Last ping tick: 934.295301ms
+Ping tick rate: 10s
+Last ping tick: 959.316048ms
+Ping tick rate: 10s
+Last ping tick: 985.048919ms
+Ping tick rate: 10s
+Last ping tick: 997.03322ms
+Ping tick rate: 10s
+Last ping tick: 1.010461798s
+Ping tick rate: 10s
+Last ping tick: 1.03627247s
+Ping tick rate: 10s
+Last ping tick: 1.060434424s
+Ping tick rate: 10s
+Last ping tick: 1.086804596s
+Ping tick rate: 10s
+Last ping tick: 1.11063513s
+Ping tick rate: 10s
+Last ping tick: 1.135727716s
+Ping tick rate: 10s
+Last ping tick: 1.161525749s
+Ping tick rate: 10s
+Last ping tick: 1.18550173s
+Ping tick rate: 10s
+Last ping tick: 1.247635457s
+Ping tick rate: 10s
+Last ping tick: 1.318178673s
+Ping tick rate: 10s
+Last ping tick: 1.498717817s
+Ping tick rate: 10s
+Last ping tick: 1.553261589s
+Ping tick rate: 10s
+Last ping tick: 1.578506661s
+Ping tick rate: 10s
+Last ping tick: 1.60303772s
+Ping tick rate: 10s
+Last ping tick: 1.628248731s
+Ping tick rate: 10s
+Last ping tick: 1.65275673s
+Ping tick rate: 10s
+Last ping tick: 1.677689255s
+Ping tick rate: 10s
+Last ping tick: 1.70706714s
+Ping tick rate: 10s
+Last ping tick: 1.728132576s
+Ping tick rate: 10s
+Last ping tick: 1.749795733s
+Ping tick rate: 10s
+Last ping tick: 1.757118946s
+Ping tick rate: 10s
+Last ping tick: 1.782765232s
+Ping tick rate: 10s
+Last ping tick: 1.803426573s
+Ping tick rate: 10s
+Last ping tick: 1.828584899s
+Ping tick rate: 10s
+Last ping tick: 1.858472797s
+Ping tick rate: 10s
+Last ping tick: 1.883719055s
+Ping tick rate: 10s
+Last ping tick: 1.904269168s
+Ping tick rate: 10s
+Last ping tick: 1.933173261s
+Ping tick rate: 10s
+Last ping tick: 1.958882943s
+Ping tick rate: 10s
+Last ping tick: 1.979816464s
+Ping tick rate: 10s
+Last ping tick: 2.000465116s
+Ping tick rate: 10s
+Last ping tick: 2.009194527s
+Ping tick rate: 10s
+Last ping tick: 2.034007812s
+Ping tick rate: 10s
+Last ping tick: 2.055463562s
+Ping tick rate: 10s
+Last ping tick: 2.080509191s
+Ping tick rate: 10s
+Last ping tick: 2.110837301s
+Ping tick rate: 10s
+Last ping tick: 2.135527537s
+Ping tick rate: 10s
+Last ping tick: 2.154664884s
+Ping tick rate: 10s
+Last ping tick: 2.180238627s
+Ping tick rate: 10s
+Last ping tick: 2.205603219s
+Ping tick rate: 10s
+Last ping tick: 2.230743336s
+Ping tick rate: 10s
+Last ping tick: 2.251190853s
+Ping tick rate: 10s
+Last ping tick: 2.259556562s
+Ping tick rate: 10s
+Last ping tick: 2.281621404s
+Ping tick rate: 10s
+Last ping tick: 2.305568598s
+Ping tick rate: 10s
+Last ping tick: 2.331260243s
+Ping tick rate: 10s
+Last ping tick: 2.355809449s
+Ping tick rate: 10s
+Last ping tick: 2.383553557s
+Ping tick rate: 10s
+Last ping tick: 2.406357152s
+Ping tick rate: 10s
+Last ping tick: 2.436524945s
+Ping tick rate: 10s
+Last ping tick: 2.45879976s
+Ping tick rate: 10s
+Last ping tick: 2.481046434s
+Ping tick rate: 10s
+Last ping tick: 2.489490835s
+Ping tick rate: 10s
+Last ping tick: 2.502113572s
+Ping tick rate: 10s
+Last ping tick: 2.722898596s
+Ping tick rate: 10s
+Last ping tick: 2.748395376s
+Ping tick rate: 10s
+Last ping tick: 2.756432513s
+Ping tick rate: 10s
+Last ping tick: 2.77479459s
+Ping tick rate: 10s
+Last ping tick: 2.797446078s
+Ping tick rate: 10s
+Last ping tick: 2.821585424s
+Ping tick rate: 10s
+Last ping tick: 2.850523386s
+Ping tick rate: 10s
+Last ping tick: 2.872546674s
+Ping tick rate: 10s
+Last ping tick: 2.904317998s
+Ping tick rate: 10s
+Last ping tick: 2.926577059s
+Ping tick rate: 10s
+Last ping tick: 2.949182301s
+Ping tick rate: 10s
+Last ping tick: 2.979063128s
+Ping tick rate: 10s
+Last ping tick: 3.001037686s
+Ping tick rate: 10s
+Last ping tick: 3.009010859s
+Ping tick rate: 10s
+Last ping tick: 3.026021597s
+Ping tick rate: 10s
+Last ping tick: 3.056476015s
+Ping tick rate: 10s
+Last ping tick: 3.076483104s
+Ping tick rate: 10s
+Last ping tick: 3.102019682s
+Ping tick rate: 10s
+Last ping tick: 3.129847973s
+Ping tick rate: 10s
+Last ping tick: 3.152387236s
+Ping tick rate: 10s
+Last ping tick: 3.202383431s
+Ping tick rate: 10s
+Last ping tick: 3.260050386s
+Ping tick rate: 10s
+Last ping tick: 3.437378314s
+Ping tick rate: 10s
+Last ping tick: 3.462264654s
+Ping tick rate: 10s
+Last ping tick: 3.489114605s
+Ping tick rate: 10s
+Last ping tick: 3.51040158s
+Ping tick rate: 10s
+Last ping tick: 3.517459702s
+Ping tick rate: 10s
+Last ping tick: 3.537043197s
+Ping tick rate: 10s
+Last ping tick: 3.562008948s
+Ping tick rate: 10s
+Last ping tick: 3.58729939s
+Ping tick rate: 10s
+Last ping tick: 3.614634246s
+Ping tick rate: 10s
+Last ping tick: 3.638896829s
+Ping tick rate: 10s
+Last ping tick: 3.666063338s
+Ping tick rate: 10s
+Last ping tick: 3.690150953s
+Ping tick rate: 10s
+Last ping tick: 3.713004566s
+Ping tick rate: 10s
+Last ping tick: 3.738868468s
+Ping tick rate: 10s
+Last ping tick: 3.760598032s
+Ping tick rate: 10s
+Last ping tick: 3.767807878s
+Ping tick rate: 10s
+Last ping tick: 3.787768814s
+Ping tick rate: 10s
+Last ping tick: 3.813195081s
+Ping tick rate: 10s
+Last ping tick: 3.839074357s
+Ping tick rate: 10s
+Last ping tick: 3.863315333s
+Ping tick rate: 10s
+Last ping tick: 3.888487513s
+Ping tick rate: 10s
+Last ping tick: 3.914178363s
+Ping tick rate: 10s
+Last ping tick: 3.938390553s
+Ping tick rate: 10s
+Last ping tick: 3.963179165s
+Ping tick rate: 10s
+Last ping tick: 3.989679078s
+Ping tick rate: 10s
+Last ping tick: 4.01143096s
+Ping tick rate: 10s
+Last ping tick: 4.018039653s
+Ping tick rate: 10s
+Last ping tick: 4.038079484s
+Ping tick rate: 10s
+Last ping tick: 4.064830962s
+Ping tick rate: 10s
+Last ping tick: 4.087913835s
+Ping tick rate: 10s
+Last ping tick: 4.113239215s
+Ping tick rate: 10s
+Last ping tick: 4.138356299s
+Ping tick rate: 10s
+Last ping tick: 4.16338666s
+Ping tick rate: 10s
+Last ping tick: 4.18960814s
+Ping tick rate: 10s
+Last ping tick: 4.21367324s
+Ping tick rate: 10s
+Last ping tick: 4.238715821s
+Ping tick rate: 10s
+Last ping tick: 4.262114644s
+Ping tick rate: 10s
+Last ping tick: 4.268821973s
+Ping tick rate: 10s
+Last ping tick: 4.289436391s
+Ping tick rate: 10s
+Last ping tick: 4.315711925s
+Ping tick rate: 10s
+Last ping tick: 4.341572897s
+Ping tick rate: 10s
+Last ping tick: 4.45229048s
+Ping tick rate: 10s
+Last ping tick: 4.512766762s
+Ping tick rate: 10s
+Last ping tick: 4.735518517s
+Ping tick rate: 10s
+Last ping tick: 4.763103424s
+Ping tick rate: 10s
+Last ping tick: 4.935507356s
+Ping tick rate: 10s
+Last ping tick: 5.014206966s
+Ping tick rate: 10s
+Last ping tick: 5.170896074s
+Ping tick rate: 10s
+Last ping tick: 5.196693884s
+Ping tick rate: 10s
+Last ping tick: 5.265373934s
+Ping tick rate: 10s
+Last ping tick: 5.335177124s
+Ping tick rate: 10s
+Last ping tick: 5.515738583s
+Ping tick rate: 10s
+Last ping tick: 5.536218094s
+Ping tick rate: 10s
+Last ping tick: 5.766420037s
+Ping tick rate: 10s
+Last ping tick: 5.786216443s
+Ping tick rate: 10s
+Last ping tick: 6.017391347s
+Ping tick rate: 10s
+Last ping tick: 6.085474272s
+Ping tick rate: 10s
+Last ping tick: 6.268454636s
+Ping tick rate: 10s
+Last ping tick: 6.518735654s
+Ping tick rate: 10s
+Last ping tick: 6.570007083s
+Ping tick rate: 10s
+Last ping tick: 6.76907504s
+Ping tick rate: 10s
+Last ping tick: 6.835457014s
+Ping tick rate: 10s
+Last ping tick: 7.020298708s
+Ping tick rate: 10s
+Last ping tick: 7.270908102s
+Ping tick rate: 10s
+Last ping tick: 7.521732774s
+Ping tick rate: 10s
+Last ping tick: 7.772180344s
+Ping tick rate: 10s
+Last ping tick: 8.02277952s
+Ping tick rate: 10s
+Last ping tick: 8.273314131s
+Ping tick rate: 10s
+Last ping tick: 8.523929127s
+Ping tick rate: 10s
+Last ping tick: 8.774636306s
+Ping tick rate: 10s
+Last ping tick: 9.025373522s
+Ping tick rate: 10s
+Last ping tick: 9.08634793s
+Ping tick rate: 10s
+Last ping tick: 9.103589698s
+Ping tick rate: 10s
+Last ping tick: 9.119935924s
+Ping tick rate: 10s
+Last ping tick: 9.137296138s
+Ping tick rate: 10s
+Last ping tick: 9.165164217s
+Ping tick rate: 10s
+Last ping tick: 9.185927414s
+Ping tick rate: 10s
+Last ping tick: 9.20291769s
+Ping tick rate: 10s
+Last ping tick: 9.275645639s
+Ping tick rate: 10s
+Last ping tick: 9.526129115s
+Ping tick rate: 10s
+Last ping tick: 9.77653709s
+Ping tick rate: 10s
+Last ping tick: 10.027027669s
+Ping tick rate: 10s
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 35.8974 -83.9425
+Remote location acquired: 39.0438 -77.4874
+Last ping tick: 250.55583ms
+Ping tick rate: 10s
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 41.5908 -93.6208
+Remote location acquired: 43.6532 -79.3832
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 36.677696 -78.37471
+Last ping tick: 501.31232ms
+Ping tick rate: 10s
+Remote location acquired: 39.0997 -94.5785
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 38.6828 -76.1563
+Last ping tick: 751.917172ms
+Ping tick rate: 10s
+Last ping tick: 1.002482412s
+Ping tick rate: 10s
+Last ping tick: 1.252958346s
+Ping tick rate: 10s
+Last ping tick: 1.503426241s
+Ping tick rate: 10s
+Last ping tick: 1.753746064s
+Ping tick rate: 10s
+Last ping tick: 2.004294578s
+Ping tick rate: 10s
+Last ping tick: 2.255183002s
+Ping tick rate: 10s
+Last ping tick: 2.505638794s
+Ping tick rate: 10s
+Last ping tick: 2.756302806s
+Ping tick rate: 10s
+Last ping tick: 3.006697704s
+Ping tick rate: 10s
+Last ping tick: 3.25754447s
+Ping tick rate: 10s
+Last ping tick: 3.508918654s
+Ping tick rate: 10s
+Last ping tick: 3.759667366s
+Ping tick rate: 10s
+Last ping tick: 4.010113154s
+Ping tick rate: 10s
+Last ping tick: 4.26056938s
+Ping tick rate: 10s
+Last ping tick: 4.511255682s
+Ping tick rate: 10s
+Last ping tick: 4.762639261s
+Ping tick rate: 10s
+Last ping tick: 5.013936549s
+Ping tick rate: 10s
+Last ping tick: 5.264621913s
+Ping tick rate: 10s
+Last ping tick: 5.515256107s
+Ping tick rate: 10s
+Last ping tick: 5.765464026s
+Ping tick rate: 10s
+Last ping tick: 6.015931449s
+Ping tick rate: 10s
+Last ping tick: 6.266730444s
+Ping tick rate: 10s
+Last ping tick: 6.517409436s
+Ping tick rate: 10s
+Last ping tick: 6.768203397s
+Ping tick rate: 10s
+Last ping tick: 7.018782877s
+Ping tick rate: 10s
+Last ping tick: 7.269702522s
+Ping tick rate: 10s
+Last ping tick: 7.52073611s
+Ping tick rate: 10s
+Last ping tick: 7.771464158s
+Ping tick rate: 10s
+Last ping tick: 8.022270684s
+Ping tick rate: 10s
+Last ping tick: 8.27313758s
+Ping tick rate: 10s
+Last ping tick: 8.524013781s
+Ping tick rate: 10s
+Last ping tick: 8.774879994s
+Ping tick rate: 10s
+Last ping tick: 9.025530874s
+Ping tick rate: 10s
+Last ping tick: 9.276093954s
+Ping tick rate: 10s
+Last ping tick: 9.52674458s
+Ping tick rate: 10s
+Last ping tick: 9.777514062s
+Ping tick rate: 10s
+Last ping tick: 10.028127132s
+Ping tick rate: 10s
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 35.8974 -83.9425
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 36.677696 -78.37471
+Last ping tick: 250.487423ms
+Ping tick rate: 10s
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 41.5908 -93.6208
+Remote location acquired: 43.6532 -79.3832
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 39.0997 -94.5785
+Last ping tick: 501.101295ms
+Ping tick rate: 10s
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 41.5908 -93.6208
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 38.6828 -76.1563
+Last ping tick: 751.674659ms
+Ping tick rate: 10s
+Last ping tick: 1.002553801s
+Ping tick rate: 10s
+Last ping tick: 1.253061517s
+Ping tick rate: 10s
+Last ping tick: 1.503756011s
+Ping tick rate: 10s
+Last ping tick: 1.754171263s
+Ping tick rate: 10s
+Last ping tick: 2.004780534s
+Ping tick rate: 10s
+Last ping tick: 2.255723192s
+Ping tick rate: 10s
+Last ping tick: 2.506298901s
+Ping tick rate: 10s
+Last ping tick: 2.756880224s
+Ping tick rate: 10s
+Last ping tick: 3.007245823s
+Ping tick rate: 10s
+Last ping tick: 3.257645291s
+Ping tick rate: 10s
+Last ping tick: 3.508107871s
+Ping tick rate: 10s
+Last ping tick: 3.758311021s
+Ping tick rate: 10s
+Last ping tick: 4.009285085s
+Ping tick rate: 10s
+Last ping tick: 4.259833509s
+Ping tick rate: 10s
+Last ping tick: 4.510348071s
+Ping tick rate: 10s
+Last ping tick: 4.76088845s
+Ping tick rate: 10s
+Last ping tick: 5.011274825s
+Ping tick rate: 10s
+Last ping tick: 5.261347496s
+Ping tick rate: 10s
+Last ping tick: 5.5119511s
+Ping tick rate: 10s
+Last ping tick: 5.762321497s
+Ping tick rate: 10s
+Last ping tick: 6.013392272s
+Ping tick rate: 10s
+Last ping tick: 6.263898412s
+Ping tick rate: 10s
+Last ping tick: 6.5144943s
+Ping tick rate: 10s
+Last ping tick: 6.765270938s
+Ping tick rate: 10s
+Last ping tick: 7.016011193s
+Ping tick rate: 10s
+Last ping tick: 7.26642351s
+Ping tick rate: 10s
+Last ping tick: 7.516913538s
+Ping tick rate: 10s
+Last ping tick: 7.767286239s
+Ping tick rate: 10s
+Last ping tick: 8.017888771s
+Ping tick rate: 10s
+Last ping tick: 8.269102464s
+Ping tick rate: 10s
+Last ping tick: 8.519754794s
+Ping tick rate: 10s
+Last ping tick: 8.77038306s
+Ping tick rate: 10s
+Last ping tick: 9.021038899s
+Ping tick rate: 10s
+Last ping tick: 9.272097389s
+Ping tick rate: 10s
+Last ping tick: 9.522697334s
+Ping tick rate: 10s
+Last ping tick: 9.77311474s
+Ping tick rate: 10s
+Last ping tick: 10.023358002s
+Ping tick rate: 10s
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 41.5908 -93.6208
+Last ping tick: 250.46626ms
+Ping tick rate: 10s
+Remote location acquired: 43.6532 -79.3832
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 39.0997 -94.5785
+Remote location acquired: 39.0438 -77.4874
+Last ping tick: 500.952359ms
+Ping tick rate: 10s
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 38.6828 -76.1563
+Last ping tick: 751.499002ms
+Ping tick rate: 10s
+Last ping tick: 1.001858023s
+Ping tick rate: 10s
+Last ping tick: 1.252228168s
+Ping tick rate: 10s
+Last ping tick: 1.502716648s
+Ping tick rate: 10s
+Last ping tick: 1.753164916s
+Ping tick rate: 10s
+Last ping tick: 2.003615256s
+Ping tick rate: 10s
+Last ping tick: 2.031662472s
+Ping tick rate: 10s
+Last ping tick: 2.047102581s
+Ping tick rate: 10s
+Last ping tick: 2.064236935s
+Ping tick rate: 10s
+Last ping tick: 2.082014931s
+Ping tick rate: 10s
+Last ping tick: 2.102908859s
+Ping tick rate: 10s
+Last ping tick: 2.121641428s
+Ping tick rate: 10s
+Last ping tick: 2.138623186s
+Ping tick rate: 10s
+Last ping tick: 2.154682097s
+Ping tick rate: 10s
+Last ping tick: 2.191972097s
+Ping tick rate: 10s
+Last ping tick: 2.226022573s
+Ping tick rate: 10s
+Last ping tick: 2.242787706s
+Ping tick rate: 10s
+Last ping tick: 2.254450368s
+Ping tick rate: 10s
+Last ping tick: 2.260650683s
+Ping tick rate: 10s
+Last ping tick: 2.277108409s
+Ping tick rate: 10s
+Last ping tick: 2.295724372s
+Ping tick rate: 10s
+Last ping tick: 2.374012188s
+Ping tick rate: 10s
+Last ping tick: 2.399964585s
+Ping tick rate: 10s
+Last ping tick: 2.416928531s
+Ping tick rate: 10s
+Last ping tick: 2.433405768s
+Ping tick rate: 10s
+Last ping tick: 2.449960163s
+Ping tick rate: 10s
+Last ping tick: 2.471987773s
+Ping tick rate: 10s
+Last ping tick: 2.488935643s
+Ping tick rate: 10s
+Last ping tick: 2.50521149s
+Ping tick rate: 10s
+Last ping tick: 2.512309644s
+Ping tick rate: 10s
+Last ping tick: 2.524708093s
+Ping tick rate: 10s
+Last ping tick: 2.560049128s
+Ping tick rate: 10s
+Last ping tick: 2.577567634s
+Ping tick rate: 10s
+Last ping tick: 2.596471222s
+Ping tick rate: 10s
+Last ping tick: 2.613430214s
+Ping tick rate: 10s
+Last ping tick: 2.629989999s
+Ping tick rate: 10s
+Last ping tick: 2.650262432s
+Ping tick rate: 10s
+Last ping tick: 2.671771241s
+Ping tick rate: 10s
+Last ping tick: 2.688248915s
+Ping tick rate: 10s
+Last ping tick: 2.749500637s
+Ping tick rate: 10s
+Last ping tick: 2.755707627s
+Ping tick rate: 10s
+Last ping tick: 2.776977541s
+Ping tick rate: 10s
+Last ping tick: 2.793811143s
+Ping tick rate: 10s
+Last ping tick: 2.810707755s
+Ping tick rate: 10s
+Last ping tick: 2.830910265s
+Ping tick rate: 10s
+Last ping tick: 2.849301413s
+Ping tick rate: 10s
+Last ping tick: 2.866160936s
+Ping tick rate: 10s
+Last ping tick: 2.883102292s
+Ping tick rate: 10s
+Last ping tick: 3.00628706s
+Ping tick rate: 10s
+Last ping tick: 3.256735149s
+Ping tick rate: 10s
+Last ping tick: 3.507135947s
+Ping tick rate: 10s
+Last ping tick: 3.584993038s
+Ping tick rate: 10s
+Last ping tick: 3.602171614s
+Ping tick rate: 10s
+Last ping tick: 3.61856619s
+Ping tick rate: 10s
+Last ping tick: 3.634646896s
+Ping tick rate: 10s
+Last ping tick: 3.651707465s
+Ping tick rate: 10s
+Last ping tick: 3.673404857s
+Ping tick rate: 10s
+Last ping tick: 3.689696251s
+Ping tick rate: 10s
+Last ping tick: 3.708326904s
+Ping tick rate: 10s
+Last ping tick: 3.724806377s
+Ping tick rate: 10s
+Last ping tick: 3.744892846s
+Ping tick rate: 10s
+Last ping tick: 3.758320822s
+Ping tick rate: 10s
+Last ping tick: 4.008932924s
+Ping tick rate: 10s
+Last ping tick: 4.050756499s
+Ping tick rate: 10s
+Last ping tick: 4.084601494s
+Ping tick rate: 10s
+Last ping tick: 4.100738242s
+Ping tick rate: 10s
+Last ping tick: 4.121315152s
+Ping tick rate: 10s
+Last ping tick: 4.13832845s
+Ping tick rate: 10s
+Last ping tick: 4.154785855s
+Ping tick rate: 10s
+Last ping tick: 4.172674979s
+Ping tick rate: 10s
+Last ping tick: 4.193593288s
+Ping tick rate: 10s
+Last ping tick: 4.210232328s
+Ping tick rate: 10s
+Last ping tick: 4.226497327s
+Ping tick rate: 10s
+Last ping tick: 4.244700406s
+Ping tick rate: 10s
+Last ping tick: 4.259404228s
+Ping tick rate: 10s
+Last ping tick: 4.26554331s
+Ping tick rate: 10s
+Last ping tick: 4.28171621s
+Ping tick rate: 10s
+Last ping tick: 4.298094413s
+Ping tick rate: 10s
+Last ping tick: 4.316834092s
+Ping tick rate: 10s
+Last ping tick: 4.510403851s
+Ping tick rate: 10s
+Last ping tick: 4.640596928s
+Ping tick rate: 10s
+Last ping tick: 4.671373267s
+Ping tick rate: 10s
+Last ping tick: 4.688761671s
+Ping tick rate: 10s
+Last ping tick: 4.705505695s
+Ping tick rate: 10s
+Last ping tick: 4.721572245s
+Ping tick rate: 10s
+Last ping tick: 4.742245791s
+Ping tick rate: 10s
+Last ping tick: 4.759080228s
+Ping tick rate: 10s
+Last ping tick: 4.767516476s
+Ping tick rate: 10s
+Last ping tick: 4.77752998s
+Ping tick rate: 10s
+Last ping tick: 5.018012306s
+Ping tick rate: 10s
+Last ping tick: 5.130523071s
+Ping tick rate: 10s
+Last ping tick: 5.14643614s
+Ping tick rate: 10s
+Last ping tick: 5.197279485s
+Ping tick rate: 10s
+Last ping tick: 5.217405541s
+Ping tick rate: 10s
+Last ping tick: 5.268812048s
+Ping tick rate: 10s
+Last ping tick: 5.519209859s
+Ping tick rate: 10s
+Last ping tick: 5.769648293s
+Ping tick rate: 10s
+Last ping tick: 6.020455298s
+Ping tick rate: 10s
+Last ping tick: 6.2707431s
+Ping tick rate: 10s
+Last ping tick: 6.521998447s
+Ping tick rate: 10s
+Last ping tick: 6.772989495s
+Ping tick rate: 10s
+Last ping tick: 7.023617358s
+Ping tick rate: 10s
+Last ping tick: 7.273851734s
+Ping tick rate: 10s
+Last ping tick: 7.524857612s
+Ping tick rate: 10s
+Last ping tick: 7.775203736s
+Ping tick rate: 10s
+Last ping tick: 8.025623323s
+Ping tick rate: 10s
+Last ping tick: 8.032747917s
+Ping tick rate: 10s
+Last ping tick: 8.052519292s
+Ping tick rate: 10s
+Last ping tick: 8.088095288s
+Ping tick rate: 10s
+Last ping tick: 8.104750505s
+Ping tick rate: 10s
+Last ping tick: 8.123938877s
+Ping tick rate: 10s
+Last ping tick: 8.276508282s
+Ping tick rate: 10s
+Last ping tick: 8.527327613s
+Ping tick rate: 10s
+Last ping tick: 8.551395555s
+Ping tick rate: 10s
+Last ping tick: 8.5724105s
+Ping tick rate: 10s
+Last ping tick: 8.588107369s
+Ping tick rate: 10s
+Last ping tick: 8.604392462s
+Ping tick rate: 10s
+Last ping tick: 8.625359697s
+Ping tick rate: 10s
+Last ping tick: 8.644841782s
+Ping tick rate: 10s
+Last ping tick: 8.774006512s
+Ping tick rate: 10s
+Last ping tick: 8.782968806s
+Ping tick rate: 10s
+Last ping tick: 8.815530737s
+Ping tick rate: 10s
+Last ping tick: 8.834155142s
+Ping tick rate: 10s
+Last ping tick: 8.871383413s
+Ping tick rate: 10s
+Last ping tick: 9.033462191s
+Ping tick rate: 10s
+Last ping tick: 9.284203284s
+Ping tick rate: 10s
+Last ping tick: 9.534598259s
+Ping tick rate: 10s
+Last ping tick: 9.785050121s
+Ping tick rate: 10s
+Last ping tick: 10.035739759s
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 33.9751 -118.426
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 47.6008 -122.3248
+Remote location acquired: 33.749 -84.388
+Last ping tick: 250.504106ms
+Ping tick rate: 10s
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 37.422 -122.084
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location acquired: 32.7797 -96.8022
+Remote location acquired: 36.677696 -78.37471
+Remote location attempted but not acquired
+Last ping tick: 437.135314ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 474.296476ms
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Last ping tick: 497.159619ms
+Ping tick rate: 10s
+Last ping tick: 503.316075ms
+Ping tick rate: 10s
+Last ping tick: 513.218735ms
+Ping tick rate: 10s
+Remote location acquired: 41.5908 -93.6208
+Last ping tick: 526.943471ms
+Ping tick rate: 10s
+Last ping tick: 542.498562ms
+Ping tick rate: 10s
+Remote location acquired: 25.7034 -80.2927
+Last ping tick: 560.975232ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 584.770327ms
+Ping tick rate: 10s
+Remote location acquired: 37.7768 -122.416
+Last ping tick: 619.292249ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 656.428064ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 754.280187ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 786.189429ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 854.866726ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 938.554752ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 976.185933ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 993.960703ms
+Ping tick rate: 10s
+Last ping tick: 1.005158026s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 1.026237149s
+Ping tick rate: 10s
+Last ping tick: 1.042757363s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 1.066264941s
+Ping tick rate: 10s
+Last ping tick: 1.10075566s
+Ping tick rate: 10s
+Last ping tick: 1.117326024s
+Ping tick rate: 10s
+Last ping tick: 1.138406579s
+Ping tick rate: 10s
+Last ping tick: 1.154658884s
+Ping tick rate: 10s
+Last ping tick: 1.171573989s
+Ping tick rate: 10s
+Last ping tick: 1.188770971s
+Ping tick rate: 10s
+Last ping tick: 1.209048407s
+Ping tick rate: 10s
+Last ping tick: 1.227025821s
+Ping tick rate: 10s
+Last ping tick: 1.244628203s
+Ping tick rate: 10s
+Last ping tick: 1.255904893s
+Ping tick rate: 10s
+Last ping tick: 1.265779635s
+Ping tick rate: 10s
+Last ping tick: 1.28005352s
+Ping tick rate: 10s
+Last ping tick: 1.298761586s
+Ping tick rate: 10s
+Last ping tick: 1.31512146s
+Ping tick rate: 10s
+Last ping tick: 1.333173762s
+Ping tick rate: 10s
+Last ping tick: 1.351636781s
+Ping tick rate: 10s
+Last ping tick: 1.369306454s
+Ping tick rate: 10s
+Last ping tick: 1.388610785s
+Ping tick rate: 10s
+Last ping tick: 1.405570095s
+Ping tick rate: 10s
+Last ping tick: 1.423503263s
+Ping tick rate: 10s
+Last ping tick: 1.442271746s
+Ping tick rate: 10s
+Last ping tick: 1.459681115s
+Ping tick rate: 10s
+Last ping tick: 1.506563977s
+Ping tick rate: 10s
+Last ping tick: 1.587462896s
+Ping tick rate: 10s
+Last ping tick: 1.614683427s
+Ping tick rate: 10s
+Last ping tick: 1.630406325s
+Ping tick rate: 10s
+Last ping tick: 1.650937814s
+Ping tick rate: 10s
+Last ping tick: 1.667541242s
+Ping tick rate: 10s
+Last ping tick: 1.684710295s
+Ping tick rate: 10s
+Last ping tick: 1.701125583s
+Ping tick rate: 10s
+Last ping tick: 1.722622422s
+Ping tick rate: 10s
+Last ping tick: 1.738362709s
+Ping tick rate: 10s
+Last ping tick: 1.756243427s
+Ping tick rate: 10s
+Last ping tick: 1.762674098s
+Ping tick rate: 10s
+Last ping tick: 1.772818733s
+Ping tick rate: 10s
+Last ping tick: 2.013549303s
+Ping tick rate: 10s
+Last ping tick: 2.264015171s
+Ping tick rate: 10s
+Last ping tick: 2.514568641s
+Ping tick rate: 10s
+Last ping tick: 2.765122984s
+Ping tick rate: 10s
+Last ping tick: 3.01576591s
+Ping tick rate: 10s
+Last ping tick: 3.0589543s
+Ping tick rate: 10s
+Last ping tick: 3.078181951s
+Ping tick rate: 10s
+Last ping tick: 3.094953696s
+Ping tick rate: 10s
+Last ping tick: 3.111556473s
+Ping tick rate: 10s
+Last ping tick: 3.128219155s
+Ping tick rate: 10s
+Last ping tick: 3.14957057s
+Ping tick rate: 10s
+Last ping tick: 3.165821053s
+Ping tick rate: 10s
+Last ping tick: 3.183304998s
+Ping tick rate: 10s
+Last ping tick: 3.200749651s
+Ping tick rate: 10s
+Last ping tick: 3.221818534s
+Ping tick rate: 10s
+Last ping tick: 3.239033365s
+Ping tick rate: 10s
+Last ping tick: 3.255027294s
+Ping tick rate: 10s
+Last ping tick: 3.266374088s
+Ping tick rate: 10s
+Last ping tick: 3.272606212s
+Ping tick rate: 10s
+Last ping tick: 3.292371488s
+Ping tick rate: 10s
+Last ping tick: 3.311521608s
+Ping tick rate: 10s
+Last ping tick: 3.327372728s
+Ping tick rate: 10s
+Last ping tick: 3.34415079s
+Ping tick rate: 10s
+Last ping tick: 3.362782144s
+Ping tick rate: 10s
+Last ping tick: 3.382597389s
+Ping tick rate: 10s
+Last ping tick: 3.517023456s
+Ping tick rate: 10s
+Last ping tick: 3.767245408s
+Ping tick rate: 10s
+Last ping tick: 3.804297694s
+Ping tick rate: 10s
+Last ping tick: 3.821406803s
+Ping tick rate: 10s
+Last ping tick: 3.842339118s
+Ping tick rate: 10s
+Last ping tick: 3.858857761s
+Ping tick rate: 10s
+Last ping tick: 3.875042502s
+Ping tick rate: 10s
+Last ping tick: 3.892851864s
+Ping tick rate: 10s
+Last ping tick: 3.913698323s
+Ping tick rate: 10s
+Last ping tick: 4.017894604s
+Ping tick rate: 10s
+Last ping tick: 4.170532388s
+Ping tick rate: 10s
+Last ping tick: 4.187810893s
+Ping tick rate: 10s
+Last ping tick: 4.220485014s
+Ping tick rate: 10s
+Last ping tick: 4.242646887s
+Ping tick rate: 10s
+Last ping tick: 4.268537503s
+Ping tick rate: 10s
+Last ping tick: 4.337303522s
+Ping tick rate: 10s
+Last ping tick: 4.437362429s
+Ping tick rate: 10s
+Last ping tick: 4.519784641s
+Ping tick rate: 10s
+Last ping tick: 4.580985805s
+Ping tick rate: 10s
+Last ping tick: 4.597218247s
+Ping tick rate: 10s
+Last ping tick: 4.614306885s
+Ping tick rate: 10s
+Last ping tick: 4.630931186s
+Ping tick rate: 10s
+Last ping tick: 4.647574001s
+Ping tick rate: 10s
+Last ping tick: 4.668639519s
+Ping tick rate: 10s
+Last ping tick: 4.684828088s
+Ping tick rate: 10s
+Last ping tick: 4.702607658s
+Ping tick rate: 10s
+Last ping tick: 4.718724052s
+Ping tick rate: 10s
+Last ping tick: 4.739411417s
+Ping tick rate: 10s
+Last ping tick: 4.75593372s
+Ping tick rate: 10s
+Last ping tick: 4.770149054s
+Ping tick rate: 10s
+Last ping tick: 4.777984503s
+Ping tick rate: 10s
+Last ping tick: 4.791015667s
+Ping tick rate: 10s
+Last ping tick: 5.021311088s
+Ping tick rate: 10s
+Last ping tick: 5.271756956s
+Ping tick rate: 10s
+Last ping tick: 5.522281257s
+Ping tick rate: 10s
+Last ping tick: 5.77280854s
+Ping tick rate: 10s
+Last ping tick: 5.95538514s
+Ping tick rate: 10s
+Last ping tick: 6.023037781s
+Ping tick rate: 10s
+Last ping tick: 6.273513291s
+Ping tick rate: 10s
+Last ping tick: 6.524148997s
+Ping tick rate: 10s
+Last ping tick: 6.571131762s
+Ping tick rate: 10s
+Last ping tick: 6.775210783s
+Ping tick rate: 10s
+Last ping tick: 6.920825133s
+Ping tick rate: 10s
+Last ping tick: 7.025733401s
+Ping tick rate: 10s
+Last ping tick: 7.170805649s
+Ping tick rate: 10s
+Last ping tick: 7.276811655s
+Ping tick rate: 10s
+Last ping tick: 7.387930509s
+Ping tick rate: 10s
+Last ping tick: 7.527725606s
+Ping tick rate: 10s
+Last ping tick: 7.620918346s
+Ping tick rate: 10s
+Last ping tick: 7.77869769s
+Ping tick rate: 10s
+Last ping tick: 7.838442694s
+Ping tick rate: 10s
+Last ping tick: 8.029569207s
+Ping tick rate: 10s
+Last ping tick: 8.037898795s
+Ping tick rate: 10s
+Last ping tick: 8.238273656s
+Ping tick rate: 10s
+Last ping tick: 8.280072773s
+Ping tick rate: 10s
+Last ping tick: 8.455112776s
+Ping tick rate: 10s
+Last ping tick: 8.530917853s
+Ping tick rate: 10s
+Last ping tick: 8.755521652s
+Ping tick rate: 10s
+Last ping tick: 8.78151518s
+Ping tick rate: 10s
+Last ping tick: 8.997305634s
+Ping tick rate: 10s
+Last ping tick: 9.032172616s
+Ping tick rate: 10s
+Last ping tick: 9.188008396s
+Ping tick rate: 10s
+Last ping tick: 9.283280954s
+Ping tick rate: 10s
+Last ping tick: 9.370853213s
+Ping tick rate: 10s
+Last ping tick: 9.534204162s
+Ping tick rate: 10s
+Last ping tick: 9.571143645s
+Ping tick rate: 10s
+Last ping tick: 9.754421505s
+Ping tick rate: 10s
+Last ping tick: 9.784470503s
+Ping tick rate: 10s
+Last ping tick: 9.971049139s
+Ping tick rate: 10s
+Last ping tick: 10.034760022s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 153.375518ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 250.217356ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 403.06246ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 500.699014ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 751.319158ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 761.936013ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.002006563s
+Ping tick rate: 10s
+Last ping tick: 1.153655492s
+Ping tick rate: 10s
+Last ping tick: 1.252474434s
+Ping tick rate: 10s
+Last ping tick: 1.388513425s
+Ping tick rate: 10s
+Last ping tick: 1.413981071s
+Ping tick rate: 10s
+Last ping tick: 1.439211119s
+Ping tick rate: 10s
+Last ping tick: 1.463723647s
+Ping tick rate: 10s
+Last ping tick: 1.488931021s
+Ping tick rate: 10s
+Last ping tick: 1.502875821s
+Ping tick rate: 10s
+Last ping tick: 1.513388218s
+Ping tick rate: 10s
+Last ping tick: 1.538801308s
+Ping tick rate: 10s
+Last ping tick: 1.563775714s
+Ping tick rate: 10s
+Last ping tick: 1.58911659s
+Ping tick rate: 10s
+Last ping tick: 1.613565607s
+Ping tick rate: 10s
+Last ping tick: 1.638725426s
+Ping tick rate: 10s
+Last ping tick: 1.663928702s
+Ping tick rate: 10s
+Last ping tick: 1.689438427s
+Ping tick rate: 10s
+Last ping tick: 1.713209478s
+Ping tick rate: 10s
+Last ping tick: 1.739231544s
+Ping tick rate: 10s
+Last ping tick: 1.753246593s
+Ping tick rate: 10s
+Last ping tick: 1.764161959s
+Ping tick rate: 10s
+Last ping tick: 1.788870297s
+Ping tick rate: 10s
+Last ping tick: 1.814047943s
+Ping tick rate: 10s
+Last ping tick: 1.838211056s
+Ping tick rate: 10s
+Last ping tick: 1.863999114s
+Ping tick rate: 10s
+Last ping tick: 1.893162134s
+Ping tick rate: 10s
+Last ping tick: 1.914316565s
+Ping tick rate: 10s
+Last ping tick: 1.939253551s
+Ping tick rate: 10s
+Last ping tick: 1.967778146s
+Ping tick rate: 10s
+Last ping tick: 1.991446111s
+Ping tick rate: 10s
+Last ping tick: 2.00361384s
+Ping tick rate: 10s
+Last ping tick: 2.016696311s
+Ping tick rate: 10s
+Last ping tick: 2.041391177s
+Ping tick rate: 10s
+Last ping tick: 2.066371998s
+Ping tick rate: 10s
+Last ping tick: 2.091473201s
+Ping tick rate: 10s
+Last ping tick: 2.117123872s
+Ping tick rate: 10s
+Last ping tick: 2.142936349s
+Ping tick rate: 10s
+Last ping tick: 2.168026834s
+Ping tick rate: 10s
+Last ping tick: 2.193162441s
+Ping tick rate: 10s
+Last ping tick: 2.219567253s
+Ping tick rate: 10s
+Last ping tick: 2.229218148s
+Ping tick rate: 10s
+Last ping tick: 2.253762669s
+Ping tick rate: 10s
+Last ping tick: 2.455656752s
+Ping tick rate: 10s
+Last ping tick: 2.481522678s
+Ping tick rate: 10s
+Last ping tick: 2.503932226s
+Ping tick rate: 10s
+Last ping tick: 2.513307929s
+Ping tick rate: 10s
+Last ping tick: 2.530684547s
+Ping tick rate: 10s
+Last ping tick: 2.556477452s
+Ping tick rate: 10s
+Last ping tick: 2.581430624s
+Ping tick rate: 10s
+Last ping tick: 2.606721961s
+Ping tick rate: 10s
+Last ping tick: 2.631828086s
+Ping tick rate: 10s
+Last ping tick: 2.657098379s
+Ping tick rate: 10s
+Last ping tick: 2.68275817s
+Ping tick rate: 10s
+Last ping tick: 2.706222773s
+Ping tick rate: 10s
+Last ping tick: 2.731638356s
+Ping tick rate: 10s
+Last ping tick: 2.754881568s
+Ping tick rate: 10s
+Last ping tick: 2.764299611s
+Ping tick rate: 10s
+Last ping tick: 2.781409089s
+Ping tick rate: 10s
+Last ping tick: 2.806463396s
+Ping tick rate: 10s
+Last ping tick: 2.832093937s
+Ping tick rate: 10s
+Last ping tick: 2.856823828s
+Ping tick rate: 10s
+Last ping tick: 2.881147555s
+Ping tick rate: 10s
+Last ping tick: 2.908364601s
+Ping tick rate: 10s
+Last ping tick: 2.931830368s
+Ping tick rate: 10s
+Last ping tick: 2.9614739s
+Ping tick rate: 10s
+Last ping tick: 2.983246314s
+Ping tick rate: 10s
+Last ping tick: 3.005874467s
+Ping tick rate: 10s
+Last ping tick: 3.015275923s
+Ping tick rate: 10s
+Last ping tick: 3.038176478s
+Ping tick rate: 10s
+Last ping tick: 3.058790604s
+Ping tick rate: 10s
+Last ping tick: 3.08410171s
+Ping tick rate: 10s
+Last ping tick: 3.108148449s
+Ping tick rate: 10s
+Last ping tick: 3.133472796s
+Ping tick rate: 10s
+Last ping tick: 3.158864967s
+Ping tick rate: 10s
+Last ping tick: 3.183459565s
+Ping tick rate: 10s
+Last ping tick: 3.208945222s
+Ping tick rate: 10s
+Last ping tick: 3.233595677s
+Ping tick rate: 10s
+Last ping tick: 3.256574597s
+Ping tick rate: 10s
+Last ping tick: 3.266587305s
+Ping tick rate: 10s
+Last ping tick: 3.283422185s
+Ping tick rate: 10s
+Last ping tick: 3.308779843s
+Ping tick rate: 10s
+Last ping tick: 3.333731316s
+Ping tick rate: 10s
+Last ping tick: 3.50760857s
+Ping tick rate: 10s
+Last ping tick: 3.603209873s
+Ping tick rate: 10s
+Last ping tick: 3.758540083s
+Ping tick rate: 10s
+Last ping tick: 3.787072225s
+Ping tick rate: 10s
+Last ping tick: 3.953311882s
+Ping tick rate: 10s
+Last ping tick: 4.009369384s
+Ping tick rate: 10s
+Last ping tick: 4.120066733s
+Ping tick rate: 10s
+Last ping tick: 4.259654491s
+Ping tick rate: 10s
+Last ping tick: 4.286914331s
+Ping tick rate: 10s
+Last ping tick: 4.510896135s
+Ping tick rate: 10s
+Last ping tick: 4.761981278s
+Ping tick rate: 10s
+Last ping tick: 5.012477617s
+Ping tick rate: 10s
+Last ping tick: 5.263307987s
+Ping tick rate: 10s
+Last ping tick: 5.514285917s
+Ping tick rate: 10s
+Last ping tick: 5.764765434s
+Ping tick rate: 10s
+Last ping tick: 6.015740191s
+Ping tick rate: 10s
+Last ping tick: 6.266416233s
+Ping tick rate: 10s
+Last ping tick: 6.517917682s
+Ping tick rate: 10s
+Last ping tick: 6.768402425s
+Ping tick rate: 10s
+Last ping tick: 7.019001167s
+Ping tick rate: 10s
+Last ping tick: 7.269684364s
+Ping tick rate: 10s
+Last ping tick: 7.520434619s
+Ping tick rate: 10s
+Last ping tick: 7.771173734s
+Ping tick rate: 10s
+Last ping tick: 8.022211414s
+Ping tick rate: 10s
+Last ping tick: 8.272626367s
+Ping tick rate: 10s
+Last ping tick: 8.523099484s
+Ping tick rate: 10s
+Last ping tick: 8.774394167s
+Ping tick rate: 10s
+Last ping tick: 9.024886546s
+Ping tick rate: 10s
+Last ping tick: 9.275399806s
+Ping tick rate: 10s
+Last ping tick: 9.525957296s
+Ping tick rate: 10s
+Last ping tick: 9.777227012s
+Ping tick rate: 10s
+Last ping tick: 10.027840863s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 250.434884ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location acquired: 40.0992 -83.1141
+Remote location attempted but not acquired
+Remote location acquired: 47.6034 -122.3414
+Last ping tick: 501.404936ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location acquired: 37.7768 -122.416
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 34.2319 -84.1627
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 751.881872ms
+Ping tick rate: 10s
+Remote location acquired: 36.677696 -78.37471
+Remote location attempted but not acquired
+Remote location acquired: 33.9751 -118.426
+Remote location attempted but not acquired
+Remote location acquired: 35.8974 -83.9425
+Remote location acquired: 43.6532 -79.3832
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 1.002324239s
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 38.6828 -76.1563
+Last ping tick: 1.253748168s
+Ping tick rate: 10s
+Last ping tick: 1.504623024s
+Ping tick rate: 10s
+Last ping tick: 1.755154683s
+Ping tick rate: 10s
+Last ping tick: 2.005893334s
+Ping tick rate: 10s
+Last ping tick: 2.256448051s
+Ping tick rate: 10s
+Last ping tick: 2.507139285s
+Ping tick rate: 10s
+Last ping tick: 2.758391024s
+Ping tick rate: 10s
+Last ping tick: 3.009204528s
+Ping tick rate: 10s
+Last ping tick: 3.260011043s
+Ping tick rate: 10s
+Last ping tick: 3.510545166s
+Ping tick rate: 10s
+Last ping tick: 3.761103421s
+Ping tick rate: 10s
+Last ping tick: 4.012122374s
+Ping tick rate: 10s
+Last ping tick: 4.262811174s
+Ping tick rate: 10s
+Last ping tick: 4.513346857s
+Ping tick rate: 10s
+Last ping tick: 4.764120665s
+Ping tick rate: 10s
+Last ping tick: 5.014762196s
+Ping tick rate: 10s
+Last ping tick: 5.265639268s
+Ping tick rate: 10s
+Last ping tick: 5.51665115s
+Ping tick rate: 10s
+Last ping tick: 5.767491908s
+Ping tick rate: 10s
+Last ping tick: 6.018410184s
+Ping tick rate: 10s
+Last ping tick: 6.269325636s
+Ping tick rate: 10s
+Last ping tick: 6.51969968s
+Ping tick rate: 10s
+Last ping tick: 6.770750138s
+Ping tick rate: 10s
+Last ping tick: 7.021854668s
+Ping tick rate: 10s
+Last ping tick: 7.273059201s
+Ping tick rate: 10s
+Last ping tick: 7.523711793s
+Ping tick rate: 10s
+Last ping tick: 7.774316391s
+Ping tick rate: 10s
+Last ping tick: 8.025225646s
+Ping tick rate: 10s
+Last ping tick: 8.276082644s
+Ping tick rate: 10s
+Last ping tick: 8.526586446s
+Ping tick rate: 10s
+Last ping tick: 8.777595346s
+Ping tick rate: 10s
+Last ping tick: 9.028628497s
+Ping tick rate: 10s
+Last ping tick: 9.279304311s
+Ping tick rate: 10s
+Last ping tick: 9.530257802s
+Ping tick rate: 10s
+Last ping tick: 9.781007306s
+Ping tick rate: 10s
+Last ping tick: 10.031611346s
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 33.9751 -118.426
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 47.6008 -122.3248
+Remote location acquired: 33.749 -84.388
+Last ping tick: 250.971107ms
+Ping tick rate: 10s
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 32.7797 -96.8022
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 35.0125 -80.9309
+Last ping tick: 501.61342ms
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 25.7034 -80.2927
+Remote location acquired: 37.7768 -122.416
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 34.2319 -84.1627
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 752.027647ms
+Ping tick rate: 10s
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 39.0997 -94.5785
+Remote location acquired: 33.9751 -118.426
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 35.8974 -83.9425
+Remote location acquired: 43.6532 -79.3832
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 47.6034 -122.3414
+Last ping tick: 1.002430378s
+Ping tick rate: 10s
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 38.6828 -76.1563
+Last ping tick: 1.252741839s
+Ping tick rate: 10s
+Last ping tick: 1.503407221s
+Ping tick rate: 10s
+Last ping tick: 1.75428489s
+Ping tick rate: 10s
+Last ping tick: 2.0047321s
+Ping tick rate: 10s
+Last ping tick: 2.255368968s
+Ping tick rate: 10s
+Last ping tick: 2.505731188s
+Ping tick rate: 10s
+Last ping tick: 2.756635949s
+Ping tick rate: 10s
+Last ping tick: 3.007291814s
+Ping tick rate: 10s
+Last ping tick: 3.257726734s
+Ping tick rate: 10s
+Last ping tick: 3.508508511s
+Ping tick rate: 10s
+Last ping tick: 3.75944215s
+Ping tick rate: 10s
+Last ping tick: 4.010395468s
+Ping tick rate: 10s
+Last ping tick: 4.261163071s
+Ping tick rate: 10s
+Last ping tick: 4.512294163s
+Ping tick rate: 10s
+Last ping tick: 4.76318465s
+Ping tick rate: 10s
+Last ping tick: 5.013726287s
+Ping tick rate: 10s
+Last ping tick: 5.264412871s
+Ping tick rate: 10s
+Last ping tick: 5.515353978s
+Ping tick rate: 10s
+Last ping tick: 5.766133171s
+Ping tick rate: 10s
+Last ping tick: 6.017143016s
+Ping tick rate: 10s
+Last ping tick: 6.268010006s
+Ping tick rate: 10s
+Last ping tick: 6.518736031s
+Ping tick rate: 10s
+Last ping tick: 6.769761956s
+Ping tick rate: 10s
+Last ping tick: 7.020544229s
+Ping tick rate: 10s
+Last ping tick: 7.271438965s
+Ping tick rate: 10s
+Last ping tick: 7.522168148s
+Ping tick rate: 10s
+Last ping tick: 7.772768996s
+Ping tick rate: 10s
+Last ping tick: 8.023487154s
+Ping tick rate: 10s
+Last ping tick: 8.274107008s
+Ping tick rate: 10s
+Last ping tick: 8.524740322s
+Ping tick rate: 10s
+Last ping tick: 8.775308696s
+Ping tick rate: 10s
+Last ping tick: 9.025823597s
+Ping tick rate: 10s
+Last ping tick: 9.276482312s
+Ping tick rate: 10s
+Last ping tick: 9.527225772s
+Ping tick rate: 10s
+Last ping tick: 9.777752849s
+Ping tick rate: 10s
+Last ping tick: 10.028550559s
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 33.9751 -118.426
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 47.6008 -122.3248
+Remote location acquired: 33.749 -84.388
+Last ping tick: 250.567883ms
+Ping tick rate: 10s
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 32.7797 -96.8022
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 35.0125 -80.9309
+Last ping tick: 501.917447ms
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location acquired: 45.5019 -73.5674
+Remote location attempted but not acquired
+Remote location acquired: 47.6034 -122.3414
+Remote location attempted but not acquired
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 752.693989ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 39.0997 -94.5785
+Remote location acquired: 33.9751 -118.426
+Remote location acquired: 45.5019 -73.5674
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.003630759s
+Ping tick rate: 10s
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 1.254125788s
+Ping tick rate: 10s
+Last ping tick: 1.504656334s
+Ping tick rate: 10s
+Last ping tick: 1.75545935s
+Ping tick rate: 10s
+Last ping tick: 2.006189889s
+Ping tick rate: 10s
+Last ping tick: 2.256959468s
+Ping tick rate: 10s
+Last ping tick: 2.507794093s
+Ping tick rate: 10s
+Last ping tick: 2.758829968s
+Ping tick rate: 10s
+Last ping tick: 3.009418613s
+Ping tick rate: 10s
+Last ping tick: 3.098298147s
+Ping tick rate: 10s
+Last ping tick: 3.260594769s
+Ping tick rate: 10s
+Last ping tick: 3.511088848s
+Ping tick rate: 10s
+Last ping tick: 3.51777112s
+Ping tick rate: 10s
+Last ping tick: 3.762286585s
+Ping tick rate: 10s
+Last ping tick: 4.012990742s
+Ping tick rate: 10s
+Last ping tick: 4.26392555s
+Ping tick rate: 10s
+Last ping tick: 4.51491313s
+Ping tick rate: 10s
+Last ping tick: 4.765825633s
+Ping tick rate: 10s
+Last ping tick: 4.815548023s
+Ping tick rate: 10s
+Last ping tick: 5.017113641s
+Ping tick rate: 10s
+Last ping tick: 5.18208145s
+Ping tick rate: 10s
+Last ping tick: 5.268044724s
+Ping tick rate: 10s
+Last ping tick: 5.382313771s
+Ping tick rate: 10s
+Last ping tick: 5.519023261s
+Ping tick rate: 10s
+Last ping tick: 5.547832273s
+Ping tick rate: 10s
+Last ping tick: 5.731952929s
+Ping tick rate: 10s
+Last ping tick: 5.770131139s
+Ping tick rate: 10s
+Last ping tick: 6.020806998s
+Ping tick rate: 10s
+Last ping tick: 6.132751842s
+Ping tick rate: 10s
+Last ping tick: 6.27110674s
+Ping tick rate: 10s
+Last ping tick: 6.522178404s
+Ping tick rate: 10s
+Last ping tick: 6.772709746s
+Ping tick rate: 10s
+Last ping tick: 7.023263516s
+Ping tick rate: 10s
+Last ping tick: 7.274169046s
+Ping tick rate: 10s
+Last ping tick: 7.524989787s
+Ping tick rate: 10s
+Last ping tick: 7.775668568s
+Ping tick rate: 10s
+Last ping tick: 8.026122103s
+Ping tick rate: 10s
+Last ping tick: 8.277007028s
+Ping tick rate: 10s
+Last ping tick: 8.527658526s
+Ping tick rate: 10s
+Last ping tick: 8.77880829s
+Ping tick rate: 10s
+Last ping tick: 9.029842555s
+Ping tick rate: 10s
+Last ping tick: 9.280956633s
+Ping tick rate: 10s
+Last ping tick: 9.531935665s
+Ping tick rate: 10s
+Last ping tick: 9.782806734s
+Ping tick rate: 10s
+Last ping tick: 9.864990038s
+Ping tick rate: 10s
+Last ping tick: 9.895075693s
+Ping tick rate: 10s
+Last ping tick: 9.911311527s
+Ping tick rate: 10s
+Last ping tick: 9.927972437s
+Ping tick rate: 10s
+Last ping tick: 9.944412617s
+Ping tick rate: 10s
+Last ping tick: 9.965899596s
+Ping tick rate: 10s
+Last ping tick: 9.983341315s
+Ping tick rate: 10s
+Last ping tick: 9.999746784s
+Ping tick rate: 10s
+Last ping tick: 10.033280129s
+Ping tick rate: 10s
+Last ping tick: 250.579087ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location acquired: 33.9751 -118.426
+Remote location attempted but not acquired
+Remote location acquired: 45.5019 -73.5674
+Last ping tick: 501.391263ms
+Ping tick rate: 10s
+Remote location acquired: 47.6008 -122.3248
+Remote location acquired: 33.749 -84.388
+Remote location attempted but not acquired
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 32.7797 -96.8022
+Remote location acquired: 36.677696 -78.37471
+Last ping tick: 751.909548ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location acquired: 47.6034 -122.3414
+Remote location attempted but not acquired
+Remote location acquired: 39.0438 -77.4874
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.002527775s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location acquired: 37.422 -122.084
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.253038577s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 40.0992 -83.1141
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.503517728s
+Ping tick rate: 10s
+Last ping tick: 1.754291412s
+Ping tick rate: 10s
+Last ping tick: 2.004698129s
+Ping tick rate: 10s
+Last ping tick: 2.255172416s
+Ping tick rate: 10s
+Last ping tick: 2.506285596s
+Ping tick rate: 10s
+Last ping tick: 2.756857368s
+Ping tick rate: 10s
+Last ping tick: 3.007715405s
+Ping tick rate: 10s
+Last ping tick: 3.258184754s
+Ping tick rate: 10s
+Last ping tick: 3.508840405s
+Ping tick rate: 10s
+Last ping tick: 3.759483828s
+Ping tick rate: 10s
+Last ping tick: 4.009784899s
+Ping tick rate: 10s
+Last ping tick: 4.260397226s
+Ping tick rate: 10s
+Last ping tick: 4.510946353s
+Ping tick rate: 10s
+Last ping tick: 4.761448265s
+Ping tick rate: 10s
+Last ping tick: 5.012080843s
+Ping tick rate: 10s
+Last ping tick: 5.262656906s
+Ping tick rate: 10s
+Last ping tick: 5.513254804s
+Ping tick rate: 10s
+Last ping tick: 5.763781899s
+Ping tick rate: 10s
+Last ping tick: 6.014317442s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 6.264805062s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 6.515575148s
+Ping tick rate: 10s
+Last ping tick: 6.766079819s
+Ping tick rate: 10s
+Last ping tick: 7.016715222s
+Ping tick rate: 10s
+Last ping tick: 7.267084158s
+Ping tick rate: 10s
+Last ping tick: 7.517753507s
+Ping tick rate: 10s
+Last ping tick: 7.768162794s
+Ping tick rate: 10s
+Last ping tick: 8.018702285s
+Ping tick rate: 10s
+Last ping tick: 8.269685395s
+Ping tick rate: 10s
+Last ping tick: 8.520703182s
+Ping tick rate: 10s
+Last ping tick: 8.771680338s
+Ping tick rate: 10s
+Last ping tick: 9.022642148s
+Ping tick rate: 10s
+Last ping tick: 9.273695965s
+Ping tick rate: 10s
+Last ping tick: 9.524639641s
+Ping tick rate: 10s
+Last ping tick: 9.775384118s
+Ping tick rate: 10s
+Last ping tick: 10.026202033s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 251.296406ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 502.362661ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 752.633907ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.003230617s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.253906424s
+Ping tick rate: 10s
+Last ping tick: 1.504869866s
+Ping tick rate: 10s
+Last ping tick: 1.755536463s
+Ping tick rate: 10s
+Last ping tick: 2.006430918s
+Ping tick rate: 10s
+Last ping tick: 2.151085151s
+Ping tick rate: 10s
+Last ping tick: 2.166397237s
+Ping tick rate: 10s
+Last ping tick: 2.18505126s
+Ping tick rate: 10s
+Last ping tick: 2.202057941s
+Ping tick rate: 10s
+Last ping tick: 2.221113038s
+Ping tick rate: 10s
+Last ping tick: 2.238861833s
+Ping tick rate: 10s
+Last ping tick: 2.257213005s
+Ping tick rate: 10s
+Last ping tick: 2.507985708s
+Ping tick rate: 10s
+Last ping tick: 2.547415418s
+Ping tick rate: 10s
+Last ping tick: 2.611762753s
+Ping tick rate: 10s
+Last ping tick: 2.728354974s
+Ping tick rate: 10s
+Last ping tick: 2.75872103s
+Ping tick rate: 10s
+Last ping tick: 2.766214783s
+Ping tick rate: 10s
+Last ping tick: 2.778660227s
+Ping tick rate: 10s
+Last ping tick: 2.799685202s
+Ping tick rate: 10s
+Last ping tick: 2.816284479s
+Ping tick rate: 10s
+Last ping tick: 2.833639707s
+Ping tick rate: 10s
+Last ping tick: 2.850654862s
+Ping tick rate: 10s
+Last ping tick: 2.871920799s
+Ping tick rate: 10s
+Last ping tick: 2.889061446s
+Ping tick rate: 10s
+Last ping tick: 2.905727412s
+Ping tick rate: 10s
+Last ping tick: 3.009917596s
+Ping tick rate: 10s
+Last ping tick: 3.2604391s
+Ping tick rate: 10s
+Last ping tick: 3.511320173s
+Ping tick rate: 10s
+Last ping tick: 3.762157733s
+Ping tick rate: 10s
+Last ping tick: 3.77155483s
+Ping tick rate: 10s
+Last ping tick: 3.788236561s
+Ping tick rate: 10s
+Last ping tick: 3.805253867s
+Ping tick rate: 10s
+Last ping tick: 3.822745805s
+Ping tick rate: 10s
+Last ping tick: 3.843395244s
+Ping tick rate: 10s
+Last ping tick: 4.012428845s
+Ping tick rate: 10s
+Last ping tick: 4.262957994s
+Ping tick rate: 10s
+Last ping tick: 4.514089533s
+Ping tick rate: 10s
+Last ping tick: 4.7647766s
+Ping tick rate: 10s
+Last ping tick: 5.015381772s
+Ping tick rate: 10s
+Last ping tick: 5.266122161s
+Ping tick rate: 10s
+Last ping tick: 5.516502606s
+Ping tick rate: 10s
+Last ping tick: 5.767634809s
+Ping tick rate: 10s
+Last ping tick: 6.018478232s
+Ping tick rate: 10s
+Last ping tick: 6.269298808s
+Ping tick rate: 10s
+Last ping tick: 6.520427183s
+Ping tick rate: 10s
+Last ping tick: 6.771326265s
+Ping tick rate: 10s
+Last ping tick: 7.022172035s
+Ping tick rate: 10s
+Last ping tick: 7.272829882s
+Ping tick rate: 10s
+Last ping tick: 7.523713768s
+Ping tick rate: 10s
+Last ping tick: 7.774521396s
+Ping tick rate: 10s
+Last ping tick: 8.0253764s
+Ping tick rate: 10s
+Last ping tick: 8.275935902s
+Ping tick rate: 10s
+Last ping tick: 8.526510452s
+Ping tick rate: 10s
+Last ping tick: 8.777739407s
+Ping tick rate: 10s
+Last ping tick: 9.028492147s
+Ping tick rate: 10s
+Last ping tick: 9.279541641s
+Ping tick rate: 10s
+Last ping tick: 9.530188012s
+Ping tick rate: 10s
+Last ping tick: 9.727751626s
+Ping tick rate: 10s
+Last ping tick: 9.781194918s
+Ping tick rate: 10s
+Last ping tick: 9.964194432s
+Ping tick rate: 10s
+Last ping tick: 9.989210592s
+Ping tick rate: 10s
+Last ping tick: 10.017863038s
+Ping tick rate: 10s
+Last ping tick: 13.500638ms
+Ping tick rate: 10s
+Last ping tick: 21.560247ms
+Ping tick rate: 10s
+Last ping tick: 46.855068ms
+Ping tick rate: 10s
+Last ping tick: 72.234713ms
+Ping tick rate: 10s
+Last ping tick: 97.256566ms
+Ping tick rate: 10s
+Last ping tick: 264.101201ms
+Ping tick rate: 10s
+Last ping tick: 515.296324ms
+Ping tick rate: 10s
+Last ping tick: 765.728932ms
+Ping tick rate: 10s
+Last ping tick: 990.016113ms
+Ping tick rate: 10s
+Last ping tick: 1.016863719s
+Ping tick rate: 10s
+Last ping tick: 1.225273987s
+Ping tick rate: 10s
+Last ping tick: 1.250314895s
+Ping tick rate: 10s
+Last ping tick: 1.267170576s
+Ping tick rate: 10s
+Last ping tick: 1.274820367s
+Ping tick rate: 10s
+Last ping tick: 1.300760346s
+Ping tick rate: 10s
+Last ping tick: 1.326491901s
+Ping tick rate: 10s
+Last ping tick: 1.351134526s
+Ping tick rate: 10s
+Last ping tick: 1.377026922s
+Ping tick rate: 10s
+Last ping tick: 1.401238438s
+Ping tick rate: 10s
+Last ping tick: 1.42531095s
+Ping tick rate: 10s
+Last ping tick: 1.451963411s
+Ping tick rate: 10s
+Last ping tick: 1.475431967s
+Ping tick rate: 10s
+Last ping tick: 1.501444533s
+Ping tick rate: 10s
+Last ping tick: 1.518233071s
+Ping tick rate: 10s
+Last ping tick: 1.526969726s
+Ping tick rate: 10s
+Last ping tick: 1.55166168s
+Ping tick rate: 10s
+Last ping tick: 1.57711169s
+Ping tick rate: 10s
+Last ping tick: 1.601900724s
+Ping tick rate: 10s
+Last ping tick: 1.627595045s
+Ping tick rate: 10s
+Last ping tick: 1.654586688s
+Ping tick rate: 10s
+Last ping tick: 1.677248542s
+Ping tick rate: 10s
+Last ping tick: 1.703085994s
+Ping tick rate: 10s
+Last ping tick: 1.728125054s
+Ping tick rate: 10s
+Last ping tick: 1.753422893s
+Ping tick rate: 10s
+Last ping tick: 1.76850371s
+Ping tick rate: 10s
+Last ping tick: 1.778000176s
+Ping tick rate: 10s
+Last ping tick: 1.803333276s
+Ping tick rate: 10s
+Last ping tick: 1.828786942s
+Ping tick rate: 10s
+Last ping tick: 1.854300393s
+Ping tick rate: 10s
+Last ping tick: 1.879025452s
+Ping tick rate: 10s
+Last ping tick: 1.904045326s
+Ping tick rate: 10s
+Last ping tick: 1.93374734s
+Ping tick rate: 10s
+Last ping tick: 2.019395114s
+Ping tick rate: 10s
+Last ping tick: 2.171723853s
+Ping tick rate: 10s
+Last ping tick: 2.270074632s
+Ping tick rate: 10s
+Last ping tick: 2.407360599s
+Ping tick rate: 10s
+Last ping tick: 2.431728373s
+Ping tick rate: 10s
+Last ping tick: 2.457326802s
+Ping tick rate: 10s
+Last ping tick: 2.483991664s
+Ping tick rate: 10s
+Last ping tick: 2.506188336s
+Ping tick rate: 10s
+Last ping tick: 2.5208037s
+Ping tick rate: 10s
+Last ping tick: 2.53474653s
+Ping tick rate: 10s
+Last ping tick: 2.704903701s
+Ping tick rate: 10s
+Last ping tick: 2.771968357s
+Ping tick rate: 10s
+Last ping tick: 2.9401649s
+Ping tick rate: 10s
+Last ping tick: 2.965917221s
+Ping tick rate: 10s
+Last ping tick: 2.995076103s
+Ping tick rate: 10s
+Last ping tick: 3.023149339s
+Ping tick rate: 10s
+Last ping tick: 3.273580149s
+Ping tick rate: 10s
+Last ping tick: 3.524907253s
+Ping tick rate: 10s
+Last ping tick: 3.77625445s
+Ping tick rate: 10s
+Last ping tick: 4.027591538s
+Ping tick rate: 10s
+Last ping tick: 4.278136705s
+Ping tick rate: 10s
+Last ping tick: 4.528624978s
+Ping tick rate: 10s
+Last ping tick: 4.779137271s
+Ping tick rate: 10s
+Last ping tick: 5.029676826s
+Ping tick rate: 10s
+Last ping tick: 5.280099428s
+Ping tick rate: 10s
+Last ping tick: 5.53081866s
+Ping tick rate: 10s
+Last ping tick: 5.782097195s
+Ping tick rate: 10s
+Last ping tick: 6.033398463s
+Ping tick rate: 10s
+Last ping tick: 6.2837594s
+Ping tick rate: 10s
+Last ping tick: 6.534191159s
+Ping tick rate: 10s
+Last ping tick: 6.784748333s
+Ping tick rate: 10s
+Last ping tick: 7.035363209s
+Ping tick rate: 10s
+Last ping tick: 7.286830787s
+Ping tick rate: 10s
+Last ping tick: 7.537571104s
+Ping tick rate: 10s
+Last ping tick: 7.788931603s
+Ping tick rate: 10s
+Last ping tick: 8.039812318s
+Ping tick rate: 10s
+Last ping tick: 8.290189792s
+Ping tick rate: 10s
+Last ping tick: 8.540763198s
+Ping tick rate: 10s
+Last ping tick: 8.791315568s
+Ping tick rate: 10s
+Last ping tick: 9.041973156s
+Ping tick rate: 10s
+Last ping tick: 9.293306111s
+Ping tick rate: 10s
+Last ping tick: 9.544282259s
+Ping tick rate: 10s
+Last ping tick: 9.794600607s
+Ping tick rate: 10s
+Last ping tick: 10.045695975s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 250.694725ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 501.231113ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 751.73653ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.002997787s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.253544063s
+Ping tick rate: 10s
+Last ping tick: 1.504261378s
+Ping tick rate: 10s
+Last ping tick: 1.755052861s
+Ping tick rate: 10s
+Last ping tick: 2.005602897s
+Ping tick rate: 10s
+Last ping tick: 2.25592319s
+Ping tick rate: 10s
+Last ping tick: 2.506204243s
+Ping tick rate: 10s
+Last ping tick: 2.757017943s
+Ping tick rate: 10s
+Last ping tick: 3.007675716s
+Ping tick rate: 10s
+Last ping tick: 3.258814663s
+Ping tick rate: 10s
+Last ping tick: 3.510002705s
+Ping tick rate: 10s
+Last ping tick: 3.761149823s
+Ping tick rate: 10s
+Last ping tick: 3.825575598s
+Ping tick rate: 10s
+Last ping tick: 4.011703573s
+Ping tick rate: 10s
+Last ping tick: 4.04201198s
+Ping tick rate: 10s
+Last ping tick: 4.226040361s
+Ping tick rate: 10s
+Last ping tick: 4.262427107s
+Ping tick rate: 10s
+Last ping tick: 4.408852355s
+Ping tick rate: 10s
+Last ping tick: 4.51341178s
+Ping tick rate: 10s
+Last ping tick: 4.609376905s
+Ping tick rate: 10s
+Last ping tick: 4.763997292s
+Ping tick rate: 10s
+Last ping tick: 4.793075039s
+Ping tick rate: 10s
+Last ping tick: 5.014845556s
+Ping tick rate: 10s
+Last ping tick: 5.02594763s
+Ping tick rate: 10s
+Last ping tick: 5.26591249s
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Last ping tick: 5.342095803s
+Ping tick rate: 10s
+Remote location acquired: 35.0125 -80.9309
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 33.9751 -118.426
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 47.6008 -122.3248
+Last ping tick: 5.517088111s
+Ping tick rate: 10s
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 32.7797 -96.8022
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 5.727837498s
+Ping tick rate: 10s
+Remote location acquired: 35.0125 -80.9309
+Last ping tick: 5.768232794s
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 25.7034 -80.2927
+Remote location acquired: 37.7768 -122.416
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 34.2319 -84.1627
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 35.8974 -83.9425
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 6.018824372s
+Ping tick rate: 10s
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 38.6828 -76.1563
+Remote location acquired: 39.0997 -94.5785
+Remote location acquired: 33.9751 -118.426
+Remote location acquired: 52.3667 4.9
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 43.6532 -79.3832
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 47.6034 -122.3414
+Last ping tick: 6.269999116s
+Ping tick rate: 10s
+Last ping tick: 6.39263169s
+Ping tick rate: 10s
+Last ping tick: 6.520155819s
+Ping tick rate: 10s
+Last ping tick: 6.770921669s
+Ping tick rate: 10s
+Last ping tick: 7.021335902s
+Ping tick rate: 10s
+Last ping tick: 7.27269939s
+Ping tick rate: 10s
+Last ping tick: 7.523981313s
+Ping tick rate: 10s
+Last ping tick: 7.576090627s
+Ping tick rate: 10s
+Last ping tick: 7.775336626s
+Ping tick rate: 10s
+Last ping tick: 7.958966606s
+Ping tick rate: 10s
+Last ping tick: 8.026243979s
+Ping tick rate: 10s
+Last ping tick: 8.225135042s
+Ping tick rate: 10s
+Last ping tick: 8.276575008s
+Ping tick rate: 10s
+Last ping tick: 8.45881272s
+Ping tick rate: 10s
+Last ping tick: 8.527229394s
+Ping tick rate: 10s
+Last ping tick: 8.691826562s
+Ping tick rate: 10s
+Last ping tick: 8.778262199s
+Ping tick rate: 10s
+Last ping tick: 9.029233128s
+Ping tick rate: 10s
+Last ping tick: 9.279822998s
+Ping tick rate: 10s
+Last ping tick: 9.488219892s
+Ping tick rate: 10s
+Last ping tick: 9.530844838s
+Ping tick rate: 10s
+Last ping tick: 9.744092865s
+Ping tick rate: 10s
+Last ping tick: 9.781846173s
+Ping tick rate: 10s
+Last ping tick: 10.025508559s
+Ping tick rate: 10s
+Last ping tick: 7.317568ms
+Ping tick rate: 10s
+Last ping tick: 258.237628ms
+Ping tick rate: 10s
+Last ping tick: 383.84621ms
+Ping tick rate: 10s
+Last ping tick: 508.7893ms
+Ping tick rate: 10s
+Last ping tick: 650.381974ms
+Ping tick rate: 10s
+Last ping tick: 759.913125ms
+Ping tick rate: 10s
+Last ping tick: 866.358576ms
+Ping tick rate: 10s
+Last ping tick: 1.01103453s
+Ping tick rate: 10s
+Last ping tick: 1.133882175s
+Ping tick rate: 10s
+Last ping tick: 1.261686167s
+Ping tick rate: 10s
+Last ping tick: 1.512076296s
+Ping tick rate: 10s
+Last ping tick: 1.762274954s
+Ping tick rate: 10s
+Last ping tick: 1.797094475s
+Ping tick rate: 10s
+Remote location acquired: 38.6828 -76.1563
+Last ping tick: 2.013189749s
+Ping tick rate: 10s
+Last ping tick: 2.264378483s
+Ping tick rate: 10s
+Last ping tick: 2.515702952s
+Ping tick rate: 10s
+Last ping tick: 2.766944768s
+Ping tick rate: 10s
+Last ping tick: 3.017620256s
+Ping tick rate: 10s
+Last ping tick: 3.031382094s
+Ping tick rate: 10s
+Last ping tick: 3.266261057s
+Ping tick rate: 10s
+Last ping tick: 3.27396651s
+Ping tick rate: 10s
+Last ping tick: 3.292149514s
+Ping tick rate: 10s
+Last ping tick: 3.317539605s
+Ping tick rate: 10s
+Last ping tick: 3.342141317s
+Ping tick rate: 10s
+Last ping tick: 3.367037602s
+Ping tick rate: 10s
+Last ping tick: 3.396772932s
+Ping tick rate: 10s
+Last ping tick: 3.416979378s
+Ping tick rate: 10s
+Last ping tick: 3.441804934s
+Ping tick rate: 10s
+Last ping tick: 3.467393726s
+Ping tick rate: 10s
+Last ping tick: 3.492022543s
+Ping tick rate: 10s
+Last ping tick: 3.517795082s
+Ping tick rate: 10s
+Last ping tick: 3.52586707s
+Ping tick rate: 10s
+Last ping tick: 3.542766761s
+Ping tick rate: 10s
+Last ping tick: 3.569799051s
+Ping tick rate: 10s
+Last ping tick: 3.594055961s
+Ping tick rate: 10s
+Last ping tick: 3.62196181s
+Ping tick rate: 10s
+Last ping tick: 3.645702385s
+Ping tick rate: 10s
+Last ping tick: 3.716236484s
+Ping tick rate: 10s
+Last ping tick: 3.776267148s
+Ping tick rate: 10s
+Last ping tick: 3.952180786s
+Ping tick rate: 10s
+Last ping tick: 3.977328775s
+Ping tick rate: 10s
+Last ping tick: 4.003327618s
+Ping tick rate: 10s
+Last ping tick: 4.026546657s
+Ping tick rate: 10s
+Last ping tick: 4.03419082s
+Ping tick rate: 10s
+Last ping tick: 4.058160477s
+Ping tick rate: 10s
+Last ping tick: 4.07880309s
+Ping tick rate: 10s
+Last ping tick: 4.104216961s
+Ping tick rate: 10s
+Last ping tick: 4.133619565s
+Ping tick rate: 10s
+Last ping tick: 4.153881497s
+Ping tick rate: 10s
+Last ping tick: 4.179725731s
+Ping tick rate: 10s
+Last ping tick: 4.208724883s
+Ping tick rate: 10s
+Last ping tick: 4.229383198s
+Ping tick rate: 10s
+Last ping tick: 4.257975726s
+Ping tick rate: 10s
+Last ping tick: 4.276797639s
+Ping tick rate: 10s
+Last ping tick: 4.28413889s
+Ping tick rate: 10s
+Last ping tick: 4.304032594s
+Ping tick rate: 10s
+Last ping tick: 4.329979619s
+Ping tick rate: 10s
+Last ping tick: 4.35975511s
+Ping tick rate: 10s
+Last ping tick: 4.380396749s
+Ping tick rate: 10s
+Last ping tick: 4.405253189s
+Ping tick rate: 10s
+Last ping tick: 4.435740294s
+Ping tick rate: 10s
+Last ping tick: 4.455421165s
+Ping tick rate: 10s
+Last ping tick: 4.481070223s
+Ping tick rate: 10s
+Last ping tick: 4.507152278s
+Ping tick rate: 10s
+Last ping tick: 4.527476421s
+Ping tick rate: 10s
+Last ping tick: 4.534533211s
+Ping tick rate: 10s
+Last ping tick: 4.559509591s
+Ping tick rate: 10s
+Last ping tick: 4.582102088s
+Ping tick rate: 10s
+Last ping tick: 4.60691939s
+Ping tick rate: 10s
+Last ping tick: 4.63194121s
+Ping tick rate: 10s
+Last ping tick: 4.656979668s
+Ping tick rate: 10s
+Last ping tick: 4.681316761s
+Ping tick rate: 10s
+Last ping tick: 4.71090831s
+Ping tick rate: 10s
+Last ping tick: 4.732139647s
+Ping tick rate: 10s
+Last ping tick: 4.7568559s
+Ping tick rate: 10s
+Last ping tick: 4.778595489s
+Ping tick rate: 10s
+Last ping tick: 4.78806357s
+Ping tick rate: 10s
+Last ping tick: 4.8077496s
+Ping tick rate: 10s
+Last ping tick: 4.833072543s
+Ping tick rate: 10s
+Last ping tick: 4.859780528s
+Ping tick rate: 10s
+Last ping tick: 4.883038817s
+Ping tick rate: 10s
+Last ping tick: 5.029785462s
+Ping tick rate: 10s
+Last ping tick: 5.28047452s
+Ping tick rate: 10s
+Last ping tick: 5.333902816s
+Ping tick rate: 10s
+Last ping tick: 5.531695725s
+Ping tick rate: 10s
+Last ping tick: 5.566739827s
+Ping tick rate: 10s
+Last ping tick: 5.782750807s
+Ping tick rate: 10s
+Last ping tick: 5.849730424s
+Ping tick rate: 10s
+Last ping tick: 6.033713839s
+Ping tick rate: 10s
+Last ping tick: 6.066763744s
+Ping tick rate: 10s
+Last ping tick: 6.26642172s
+Ping tick rate: 10s
+Last ping tick: 6.283951956s
+Ping tick rate: 10s
+Last ping tick: 6.535240164s
+Ping tick rate: 10s
+Last ping tick: 6.786519242s
+Ping tick rate: 10s
+Last ping tick: 6.796708347s
+Ping tick rate: 10s
+Last ping tick: 7.037363462s
+Ping tick rate: 10s
+Last ping tick: 7.288531479s
+Ping tick rate: 10s
+Last ping tick: 7.417198489s
+Ping tick rate: 10s
+Last ping tick: 7.539253856s
+Ping tick rate: 10s
+Last ping tick: 7.651785933s
+Ping tick rate: 10s
+Last ping tick: 7.676598841s
+Ping tick rate: 10s
+Last ping tick: 7.70209668s
+Ping tick rate: 10s
+Last ping tick: 7.726306809s
+Ping tick rate: 10s
+Last ping tick: 7.75203813s
+Ping tick rate: 10s
+Last ping tick: 7.776969218s
+Ping tick rate: 10s
+Last ping tick: 7.789667188s
+Ping tick rate: 10s
+Last ping tick: 7.802628957s
+Ping tick rate: 10s
+Last ping tick: 7.827516471s
+Ping tick rate: 10s
+Last ping tick: 7.855841481s
+Ping tick rate: 10s
+Last ping tick: 7.877451355s
+Ping tick rate: 10s
+Last ping tick: 7.902354097s
+Ping tick rate: 10s
+Last ping tick: 7.928479308s
+Ping tick rate: 10s
+Last ping tick: 7.953862807s
+Ping tick rate: 10s
+Last ping tick: 7.97987773s
+Ping tick rate: 10s
+Last ping tick: 8.005584732s
+Ping tick rate: 10s
+Last ping tick: 8.028727105s
+Ping tick rate: 10s
+Last ping tick: 8.039855676s
+Ping tick rate: 10s
+Last ping tick: 8.054744405s
+Ping tick rate: 10s
+Last ping tick: 8.080601856s
+Ping tick rate: 10s
+Last ping tick: 8.103982197s
+Ping tick rate: 10s
+Last ping tick: 8.128111471s
+Ping tick rate: 10s
+Last ping tick: 8.154735035s
+Ping tick rate: 10s
+Last ping tick: 8.178995379s
+Ping tick rate: 10s
+Last ping tick: 8.204109807s
+Ping tick rate: 10s
+Last ping tick: 8.22939172s
+Ping tick rate: 10s
+Last ping tick: 8.290365838s
+Ping tick rate: 10s
+Last ping tick: 8.399512688s
+Ping tick rate: 10s
+Last ping tick: 8.540707346s
+Ping tick rate: 10s
+Last ping tick: 8.666180851s
+Ping tick rate: 10s
+Last ping tick: 8.791680387s
+Ping tick rate: 10s
+Last ping tick: 9.042534703s
+Ping tick rate: 10s
+Last ping tick: 9.175713128s
+Ping tick rate: 10s
+Last ping tick: 9.20316531s
+Ping tick rate: 10s
+Last ping tick: 9.220357332s
+Ping tick rate: 10s
+Last ping tick: 9.237225374s
+Ping tick rate: 10s
+Last ping tick: 9.253893338s
+Ping tick rate: 10s
+Last ping tick: 9.273656553s
+Ping tick rate: 10s
+Last ping tick: 9.292573722s
+Ping tick rate: 10s
+Last ping tick: 9.308321894s
+Ping tick rate: 10s
+Last ping tick: 9.326145719s
+Ping tick rate: 10s
+Last ping tick: 9.533144613s
+Ping tick rate: 10s
+Last ping tick: 9.543103568s
+Ping tick rate: 10s
+Last ping tick: 9.5637121s
+Ping tick rate: 10s
+Last ping tick: 9.581670824s
+Ping tick rate: 10s
+Last ping tick: 9.599986558s
+Ping tick rate: 10s
+Last ping tick: 9.617115078s
+Ping tick rate: 10s
+Last ping tick: 9.63566861s
+Ping tick rate: 10s
+Last ping tick: 9.652142642s
+Ping tick rate: 10s
+Last ping tick: 9.670855632s
+Ping tick rate: 10s
+Last ping tick: 9.706483139s
+Ping tick rate: 10s
+Last ping tick: 9.79399045s
+Ping tick rate: 10s
+Last ping tick: 9.990646803s
+Ping tick rate: 10s
+Last ping tick: 10.044320653s
+Ping tick rate: 10s
+Last ping tick: 251.22377ms
+Ping tick rate: 10s
+Last ping tick: 490.119092ms
+Ping tick rate: 10s
+Last ping tick: 501.755015ms
+Ping tick rate: 10s
+Last ping tick: 752.879009ms
+Ping tick rate: 10s
+Last ping tick: 822.281623ms
+Ping tick rate: 10s
+Last ping tick: 1.003461209s
+Ping tick rate: 10s
+Last ping tick: 1.122087939s
+Ping tick rate: 10s
+Last ping tick: 1.253891166s
+Ping tick rate: 10s
+Last ping tick: 1.389116296s
+Ping tick rate: 10s
+Last ping tick: 1.504033621s
+Ping tick rate: 10s
+Last ping tick: 1.754410709s
+Ping tick rate: 10s
+Last ping tick: 1.769964078s
+Ping tick rate: 10s
+Last ping tick: 2.004802806s
+Ping tick rate: 10s
+Last ping tick: 2.15635391s
+Ping tick rate: 10s
+Last ping tick: 2.255487169s
+Ping tick rate: 10s
+Last ping tick: 2.505904275s
+Ping tick rate: 10s
+Last ping tick: 2.756969627s
+Ping tick rate: 10s
+Last ping tick: 3.007530268s
+Ping tick rate: 10s
+Last ping tick: 3.121167675s
+Ping tick rate: 10s
+Last ping tick: 3.151775192s
+Ping tick rate: 10s
+Last ping tick: 3.168799011s
+Ping tick rate: 10s
+Last ping tick: 3.18526698s
+Ping tick rate: 10s
+Last ping tick: 3.201880273s
+Ping tick rate: 10s
+Last ping tick: 3.22369139s
+Ping tick rate: 10s
+Last ping tick: 3.239970029s
+Ping tick rate: 10s
+Last ping tick: 3.256628686s
+Ping tick rate: 10s
+Last ping tick: 3.264581443s
+Ping tick rate: 10s
+Last ping tick: 3.27337383s
+Ping tick rate: 10s
+Last ping tick: 3.294886583s
+Ping tick rate: 10s
+Last ping tick: 3.312437642s
+Ping tick rate: 10s
+Last ping tick: 3.329789344s
+Ping tick rate: 10s
+Last ping tick: 3.346504267s
+Ping tick rate: 10s
+Last ping tick: 3.38337064s
+Ping tick rate: 10s
+Last ping tick: 3.418163085s
+Ping tick rate: 10s
+Last ping tick: 3.435008797s
+Ping tick rate: 10s
+Last ping tick: 3.454230243s
+Ping tick rate: 10s
+Last ping tick: 3.470220871s
+Ping tick rate: 10s
+Last ping tick: 3.488103344s
+Ping tick rate: 10s
+Last ping tick: 3.506729905s
+Ping tick rate: 10s
+Last ping tick: 3.515755631s
+Ping tick rate: 10s
+Last ping tick: 3.526419242s
+Ping tick rate: 10s
+Last ping tick: 3.737572583s
+Ping tick rate: 10s
+Last ping tick: 3.763626742s
+Ping tick rate: 10s
+Last ping tick: 3.770388173s
+Ping tick rate: 10s
+Last ping tick: 3.779637065s
+Ping tick rate: 10s
+Last ping tick: 3.797623126s
+Ping tick rate: 10s
+Last ping tick: 3.814207042s
+Ping tick rate: 10s
+Last ping tick: 3.835007769s
+Ping tick rate: 10s
+Last ping tick: 3.852506629s
+Ping tick rate: 10s
+Last ping tick: 3.868908379s
+Ping tick rate: 10s
+Last ping tick: 3.884295043s
+Ping tick rate: 10s
+Last ping tick: 3.906658252s
+Ping tick rate: 10s
+Last ping tick: 3.924285089s
+Ping tick rate: 10s
+Last ping tick: 3.940871694s
+Ping tick rate: 10s
+Last ping tick: 4.021499755s
+Ping tick rate: 10s
+Last ping tick: 4.0626888s
+Ping tick rate: 10s
+Last ping tick: 4.079602544s
+Ping tick rate: 10s
+Last ping tick: 4.096030504s
+Ping tick rate: 10s
+Last ping tick: 4.112246231s
+Ping tick rate: 10s
+Last ping tick: 4.132826622s
+Ping tick rate: 10s
+Last ping tick: 4.169059727s
+Ping tick rate: 10s
+Last ping tick: 4.185723229s
+Ping tick rate: 10s
+Last ping tick: 4.204340086s
+Ping tick rate: 10s
+Last ping tick: 4.221534352s
+Ping tick rate: 10s
+Last ping tick: 4.27230203s
+Ping tick rate: 10s
+Last ping tick: 4.279217506s
+Ping tick rate: 10s
+Last ping tick: 4.293842825s
+Ping tick rate: 10s
+Last ping tick: 4.310534991s
+Ping tick rate: 10s
+Last ping tick: 4.32661783s
+Ping tick rate: 10s
+Last ping tick: 4.365699158s
+Ping tick rate: 10s
+Last ping tick: 4.381429172s
+Ping tick rate: 10s
+Last ping tick: 4.398879961s
+Ping tick rate: 10s
+Last ping tick: 4.415339793s
+Ping tick rate: 10s
+Last ping tick: 4.451787987s
+Ping tick rate: 10s
+Last ping tick: 4.488904486s
+Ping tick rate: 10s
+Last ping tick: 4.522930751s
+Ping tick rate: 10s
+Last ping tick: 4.539114816s
+Ping tick rate: 10s
+Last ping tick: 4.574570448s
+Ping tick rate: 10s
+Last ping tick: 4.591651636s
+Ping tick rate: 10s
+Last ping tick: 4.629016647s
+Ping tick rate: 10s
+Last ping tick: 4.688598553s
+Ping tick rate: 10s
+Last ping tick: 4.716765809s
+Ping tick rate: 10s
+Last ping tick: 4.732950399s
+Ping tick rate: 10s
+Last ping tick: 4.750726974s
+Ping tick rate: 10s
+Last ping tick: 4.773399054s
+Ping tick rate: 10s
+Last ping tick: 4.786694031s
+Ping tick rate: 10s
+Last ping tick: 4.803604258s
+Ping tick rate: 10s
+Last ping tick: 4.821727867s
+Ping tick rate: 10s
+Last ping tick: 4.839356988s
+Ping tick rate: 10s
+Last ping tick: 4.882367327s
+Ping tick rate: 10s
+Last ping tick: 4.893418213s
+Ping tick rate: 10s
+Last ping tick: 4.909919951s
+Ping tick rate: 10s
+Last ping tick: 4.935385538s
+Ping tick rate: 10s
+Last ping tick: 4.952833842s
+Ping tick rate: 10s
+Last ping tick: 4.986638578s
+Ping tick rate: 10s
+Last ping tick: 5.023917066s
+Ping tick rate: 10s
+Last ping tick: 5.041027785s
+Ping tick rate: 10s
+Last ping tick: 5.058367184s
+Ping tick rate: 10s
+Last ping tick: 5.0756949s
+Ping tick rate: 10s
+Last ping tick: 5.092248505s
+Ping tick rate: 10s
+Last ping tick: 5.111895334s
+Ping tick rate: 10s
+Last ping tick: 5.129584666s
+Ping tick rate: 10s
+Last ping tick: 5.14692564s
+Ping tick rate: 10s
+Last ping tick: 5.274843987s
+Ping tick rate: 10s
+Last ping tick: 5.438646075s
+Ping tick rate: 10s
+Last ping tick: 5.468695757s
+Ping tick rate: 10s
+Last ping tick: 5.484966617s
+Ping tick rate: 10s
+Last ping tick: 5.504088653s
+Ping tick rate: 10s
+Last ping tick: 5.520529835s
+Ping tick rate: 10s
+Last ping tick: 5.526870516s
+Ping tick rate: 10s
+Last ping tick: 5.539087876s
+Ping tick rate: 10s
+Last ping tick: 5.556200104s
+Ping tick rate: 10s
+Last ping tick: 5.575886103s
+Ping tick rate: 10s
+Last ping tick: 5.593213172s
+Ping tick rate: 10s
+Last ping tick: 5.60960029s
+Ping tick rate: 10s
+Last ping tick: 5.627612464s
+Ping tick rate: 10s
+Last ping tick: 5.647911904s
+Ping tick rate: 10s
+Last ping tick: 5.777662542s
+Ping tick rate: 10s
+Last ping tick: 5.972103254s
+Ping tick rate: 10s
+Last ping tick: 6.028002479s
+Ping tick rate: 10s
+Last ping tick: 6.208102981s
+Ping tick rate: 10s
+Last ping tick: 6.234147758s
+Ping tick rate: 10s
+Last ping tick: 6.25773049s
+Ping tick rate: 10s
+Last ping tick: 6.278337036s
+Ping tick rate: 10s
+Last ping tick: 6.284650378s
+Ping tick rate: 10s
+Last ping tick: 6.308457294s
+Ping tick rate: 10s
+Last ping tick: 6.333471996s
+Ping tick rate: 10s
+Last ping tick: 6.488888144s
+Ping tick rate: 10s
+Last ping tick: 6.529423494s
+Ping tick rate: 10s
+Last ping tick: 6.724886374s
+Ping tick rate: 10s
+Last ping tick: 6.749945304s
+Ping tick rate: 10s
+Last ping tick: 6.777618707s
+Ping tick rate: 10s
+Last ping tick: 6.783902911s
+Ping tick rate: 10s
+Last ping tick: 6.799793269s
+Ping tick rate: 10s
+Last ping tick: 6.828700139s
+Ping tick rate: 10s
+Last ping tick: 6.850612303s
+Ping tick rate: 10s
+Last ping tick: 6.876300326s
+Ping tick rate: 10s
+Last ping tick: 6.902666347s
+Ping tick rate: 10s
+Last ping tick: 6.925844859s
+Ping tick rate: 10s
+Last ping tick: 6.951750808s
+Ping tick rate: 10s
+Last ping tick: 6.977006742s
+Ping tick rate: 10s
+Last ping tick: 7.002556451s
+Ping tick rate: 10s
+Last ping tick: 7.026945328s
+Ping tick rate: 10s
+Last ping tick: 7.03496518s
+Ping tick rate: 10s
+Last ping tick: 7.052560808s
+Ping tick rate: 10s
+Last ping tick: 7.221559323s
+Ping tick rate: 10s
+Last ping tick: 7.240081162s
+Ping tick rate: 10s
+Last ping tick: 7.285369958s
+Ping tick rate: 10s
+Last ping tick: 7.474222644s
+Ping tick rate: 10s
+Last ping tick: 7.49965763s
+Ping tick rate: 10s
+Last ping tick: 7.535852833s
+Ping tick rate: 10s
+Last ping tick: 7.770044451s
+Ping tick rate: 10s
+Last ping tick: 7.786576334s
+Ping tick rate: 10s
+Last ping tick: 8.00614298s
+Ping tick rate: 10s
+Last ping tick: 8.037298644s
+Ping tick rate: 10s
+Last ping tick: 8.189385643s
+Ping tick rate: 10s
+Last ping tick: 8.287701819s
+Ping tick rate: 10s
+Last ping tick: 8.405913467s
+Ping tick rate: 10s
+Last ping tick: 8.538458673s
+Ping tick rate: 10s
+Last ping tick: 8.622023749s
+Ping tick rate: 10s
+Last ping tick: 8.78964908s
+Ping tick rate: 10s
+Last ping tick: 9.040616357s
+Ping tick rate: 10s
+Last ping tick: 9.088643791s
+Ping tick rate: 10s
+Last ping tick: 9.118946267s
+Ping tick rate: 10s
+Last ping tick: 9.151852332s
+Ping tick rate: 10s
+Last ping tick: 9.238806595s
+Ping tick rate: 10s
+Last ping tick: 9.25641496s
+Ping tick rate: 10s
+Last ping tick: 9.273393253s
+Ping tick rate: 10s
+Last ping tick: 9.290164877s
+Ping tick rate: 10s
+Last ping tick: 9.297470545s
+Ping tick rate: 10s
+Last ping tick: 9.307656658s
+Ping tick rate: 10s
+Last ping tick: 9.54843718s
+Ping tick rate: 10s
+Last ping tick: 9.799428286s
+Ping tick rate: 10s
+Last ping tick: 10.050321814s
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 35.0125 -80.9309
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 33.9751 -118.426
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 250.789472ms
+Ping tick rate: 10s
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 47.6008 -122.3248
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 33.749 -84.388
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 32.7797 -96.8022
+Last ping tick: 501.403608ms
+Ping tick rate: 10s
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 35.0125 -80.9309
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 25.7034 -80.2927
+Remote location acquired: 37.7768 -122.416
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 34.2319 -84.1627
+Remote location acquired: 47.6034 -122.3414
+Last ping tick: 751.981454ms
+Ping tick rate: 10s
+Remote location acquired: 35.8974 -83.9425
+Remote location acquired: 37.422 -122.084
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 36.677696 -78.37471
+Remote location acquired: 38.6828 -76.1563
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 39.0997 -94.5785
+Remote location acquired: 33.9751 -118.426
+Last ping tick: 1.002931194s
+Ping tick rate: 10s
+Remote location acquired: 52.3667 4.9
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 52.3667 4.9
+Remote location acquired: 45.5019 -73.5674
+Remote location acquired: 43.6532 -79.3832
+Remote location acquired: 39.0438 -77.4874
+Remote location acquired: 47.6034 -122.3414
+Remote location acquired: 47.6034 -122.3414
+Remote location attempted but not acquired
+Last ping tick: 1.254067708s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.505234314s
+Ping tick rate: 10s
+Last ping tick: 1.755421262s
+Ping tick rate: 10s
+Last ping tick: 2.006507265s
+Ping tick rate: 10s
+Last ping tick: 2.257509068s
+Ping tick rate: 10s
+Last ping tick: 2.508509947s
+Ping tick rate: 10s
+Last ping tick: 2.719834688s
+Ping tick rate: 10s
+Last ping tick: 2.735373911s
+Ping tick rate: 10s
+Last ping tick: 2.757313399s
+Ping tick rate: 10s
+Last ping tick: 2.764859771s
+Ping tick rate: 10s
+Last ping tick: 2.774003864s
+Ping tick rate: 10s
+Last ping tick: 2.80665951s
+Ping tick rate: 10s
+Last ping tick: 2.828241964s
+Ping tick rate: 10s
+Last ping tick: 2.844625959s
+Ping tick rate: 10s
+Last ping tick: 2.932359983s
+Ping tick rate: 10s
+Last ping tick: 2.96523164s
+Ping tick rate: 10s
+Last ping tick: 3.015291556s
+Ping tick rate: 10s
+Last ping tick: 3.035700773s
+Ping tick rate: 10s
+Last ping tick: 3.06931675s
+Ping tick rate: 10s
+Last ping tick: 3.125097073s
+Ping tick rate: 10s
+Last ping tick: 3.142416827s
+Ping tick rate: 10s
+Last ping tick: 3.171710983s
+Ping tick rate: 10s
+Last ping tick: 3.188990081s
+Ping tick rate: 10s
+Last ping tick: 3.247500426s
+Ping tick rate: 10s
+Last ping tick: 3.266242894s
+Ping tick rate: 10s
+Last ping tick: 3.354587208s
+Ping tick rate: 10s
+Last ping tick: 3.380263687s
+Ping tick rate: 10s
+Last ping tick: 3.517207441s
+Ping tick rate: 10s
+Last ping tick: 3.534091892s
+Ping tick rate: 10s
+Last ping tick: 3.606429229s
+Ping tick rate: 10s
+Last ping tick: 3.697958437s
+Ping tick rate: 10s
+Last ping tick: 3.731662172s
+Ping tick rate: 10s
+Last ping tick: 3.749287375s
+Ping tick rate: 10s
+Last ping tick: 3.767309321s
+Ping tick rate: 10s
+Last ping tick: 3.784303608s
+Ping tick rate: 10s
+Last ping tick: 3.821798787s
+Ping tick rate: 10s
+Last ping tick: 3.888537287s
+Ping tick rate: 10s
+Last ping tick: 4.017954852s
+Ping tick rate: 10s
+Last ping tick: 4.124051943s
+Ping tick rate: 10s
+Last ping tick: 4.151053309s
+Ping tick rate: 10s
+Last ping tick: 4.174287355s
+Ping tick rate: 10s
+Last ping tick: 4.198924187s
+Ping tick rate: 10s
+Last ping tick: 4.228054676s
+Ping tick rate: 10s
+Last ping tick: 4.248528777s
+Ping tick rate: 10s
+Last ping tick: 4.268595823s
+Ping tick rate: 10s
+Last ping tick: 4.275227397s
+Ping tick rate: 10s
+Last ping tick: 4.282347593s
+Ping tick rate: 10s
+Last ping tick: 4.303695011s
+Ping tick rate: 10s
+Last ping tick: 4.325677161s
+Ping tick rate: 10s
+Last ping tick: 4.350310756s
+Ping tick rate: 10s
+Last ping tick: 4.380280819s
+Ping tick rate: 10s
+Last ping tick: 4.400524086s
+Ping tick rate: 10s
+Last ping tick: 4.51957143s
+Ping tick rate: 10s
+Last ping tick: 4.621859778s
+Ping tick rate: 10s
+Last ping tick: 4.770670915s
+Ping tick rate: 10s
+Last ping tick: 4.85795725s
+Ping tick rate: 10s
+Last ping tick: 4.883166068s
+Ping tick rate: 10s
+Last ping tick: 4.907615561s
+Ping tick rate: 10s
+Last ping tick: 4.937699625s
+Ping tick rate: 10s
+Last ping tick: 4.958037895s
+Ping tick rate: 10s
+Last ping tick: 4.98326858s
+Ping tick rate: 10s
+Last ping tick: 5.010736634s
+Ping tick rate: 10s
+Last ping tick: 5.020888819s
+Ping tick rate: 10s
+Last ping tick: 5.033377844s
+Ping tick rate: 10s
+Last ping tick: 5.05889643s
+Ping tick rate: 10s
+Last ping tick: 5.084198371s
+Ping tick rate: 10s
+Last ping tick: 5.109987323s
+Ping tick rate: 10s
+Last ping tick: 5.135960773s
+Ping tick rate: 10s
+Last ping tick: 5.159757201s
+Ping tick rate: 10s
+Last ping tick: 5.184759838s
+Ping tick rate: 10s
+Last ping tick: 5.210504203s
+Ping tick rate: 10s
+Last ping tick: 5.272114971s
+Ping tick rate: 10s
+Last ping tick: 5.338482612s
+Ping tick rate: 10s
+Last ping tick: 5.52336687s
+Ping tick rate: 10s
+Last ping tick: 5.555345957s
+Ping tick rate: 10s
+Last ping tick: 5.721958813s
+Ping tick rate: 10s
+Last ping tick: 5.773953485s
+Ping tick rate: 10s
+Last ping tick: 5.991757055s
+Ping tick rate: 10s
+Last ping tick: 6.02472824s
+Ping tick rate: 10s
+Last ping tick: 6.276141239s
+Ping tick rate: 10s
+Last ping tick: 6.28839631s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 6.487538446s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 6.526493373s
+Ping tick rate: 10s
+Remote location acquired: 38.6828 -76.1563
+Last ping tick: 6.777810084s
+Ping tick rate: 10s
+Last ping tick: 7.028947892s
+Ping tick rate: 10s
+Last ping tick: 7.08952099s
+Ping tick rate: 10s
+Last ping tick: 7.279939005s
+Ping tick rate: 10s
+Last ping tick: 7.324647987s
+Ping tick rate: 10s
+Last ping tick: 7.350632206s
+Ping tick rate: 10s
+Last ping tick: 7.379883457s
+Ping tick rate: 10s
+Last ping tick: 7.401297234s
+Ping tick rate: 10s
+Last ping tick: 7.425608261s
+Ping tick rate: 10s
+Last ping tick: 7.455150565s
+Ping tick rate: 10s
+Last ping tick: 7.475370189s
+Ping tick rate: 10s
+Last ping tick: 7.500663314s
+Ping tick rate: 10s
+Last ping tick: 7.52604215s
+Ping tick rate: 10s
+Last ping tick: 7.533218533s
+Ping tick rate: 10s
+Last ping tick: 7.551235316s
+Ping tick rate: 10s
+Last ping tick: 7.577617678s
+Ping tick rate: 10s
+Last ping tick: 7.60072062s
+Ping tick rate: 10s
+Last ping tick: 7.626959453s
+Ping tick rate: 10s
+Last ping tick: 7.651896925s
+Ping tick rate: 10s
+Last ping tick: 7.783479384s
+Ping tick rate: 10s
+Last ping tick: 7.955929813s
+Ping tick rate: 10s
+Last ping tick: 8.034438652s
+Ping tick rate: 10s
+Last ping tick: 8.190892839s
+Ping tick rate: 10s
+Last ping tick: 8.215569599s
+Ping tick rate: 10s
+Last ping tick: 8.240660277s
+Ping tick rate: 10s
+Last ping tick: 8.266645889s
+Ping tick rate: 10s
+Last ping tick: 8.285496745s
+Ping tick rate: 10s
+Last ping tick: 8.294619087s
+Ping tick rate: 10s
+Last ping tick: 8.316615074s
+Ping tick rate: 10s
+Last ping tick: 8.342064599s
+Ping tick rate: 10s
+Last ping tick: 8.367363347s
+Ping tick rate: 10s
+Last ping tick: 8.472040393s
+Ping tick rate: 10s
+Last ping tick: 8.536515408s
+Ping tick rate: 10s
+Last ping tick: 8.671113311s
+Ping tick rate: 10s
+Last ping tick: 8.690253587s
+Ping tick rate: 10s
+Last ping tick: 8.706618492s
+Ping tick rate: 10s
+Last ping tick: 8.731738627s
+Ping tick rate: 10s
+Last ping tick: 8.750740835s
+Ping tick rate: 10s
+Last ping tick: 8.761303673s
+Ping tick rate: 10s
+Last ping tick: 8.778446263s
+Ping tick rate: 10s
+Last ping tick: 8.787271375s
+Ping tick rate: 10s
+Last ping tick: 8.802818398s
+Ping tick rate: 10s
+Last ping tick: 8.822618305s
+Ping tick rate: 10s
+Last ping tick: 9.03802824s
+Ping tick rate: 10s
+Last ping tick: 9.094345883s
+Ping tick rate: 10s
+Last ping tick: 9.111572418s
+Ping tick rate: 10s
+Last ping tick: 9.128044717s
+Ping tick rate: 10s
+Last ping tick: 9.144011814s
+Ping tick rate: 10s
+Last ping tick: 9.166834189s
+Ping tick rate: 10s
+Last ping tick: 9.288426326s
+Ping tick rate: 10s
+Last ping tick: 9.439222405s
+Ping tick rate: 10s
+Last ping tick: 9.539054324s
+Ping tick rate: 10s
+Last ping tick: 9.704979645s
+Ping tick rate: 10s
+Last ping tick: 9.789502441s
+Ping tick rate: 10s
+Last ping tick: 9.940142998s
+Ping tick rate: 10s
+Last ping tick: 9.96484553s
+Ping tick rate: 10s
+Last ping tick: 9.993192091s
+Ping tick rate: 10s
+Last ping tick: 10.014901087s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 24.626813ms
+Ping tick rate: 10s
+Last ping tick: 33.776181ms
+Ping tick rate: 10s
+Last ping tick: 49.457784ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 75.533882ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 100.303608ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location acquired: 35.0125 -80.9309
+Last ping tick: 131.079131ms
+Ping tick rate: 10s
+Remote location acquired: 33.9751 -118.426
+Remote location attempted but not acquired
+Last ping tick: 152.029889ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 178.015655ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 202.339524ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location acquired: 45.5019 -73.5674
+Last ping tick: 228.251467ms
+Ping tick rate: 10s
+Remote location acquired: 47.6008 -122.3248
+Remote location acquired: 33.749 -84.388
+Last ping tick: 252.688353ms
+Ping tick rate: 10s
+Remote location acquired: 33.749 -84.388
+Last ping tick: 274.91654ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 283.875327ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 303.959298ms
+Ping tick rate: 10s
+Remote location acquired: 37.422 -122.084
+Remote location attempted but not acquired
+Remote location acquired: 37.422 -122.084
+Last ping tick: 341.175637ms
+Ping tick rate: 10s
+Remote location acquired: 39.0438 -77.4874
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location acquired: 32.7797 -96.8022
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 471.549758ms
+Ping tick rate: 10s
+Remote location acquired: 40.0992 -83.1141
+Last ping tick: 487.271085ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location acquired: 35.0125 -80.9309
+Last ping tick: 525.019838ms
+Remote location acquired: 47.6034 -122.3414
+Ping tick rate: 10s
+Remote location acquired: 47.6034 -122.3414
+Last ping tick: 541.11759ms
+Ping tick rate: 10s
+Remote location acquired: 25.7034 -80.2927
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 673.687688ms
+Ping tick rate: 10s
+Last ping tick: 680.761478ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 747.392434ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 775.428972ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 868.3647ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 884.208176ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 909.109981ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 934.932743ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 961.293379ms
+Ping tick rate: 10s
+Last ping tick: 984.495032ms
+Ping tick rate: 10s
+Last ping tick: 1.010984169s
+Ping tick rate: 10s
+Last ping tick: 1.026394592s
+Ping tick rate: 10s
+Last ping tick: 1.036580412s
+Ping tick rate: 10s
+Last ping tick: 1.059833134s
+Ping tick rate: 10s
+Last ping tick: 1.066717928s
+Ping tick rate: 10s
+Last ping tick: 1.086091671s
+Ping tick rate: 10s
+Last ping tick: 1.111569793s
+Ping tick rate: 10s
+Last ping tick: 1.137119296s
+Ping tick rate: 10s
+Last ping tick: 1.16440256s
+Ping tick rate: 10s
+Last ping tick: 1.186639217s
+Ping tick rate: 10s
+Last ping tick: 1.277519935s
+Ping tick rate: 10s
+Last ping tick: 1.528421457s
+Ping tick rate: 10s
+Last ping tick: 1.591785269s
+Ping tick rate: 10s
+Last ping tick: 1.779214995s
+Ping tick rate: 10s
+Last ping tick: 1.856663679s
+Ping tick rate: 10s
+Last ping tick: 2.030363471s
+Ping tick rate: 10s
+Last ping tick: 2.040711792s
+Ping tick rate: 10s
+Last ping tick: 2.057303128s
+Ping tick rate: 10s
+Last ping tick: 2.281188168s
+Ping tick rate: 10s
+Last ping tick: 2.406621295s
+Ping tick rate: 10s
+Last ping tick: 2.532126239s
+Ping tick rate: 10s
+Last ping tick: 2.624115461s
+Ping tick rate: 10s
+Last ping tick: 2.782444048s
+Ping tick rate: 10s
+Last ping tick: 2.807998002s
+Ping tick rate: 10s
+Last ping tick: 3.033304474s
+Ping tick rate: 10s
+Last ping tick: 3.040447436s
+Ping tick rate: 10s
+Last ping tick: 3.273651938s
+Ping tick rate: 10s
+Last ping tick: 3.283520187s
+Ping tick rate: 10s
+Last ping tick: 3.456619325s
+Ping tick rate: 10s
+Last ping tick: 3.534510919s
+Ping tick rate: 10s
+Last ping tick: 3.785223638s
+Ping tick rate: 10s
+Last ping tick: 4.036421093s
+Ping tick rate: 10s
+Last ping tick: 4.044244543s
+Ping tick rate: 10s
+Last ping tick: 4.2877129s
+Ping tick rate: 10s
+Last ping tick: 4.504566614s
+Ping tick rate: 10s
+Last ping tick: 4.53853255s
+Ping tick rate: 10s
+Last ping tick: 4.789338589s
+Ping tick rate: 10s
+Last ping tick: 4.805498656s
+Ping tick rate: 10s
+Last ping tick: 4.812863668s
+Ping tick rate: 10s
+Last ping tick: 4.82348962s
+Ping tick rate: 10s
+Last ping tick: 4.840791332s
+Ping tick rate: 10s
+Last ping tick: 4.858907864s
+Ping tick rate: 10s
+Last ping tick: 4.883886284s
+Ping tick rate: 10s
+Last ping tick: 4.90090423s
+Ping tick rate: 10s
+Last ping tick: 4.90879465s
+Ping tick rate: 10s
+Last ping tick: 4.93579081s
+Ping tick rate: 10s
+Last ping tick: 4.954592507s
+Ping tick rate: 10s
+Last ping tick: 4.971012785s
+Ping tick rate: 10s
+Last ping tick: 4.987654415s
+Ping tick rate: 10s
+Last ping tick: 5.004325681s
+Ping tick rate: 10s
+Last ping tick: 5.025239025s
+Ping tick rate: 10s
+Last ping tick: 5.040336317s
+Ping tick rate: 10s
+Last ping tick: 5.048229205s
+Ping tick rate: 10s
+Last ping tick: 5.059201395s
+Ping tick rate: 10s
+Last ping tick: 5.077287813s
+Ping tick rate: 10s
+Last ping tick: 5.096979901s
+Ping tick rate: 10s
+Last ping tick: 5.148216778s
+Ping tick rate: 10s
+Last ping tick: 5.167602707s
+Ping tick rate: 10s
+Last ping tick: 5.184503258s
+Ping tick rate: 10s
+Last ping tick: 5.201769977s
+Ping tick rate: 10s
+Last ping tick: 5.217613842s
+Ping tick rate: 10s
+Last ping tick: 5.239397262s
+Ping tick rate: 10s
+Last ping tick: 5.256133801s
+Ping tick rate: 10s
+Last ping tick: 5.273283991s
+Ping tick rate: 10s
+Last ping tick: 5.290861083s
+Ping tick rate: 10s
+Last ping tick: 5.31135038s
+Ping tick rate: 10s
+Last ping tick: 5.328009437s
+Ping tick rate: 10s
+Last ping tick: 5.344704468s
+Ping tick rate: 10s
+Last ping tick: 5.362276643s
+Ping tick rate: 10s
+Last ping tick: 5.382838802s
+Ping tick rate: 10s
+Last ping tick: 5.399249491s
+Ping tick rate: 10s
+Last ping tick: 5.416725374s
+Ping tick rate: 10s
+Last ping tick: 5.433720807s
+Ping tick rate: 10s
+Last ping tick: 5.453809925s
+Ping tick rate: 10s
+Last ping tick: 5.471856532s
+Ping tick rate: 10s
+Last ping tick: 5.488685922s
+Ping tick rate: 10s
+Last ping tick: 5.504628288s
+Ping tick rate: 10s
+Last ping tick: 5.525421172s
+Ping tick rate: 10s
+Last ping tick: 5.541011946s
+Ping tick rate: 10s
+Last ping tick: 5.547562865s
+Ping tick rate: 10s
+Last ping tick: 5.560347366s
+Ping tick rate: 10s
+Last ping tick: 5.577108627s
+Ping tick rate: 10s
+Last ping tick: 5.597412718s
+Ping tick rate: 10s
+Last ping tick: 5.614283645s
+Ping tick rate: 10s
+Last ping tick: 5.631846136s
+Ping tick rate: 10s
+Last ping tick: 5.649155055s
+Ping tick rate: 10s
+Last ping tick: 5.667918206s
+Ping tick rate: 10s
+Last ping tick: 5.685617134s
+Ping tick rate: 10s
+Last ping tick: 5.70414029s
+Ping tick rate: 10s
+Last ping tick: 5.720441688s
+Ping tick rate: 10s
+Last ping tick: 5.756874246s
+Ping tick rate: 10s
+Last ping tick: 5.774583201s
+Ping tick rate: 10s
+Last ping tick: 5.791166816s
+Ping tick rate: 10s
+Last ping tick: 5.797823213s
+Ping tick rate: 10s
+Last ping tick: 5.80830679s
+Ping tick rate: 10s
+Last ping tick: 5.824934096s
+Ping tick rate: 10s
+Last ping tick: 5.879712729s
+Ping tick rate: 10s
+Last ping tick: 5.896143975s
+Ping tick rate: 10s
+Last ping tick: 5.912762404s
+Ping tick rate: 10s
+Last ping tick: 5.929635595s
+Ping tick rate: 10s
+Last ping tick: 5.951412245s
+Ping tick rate: 10s
+Last ping tick: 5.968162684s
+Ping tick rate: 10s
+Last ping tick: 5.985721617s
+Ping tick rate: 10s
+Last ping tick: 6.002068717s
+Ping tick rate: 10s
+Last ping tick: 6.021584688s
+Ping tick rate: 10s
+Last ping tick: 6.041749155s
+Ping tick rate: 10s
+Last ping tick: 6.057392743s
+Ping tick rate: 10s
+Last ping tick: 6.092715403s
+Ping tick rate: 10s
+Last ping tick: 6.263305802s
+Ping tick rate: 10s
+Last ping tick: 6.291974304s
+Ping tick rate: 10s
+Last ping tick: 6.298945343s
+Ping tick rate: 10s
+Last ping tick: 6.542767828s
+Ping tick rate: 10s
+Last ping tick: 6.623593704s
+Ping tick rate: 10s
+Last ping tick: 6.666611187s
+Ping tick rate: 10s
+Last ping tick: 6.686615223s
+Ping tick rate: 10s
+Last ping tick: 6.703456817s
+Ping tick rate: 10s
+Last ping tick: 6.758379026s
+Ping tick rate: 10s
+Last ping tick: 6.793857219s
+Ping tick rate: 10s
+Last ping tick: 7.044473862s
+Ping tick rate: 10s
+Last ping tick: 7.173477341s
+Ping tick rate: 10s
+Last ping tick: 7.295343733s
+Ping tick rate: 10s
+Last ping tick: 7.373163838s
+Ping tick rate: 10s
+Last ping tick: 7.41915777s
+Ping tick rate: 10s
+Last ping tick: 7.523049891s
+Ping tick rate: 10s
+Last ping tick: 7.545539846s
+Ping tick rate: 10s
+Last ping tick: 7.592322477s
+Ping tick rate: 10s
+Last ping tick: 7.627493693s
+Ping tick rate: 10s
+Last ping tick: 7.661123826s
+Ping tick rate: 10s
+Last ping tick: 7.732243473s
+Ping tick rate: 10s
+Last ping tick: 7.765371029s
+Ping tick rate: 10s
+Last ping tick: 7.795881978s
+Ping tick rate: 10s
+Last ping tick: 7.815632192s
+Ping tick rate: 10s
+Last ping tick: 7.836216334s
+Ping tick rate: 10s
+Last ping tick: 7.887321594s
+Ping tick rate: 10s
+Last ping tick: 7.906504854s
+Ping tick rate: 10s
+Last ping tick: 7.957466496s
+Ping tick rate: 10s
+Last ping tick: 7.994632572s
+Ping tick rate: 10s
+Last ping tick: 8.028464567s
+Ping tick rate: 10s
+Last ping tick: 8.046903448s
+Ping tick rate: 10s
+Last ping tick: 8.098653959s
+Ping tick rate: 10s
+Last ping tick: 8.150078571s
+Ping tick rate: 10s
+Last ping tick: 8.169254413s
+Ping tick rate: 10s
+Last ping tick: 8.202918042s
+Ping tick rate: 10s
+Last ping tick: 8.220522314s
+Ping tick rate: 10s
+Last ping tick: 8.256409578s
+Ping tick rate: 10s
+Last ping tick: 8.273531477s
+Ping tick rate: 10s
+Last ping tick: 8.297149257s
+Ping tick rate: 10s
+Last ping tick: 8.32760846s
+Ping tick rate: 10s
+Last ping tick: 8.378703408s
+Ping tick rate: 10s
+Last ping tick: 8.465917641s
+Ping tick rate: 10s
+Last ping tick: 8.482593006s
+Ping tick rate: 10s
+Last ping tick: 8.516251704s
+Ping tick rate: 10s
+Last ping tick: 8.547850527s
+Ping tick rate: 10s
+Last ping tick: 8.604365972s
+Ping tick rate: 10s
+Last ping tick: 8.693335863s
+Ping tick rate: 10s
+Last ping tick: 8.790310046s
+Ping tick rate: 10s
+Last ping tick: 8.7987212s
+Ping tick rate: 10s
+Last ping tick: 8.845743395s
+Ping tick rate: 10s
+Last ping tick: 8.867783535s
+Ping tick rate: 10s
+Last ping tick: 8.884306507s
+Ping tick rate: 10s
+Last ping tick: 8.901532219s
+Ping tick rate: 10s
+Last ping tick: 8.937635395s
+Ping tick rate: 10s
+Last ping tick: 8.989278419s
+Ping tick rate: 10s
+Last ping tick: 9.04972833s
+Ping tick rate: 10s
+Last ping tick: 9.223827433s
+Ping tick rate: 10s
+Last ping tick: 9.244102373s
+Ping tick rate: 10s
+Last ping tick: 9.259687831s
+Ping tick rate: 10s
+Last ping tick: 9.281532042s
+Ping tick rate: 10s
+Last ping tick: 9.300445977s
+Ping tick rate: 10s
+Last ping tick: 9.308642886s
+Ping tick rate: 10s
+Last ping tick: 9.317605166s
+Ping tick rate: 10s
+Last ping tick: 9.330820412s
+Ping tick rate: 10s
+Last ping tick: 9.353695504s
+Ping tick rate: 10s
+Last ping tick: 9.370977373s
+Ping tick rate: 10s
+Last ping tick: 9.387837208s
+Ping tick rate: 10s
+Last ping tick: 9.40486133s
+Ping tick rate: 10s
+Last ping tick: 9.425070396s
+Ping tick rate: 10s
+Last ping tick: 9.4412391s
+Ping tick rate: 10s
+Last ping tick: 9.476247448s
+Ping tick rate: 10s
+Last ping tick: 9.547685913s
+Ping tick rate: 10s
+Last ping tick: 9.554054979s
+Ping tick rate: 10s
+Last ping tick: 9.56468405s
+Ping tick rate: 10s
+Last ping tick: 9.804487901s
+Ping tick rate: 10s
+Last ping tick: 9.811606639s
+Ping tick rate: 10s
+Last ping tick: 9.836016742s
+Ping tick rate: 10s
+Last ping tick: 10.055172036s
+Ping tick rate: 10s
+Last ping tick: 250.981218ms
+Ping tick rate: 10s
+Last ping tick: 502.202852ms
+Ping tick rate: 10s
+Last ping tick: 705.997918ms
+Ping tick rate: 10s
+Last ping tick: 753.193261ms
+Ping tick rate: 10s
+Last ping tick: 941.410966ms
+Ping tick rate: 10s
+Last ping tick: 967.157891ms
+Ping tick rate: 10s
+Last ping tick: 994.387993ms
+Ping tick rate: 10s
+Last ping tick: 1.003718625s
+Ping tick rate: 10s
+Last ping tick: 1.0176567s
+Ping tick rate: 10s
+Last ping tick: 1.047102584s
+Ping tick rate: 10s
+Last ping tick: 1.067498067s
+Ping tick rate: 10s
+Last ping tick: 1.0930188s
+Ping tick rate: 10s
+Last ping tick: 1.117254247s
+Ping tick rate: 10s
+Last ping tick: 1.143026677s
+Ping tick rate: 10s
+Last ping tick: 1.166979549s
+Ping tick rate: 10s
+Last ping tick: 1.193722725s
+Ping tick rate: 10s
+Last ping tick: 1.218114683s
+Ping tick rate: 10s
+Last ping tick: 1.242973948s
+Ping tick rate: 10s
+Last ping tick: 1.253945727s
+Ping tick rate: 10s
+Last ping tick: 1.505220373s
+Ping tick rate: 10s
+Last ping tick: 1.560505046s
+Ping tick rate: 10s
+Last ping tick: 1.577557369s
+Ping tick rate: 10s
+Last ping tick: 1.587022917s
+Ping tick rate: 10s
+Last ping tick: 1.595659382s
+Ping tick rate: 10s
+Last ping tick: 1.611239488s
+Ping tick rate: 10s
+Last ping tick: 1.632233153s
+Ping tick rate: 10s
+Last ping tick: 1.648840341s
+Ping tick rate: 10s
+Last ping tick: 1.672749773s
+Ping tick rate: 10s
+Last ping tick: 1.756283967s
+Ping tick rate: 10s
+Last ping tick: 1.794465923s
+Ping tick rate: 10s
+Last ping tick: 1.820398224s
+Ping tick rate: 10s
+Last ping tick: 1.846077077s
+Ping tick rate: 10s
+Last ping tick: 1.856530834s
+Ping tick rate: 10s
+Last ping tick: 1.873199302s
+Ping tick rate: 10s
+Last ping tick: 1.881522443s
+Ping tick rate: 10s
+Last ping tick: 1.895113247s
+Ping tick rate: 10s
+Last ping tick: 1.914795363s
+Ping tick rate: 10s
+Last ping tick: 1.923241954s
+Ping tick rate: 10s
+Last ping tick: 1.946399673s
+Ping tick rate: 10s
+Last ping tick: 1.973799821s
+Ping tick rate: 10s
+Last ping tick: 1.996728087s
+Ping tick rate: 10s
+Last ping tick: 2.00670491s
+Ping tick rate: 10s
+Last ping tick: 2.022864829s
+Ping tick rate: 10s
+Last ping tick: 2.050003985s
+Ping tick rate: 10s
+Last ping tick: 2.071441571s
+Ping tick rate: 10s
+Last ping tick: 2.099058353s
+Ping tick rate: 10s
+Last ping tick: 2.124895806s
+Ping tick rate: 10s
+Last ping tick: 2.146828617s
+Ping tick rate: 10s
+Last ping tick: 2.174934398s
+Ping tick rate: 10s
+Last ping tick: 2.199980158s
+Ping tick rate: 10s
+Last ping tick: 2.221422483s
+Ping tick rate: 10s
+Last ping tick: 2.247447768s
+Ping tick rate: 10s
+Last ping tick: 2.256984246s
+Ping tick rate: 10s
+Last ping tick: 2.273123595s
+Ping tick rate: 10s
+Last ping tick: 2.298735602s
+Ping tick rate: 10s
+Last ping tick: 2.507622672s
+Ping tick rate: 10s
+Last ping tick: 2.568359826s
+Ping tick rate: 10s
+Last ping tick: 2.758174509s
+Ping tick rate: 10s
+Last ping tick: 2.818743146s
+Ping tick rate: 10s
+Last ping tick: 2.852498966s
+Ping tick rate: 10s
+Last ping tick: 2.869163409s
+Ping tick rate: 10s
+Last ping tick: 2.902120353s
+Ping tick rate: 10s
+Last ping tick: 2.918227759s
+Ping tick rate: 10s
+Last ping tick: 2.941275489s
+Ping tick rate: 10s
+Last ping tick: 2.952707559s
+Ping tick rate: 10s
+Last ping tick: 2.973367511s
+Ping tick rate: 10s
+Last ping tick: 2.990247013s
+Ping tick rate: 10s
+Last ping tick: 3.009125204s
+Ping tick rate: 10s
+Last ping tick: 3.016123997s
+Ping tick rate: 10s
+Last ping tick: 3.02933772s
+Ping tick rate: 10s
+Last ping tick: 3.046797647s
+Ping tick rate: 10s
+Last ping tick: 3.064094626s
+Ping tick rate: 10s
+Last ping tick: 3.085279836s
+Ping tick rate: 10s
+Last ping tick: 3.093281222s
+Ping tick rate: 10s
+Last ping tick: 3.099928788s
+Ping tick rate: 10s
+Last ping tick: 3.120264232s
+Ping tick rate: 10s
+Last ping tick: 3.15779753s
+Ping tick rate: 10s
+Last ping tick: 3.195394896s
+Ping tick rate: 10s
+Last ping tick: 3.202410233s
+Ping tick rate: 10s
+Last ping tick: 3.260026245s
+Ping tick rate: 10s
+Last ping tick: 3.267024051s
+Ping tick rate: 10s
+Last ping tick: 3.295373893s
+Ping tick rate: 10s
+Last ping tick: 3.311853853s
+Ping tick rate: 10s
+Last ping tick: 3.332434895s
+Ping tick rate: 10s
+Last ping tick: 3.34888712s
+Ping tick rate: 10s
+Last ping tick: 3.366115247s
+Ping tick rate: 10s
+Last ping tick: 3.510353878s
+Ping tick rate: 10s
+Last ping tick: 3.55163505s
+Ping tick rate: 10s
+Last ping tick: 3.558319663s
+Ping tick rate: 10s
+Last ping tick: 3.5728878s
+Ping tick rate: 10s
+Last ping tick: 3.622501652s
+Ping tick rate: 10s
+Last ping tick: 3.748931131s
+Ping tick rate: 10s
+Last ping tick: 3.76058508s
+Ping tick rate: 10s
+Last ping tick: 3.791906062s
+Ping tick rate: 10s
+Last ping tick: 3.836053702s
+Ping tick rate: 10s
+Last ping tick: 3.854214184s
+Ping tick rate: 10s
+Last ping tick: 4.011198946s
+Ping tick rate: 10s
+Last ping tick: 4.046113474s
+Ping tick rate: 10s
+Last ping tick: 4.079456496s
+Ping tick rate: 10s
+Last ping tick: 4.185648181s
+Ping tick rate: 10s
+Last ping tick: 4.261598971s
+Ping tick rate: 10s
+Last ping tick: 4.31805146s
+Ping tick rate: 10s
+Last ping tick: 4.406040917s
+Ping tick rate: 10s
+Last ping tick: 4.511863664s
+Ping tick rate: 10s
+Last ping tick: 4.762700745s
+Ping tick rate: 10s
+Last ping tick: 4.835113443s
+Ping tick rate: 10s
+Last ping tick: 5.01326915s
+Ping tick rate: 10s
+Last ping tick: 5.041845809s
+Ping tick rate: 10s
+Last ping tick: 5.062992484s
+Ping tick rate: 10s
+Last ping tick: 5.080427577s
+Ping tick rate: 10s
+Last ping tick: 5.149052111s
+Ping tick rate: 10s
+Last ping tick: 5.263843115s
+Ping tick rate: 10s
+Last ping tick: 5.283445865s
+Ping tick rate: 10s
+Last ping tick: 5.2999277s
+Ping tick rate: 10s
+Last ping tick: 5.317564618s
+Ping tick rate: 10s
+Last ping tick: 5.335899963s
+Ping tick rate: 10s
+Last ping tick: 5.354374355s
+Ping tick rate: 10s
+Last ping tick: 5.372169092s
+Ping tick rate: 10s
+Last ping tick: 5.388300833s
+Ping tick rate: 10s
+Last ping tick: 5.405904641s
+Ping tick rate: 10s
+Last ping tick: 5.426450643s
+Ping tick rate: 10s
+Last ping tick: 5.444091034s
+Ping tick rate: 10s
+Last ping tick: 5.461694674s
+Ping tick rate: 10s
+Last ping tick: 5.477373508s
+Ping tick rate: 10s
+Last ping tick: 5.497106589s
+Ping tick rate: 10s
+Last ping tick: 5.514269039s
+Ping tick rate: 10s
+Last ping tick: 5.752252386s
+Ping tick rate: 10s
+Last ping tick: 5.764348675s
+Ping tick rate: 10s
+Last ping tick: 5.773516126s
+Ping tick rate: 10s
+Last ping tick: 6.014869574s
+Ping tick rate: 10s
+Last ping tick: 6.265970356s
+Ping tick rate: 10s
+Last ping tick: 6.516754041s
+Ping tick rate: 10s
+Last ping tick: 6.726365605s
+Ping tick rate: 10s
+Last ping tick: 6.751239242s
+Ping tick rate: 10s
+Last ping tick: 6.766675408s
+Ping tick rate: 10s
+Last ping tick: 6.773850144s
+Ping tick rate: 10s
+Last ping tick: 6.781391053s
+Ping tick rate: 10s
+Last ping tick: 6.798140149s
+Ping tick rate: 10s
+Last ping tick: 6.821585666s
+Ping tick rate: 10s
+Last ping tick: 6.84167997s
+Ping tick rate: 10s
+Last ping tick: 7.018174879s
+Ping tick rate: 10s
+Last ping tick: 7.024815685s
+Ping tick rate: 10s
+Last ping tick: 7.045089447s
+Ping tick rate: 10s
+Last ping tick: 7.062311626s
+Ping tick rate: 10s
+Last ping tick: 7.079999699s
+Ping tick rate: 10s
+Last ping tick: 7.099736953s
+Ping tick rate: 10s
+Last ping tick: 7.116438284s
+Ping tick rate: 10s
+Last ping tick: 7.133240333s
+Ping tick rate: 10s
+Last ping tick: 7.275220583s
+Ping tick rate: 10s
+Last ping tick: 7.526165948s
+Ping tick rate: 10s
+Last ping tick: 7.777521207s
+Ping tick rate: 10s
+Last ping tick: 8.028418857s
+Ping tick rate: 10s
+Last ping tick: 8.279304911s
+Ping tick rate: 10s
+Last ping tick: 8.413865676s
+Ping tick rate: 10s
+Last ping tick: 8.439966572s
+Ping tick rate: 10s
+Last ping tick: 8.45701579s
+Ping tick rate: 10s
+Last ping tick: 8.474102607s
+Ping tick rate: 10s
+Last ping tick: 8.490779629s
+Ping tick rate: 10s
+Last ping tick: 8.509391098s
+Ping tick rate: 10s
+Last ping tick: 8.526872317s
+Ping tick rate: 10s
+Last ping tick: 8.534521413s
+Ping tick rate: 10s
+Last ping tick: 8.665927213s
+Ping tick rate: 10s
+Last ping tick: 8.682495521s
+Ping tick rate: 10s
+Last ping tick: 8.784803622s
+Ping tick rate: 10s
+Last ping tick: 9.035823805s
+Ping tick rate: 10s
+Last ping tick: 9.286809134s
+Ping tick rate: 10s
+Last ping tick: 9.537813393s
+Ping tick rate: 10s
+Last ping tick: 9.78900333s
+Ping tick rate: 10s
+Last ping tick: 10.039991713s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 111.861561ms
+Ping tick rate: 10s
+Last ping tick: 127.802394ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 145.347322ms
+Ping tick rate: 10s
+Last ping tick: 167.729517ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 234.256866ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 250.05878ms
+Ping tick rate: 10s
+Last ping tick: 260.245297ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 273.676801ms
+Ping tick rate: 10s
+Last ping tick: 290.127727ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 306.314441ms
+Ping tick rate: 10s
+Last ping tick: 326.711454ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 501.237187ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 752.49078ms
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.003228376s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 1.254143932s
+Ping tick rate: 10s
+Last ping tick: 1.504700095s
+Ping tick rate: 10s
+Last ping tick: 1.755214634s
+Ping tick rate: 10s
+Last ping tick: 2.006532507s
+Ping tick rate: 10s
+Last ping tick: 2.257231761s
+Ping tick rate: 10s
+Last ping tick: 2.508230186s
+Ping tick rate: 10s
+Last ping tick: 2.759133771s
+Ping tick rate: 10s
+Last ping tick: 3.01009439s
+Ping tick rate: 10s
+Last ping tick: 3.260588267s
+Ping tick rate: 10s
+Last ping tick: 3.511233878s
+Ping tick rate: 10s
+Last ping tick: 3.762052106s
+Ping tick rate: 10s
+Last ping tick: 4.013133463s
+Ping tick rate: 10s
+Last ping tick: 4.219677695s
+Ping tick rate: 10s
+Last ping tick: 4.240875161s
+Ping tick rate: 10s
+Last ping tick: 4.257509937s
+Ping tick rate: 10s
+Last ping tick: 4.26515565s
+Ping tick rate: 10s
+Last ping tick: 4.275162195s
+Ping tick rate: 10s
+Last ping tick: 4.292488706s
+Ping tick rate: 10s
+Last ping tick: 4.311536835s
+Ping tick rate: 10s
+Last ping tick: 4.327610102s
+Ping tick rate: 10s
+Last ping tick: 4.34666879s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 4.515858393s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 4.55208867s
+Ping tick rate: 10s
+Last ping tick: 4.569054548s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 4.59716388s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 4.613574929s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 4.634644856s
+Ping tick rate: 10s
+Last ping tick: 4.65147868s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 4.684612931s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 4.752559739s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Last ping tick: 4.766324742s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 4.827870729s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 5.016662161s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Last ping tick: 5.267223187s
+Ping tick rate: 10s
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location attempted but not acquired
+Remote location acquired: 47.6034 -122.3414
+Last ping tick: 5.518062179s
+Ping tick rate: 10s
+Remote location acquired: 34.2319 -84.1627
+Remote location acquired: 40.0992 -83.1141
+Remote location acquired: 35.8974 -83.9425
+Remote location attempted but not acquired
+Remote location acquired: 37.422 -122.084
+Remote location attempted but not acquired
+Testing error print

@@ -1,5 +1,3 @@
-#![feature(let_chains)]
-
 use std::{collections::HashMap, io, time::{Duration, Instant}};
 use procfs::process::{FDTarget, Stat};
 
@@ -75,7 +73,6 @@ pub fn get_tcp() -> Result<Vec<Connection>, Box<dyn std::error::Error>> {
             connections.push(connection);
         }
     }
-    println!();
 
     Ok(connections)
 }
