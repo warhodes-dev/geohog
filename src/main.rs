@@ -5,19 +5,13 @@ use std::sync::{Arc, Mutex};
 use std::{error::Error, collections::BTreeMap};
 use geohog::geography::map_load::{countries_from_shapefile, Country };
 use geohog::net;
+use geohog::net::geolocate::{geolocate_host, geolocate_endpoints, GeoLocation};
 use itertools::*;
 
 use crossterm::{event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},execute,terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},};
 use std::{io,time::{Duration, Instant},};
 use ratatui::{backend::{Backend, CrosstermBackend},layout::{Constraint, Direction, Layout, Rect},style::{Color, Style},text::Span,widgets::{canvas::{Canvas, Map, MapResolution, Rectangle, Shape, Painter, Line},Block, Borders,},Frame, Terminal,};
 use ipgeolocate::{Locator, Service};
-
-#[derive(Debug)]
-struct GeoLocation {
-    ip: String,
-    lat: f64,
-    long: f64,
-}
 
 struct App {
     countries: [BTreeMap<String, Country>; 3],
@@ -291,62 +285,4 @@ impl ViewPort {
     fn y_bounds(&self) -> [f64; 2] {
         [self.y, self.y + self.height]
     }
-}
-
-async fn geolocate_endpoints(
-    endpoint_locations: Arc<Mutex<Vec<GeoLocation>>>,
-) -> Result<(), String> {
-    let service = Service::IpApi;
-    let connections = net::get_tcp().map_err(|e| e.to_string())?;
-
-    let mut new_endpoint_locations = Vec::new();
-
-    for connection in connections {
-        let geolocate_response = Locator::get(&connection.remote_address, service).await
-            .ok()
-            .map(|response| {
-                GeoLocation {
-                    ip: connection.remote_address.to_owned(),
-                    lat: response.latitude.parse::<f64>().unwrap(),
-                    long: response.longitude.parse::<f64>().unwrap(),
-                }
-            });
-
-        if let Some(location) = geolocate_response {
-            new_endpoint_locations.push(location);
-        }
-    }
-
-    *endpoint_locations.lock().unwrap() = new_endpoint_locations;
-
-    Ok(())
-}
-
-async fn geolocate_host(host_location: Arc<Mutex<Option<GeoLocation>>>) -> Result<(), String> {
-    let service = Service::IpApi;
-
-    let ip_raw = match public_ip::addr().await.unwrap() {
-        IpAddr::V4(ipaddr) => ipaddr,
-        IpAddr::V6(_) => { return Err("IPV6 not supported".to_owned())}
-    };
-
-    let ip = ip_raw.octets()
-        .map(|byte| byte.to_string())
-        .iter()
-        .map(|s| s.as_ref())
-        .intersperse(".")
-        .collect::<String>();
-
-    let geolocate = Locator::get(&ip, service).await
-        .ok()
-        .map(|response| {
-            GeoLocation {
-                ip: ip.to_owned(),
-                lat: response.latitude.parse::<f64>().unwrap(),
-                long: response.longitude.parse::<f64>().unwrap(),
-            }
-        });
-
-    *host_location.lock().unwrap() = geolocate;
-    Ok(())
 }

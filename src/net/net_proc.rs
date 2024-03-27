@@ -1,8 +1,6 @@
 use std::{collections::HashMap, io, time::{Duration, Instant}};
 use procfs::process::{FDTarget, Stat};
 
-pub mod geolocate;
-
 pub struct Connection {
     pub local_address: String,
     pub local_address_port: String,
