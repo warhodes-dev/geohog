@@ -3,7 +3,7 @@
 use std::net::IpAddr;
 use std::sync::{Arc, Mutex};
 use std::{error::Error, collections::BTreeMap};
-use geohog::map_load::{countries_from_shapefile, Country };
+use geohog::geography::map_load::{countries_from_shapefile, Country };
 use geohog::net;
 use itertools::*;
 
