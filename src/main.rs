@@ -3,10 +3,12 @@
 use std::net::IpAddr;
 use std::sync::{Arc, Mutex};
 use std::{error::Error, collections::BTreeMap};
+use geohog::geography::get_geography;
 use geohog::geography::map_load::{countries_from_shapefile, Country };
 use geohog::net;
 use geohog::net::geolocate::{geolocate_host, geolocate_endpoints, GeoLocation};
 use itertools::*;
+use anyhow::Result;
 
 use crossterm::{event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},execute,terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},};
 use std::{io,time::{Duration, Instant},};
@@ -14,20 +16,26 @@ use ratatui::{backend::{Backend, CrosstermBackend},layout::{Constraint, Directio
 use ipgeolocate::{Locator, Service};
 
 struct App {
-    countries: [BTreeMap<String, Country>; 3],
+    geography: BTreeMap<String, Country>,
     viewport: ViewPort,
     host: Arc<Mutex<Option<GeoLocation>>>, 
     endpoints: Arc<Mutex<Vec<GeoLocation>>>,
 }
 
+enum GeoResolution {
+    Low,
+    Med,
+    High,
+}
+
 impl App {
-    fn new(countries: [BTreeMap<String, Country>; 3]) -> Self {
+    fn new(geography: BTreeMap<String, Country>) -> Self {
 
         let endpoints = Arc::new(Mutex::new(Vec::new()));
         let host = Arc::new(Mutex::new(None));
 
         App { 
-            countries, 
+            geography, 
             viewport: ViewPort {
                 x: -180.0,
                 y: -90.0,
@@ -41,19 +49,15 @@ impl App {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    let low = countries_from_shapefile("assets/ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")?;
-    let med = countries_from_shapefile("assets/ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")?;
-    let high = countries_from_shapefile("assets/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp")?;
-
-    let countries = [low, med, high];
+async fn main() -> Result<()> {
+    let geography = get_geography()?;
 
     // set up terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
-    let app = App::new(countries);
+    let app = App::new(geography);
     let mut terminal = Terminal::new(backend)?;
 
     // create app and run it
@@ -65,7 +69,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     disable_raw_mode()?;
     execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
     terminal.show_cursor()?;
-
 
     Ok(())
 }
@@ -153,16 +156,21 @@ fn ui(f: &mut Frame, app: &App) {
         .block(Block::default().borders(Borders::ALL).title("World"))
         .paint(|ctx| {
 
-            let countries = match app.viewport.width {
-                m if (70.0..=360.0).contains(&m) => &app.countries[0],
-                m if (15.0..70.0).contains(&m) => &app.countries[1],
-                m if (0.0..15.0).contains(&m) => &app.countries[2],
-                _ => &app.countries[0],
+            let resolution = match app.viewport.width {
+                m if (70.0..=360.0).contains(&m) => GeoResolution::Low,
+                m if (15.0..70.0).contains(&m) => GeoResolution::Med,
+                m if (0.0..15.0).contains(&m) => GeoResolution::High,
+                _ => GeoResolution::Low,
             };
 
             // Paint base map
-            for country in countries.values() {
-                for shape in &country.shapes {
+            for country in app.geography.values() {
+                let shapeset = match resolution {
+                    GeoResolution::Low => &country.shape_data.low,
+                    GeoResolution::Med => &country.shape_data.med,
+                    GeoResolution::High => &country.shape_data.high,
+                };
+                for shape in shapeset {
                     let point_pairs = shape.iter().tuple_windows();
 
                     for (&(x1, y1), &(x2, y2)) in point_pairs {
@@ -194,8 +202,13 @@ fn ui(f: &mut Frame, app: &App) {
             let paint_queue = vec!["USA", "FRA", "BRA", "RUS", "CHN", "NGA", "GMB"];
 
             for tag in paint_queue {
-                if let Some(country) = &countries.get(tag) {
-                    for shape in &country.shapes {
+                if let Some(country) = app.geography.get(tag) {
+                    let shapeset = match resolution {
+                        GeoResolution::Low => &country.shape_data.low,
+                        GeoResolution::Med => &country.shape_data.med,
+                        GeoResolution::High => &country.shape_data.high,
+                    };
+                    for shape in shapeset {
                         let point_pairs = shape.iter().tuple_windows();
 
                         let color = match tag {

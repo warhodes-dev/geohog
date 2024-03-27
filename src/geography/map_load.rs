@@ -6,6 +6,8 @@ use shapefile::{Reader, dbase, Shape, PolygonRing};
 use serde_derive::Serialize;
 use ratatui::{widgets::canvas::Painter, style::Color};
 use std::fs;
+use anyhow::Result;
+use itertools::izip;
 
 pub struct CountryData {
     pub tag: String,
@@ -32,44 +34,53 @@ pub struct CountryStyle {
 pub struct Country {
     pub data: CountryData,
     pub style: CountryStyle,
-    pub shapes: Vec<Vec<(f64, f64)>>,
+    pub shape_data: ShapeData,
 }
 
-pub fn countries_from_shapefile(path: &str) -> Result<BTreeMap<String, Country>, Box<dyn Error>> {
+pub struct ShapeData {
+    pub low: ShapeSet,
+    pub med: ShapeSet,
+    pub high: ShapeSet,
+}
+
+type ShapeSet = Vec<Vec<(f64, f64)>>;
+
+pub fn countries_from_shapefile(
+    low_res_path: &str,
+    med_res_path: &str,
+    high_res_path: &str,
+) -> Result<BTreeMap<String, Country>> {
     let mut countries = BTreeMap::<String, Country>::new();
 
-    let mut reader = Reader::from_path(path)?;
-    for shape_record in reader.iter_shapes_and_records() {
-        let (shape, record) = shape_record?;
+    let mut high_res_reader = shapefile::Reader::from_path(high_res_path)?;
+    let mut med_res_reader = shapefile::Reader::from_path(med_res_path)?;
+    let mut low_res_reader = shapefile::Reader::from_path(low_res_path)?;
+    
+    let high_res_record = high_res_reader.iter_shapes_and_records();
+    let med_res_record = med_res_reader.iter_shapes_and_records();
+    let low_res_record = low_res_reader.iter_shapes_and_records();
 
-        let shapes = collect_shapes(&shape);
+    let records = izip!(high_res_record, med_res_record, low_res_record);
+
+    for (high_record, med_record, low_record) in records {
+        // Use high resolution record as the base
+        let (high_shape_data, record) = high_record.expect("Could not load high record");
+        let (med_shape_data, _) = med_record.expect("Could not load med record");
+        let (low_shape_data, _) = low_record.expect("Could not load low record");
+
+        let shape_data = ShapeData {
+            low: collect_shapes(&low_shape_data),
+            med: collect_shapes(&med_shape_data),
+            high: collect_shapes(&high_shape_data),
+        };
 
         let (data, style) = parse_country_data(record);
         let tag = data.tag.clone();
 
-        let country = Country{ data, shapes, style };
+        let country = Country{ data, shape_data, style };
         countries.insert(tag, country);
     }
-
-    /*
-    let mut min_x = 0.0;
-    let mut min_y = 0.0;
-    let mut max_x = 0.0;
-    let mut max_y = 0.0;
-    for country in &countries {
-        for point in &country.1.shape {
-            if point.1 < min_y { min_y = point.1 }
-            if point.0 < min_x { min_x = point.0 }
-            if point.1 > max_y { max_y = point.1 }
-            if point.0 > max_x { max_x = point.0 }
-        }
-    }
-
-    println!("For all countries:");
-    println!("    |  X  |  Y  |");
-    println!("MAX |{:5}|{:5}|", max_x, max_y);
-    println!("MIN |{:5}|{:5}|", min_x, min_y);
-    */
+    
 
     Ok(countries)
 }
@@ -79,7 +90,6 @@ macro_rules! get_char_entry {
         if let Some(dbase::FieldValue::Character(Some(entry))) = $record.get($attr) {
             entry.to_owned()
         } else {
-            //eprintln!("Failed to read attribute {}.", $attr);
             "unknown".to_owned()
         }
     };
@@ -95,7 +105,7 @@ macro_rules! get_numeric_entry {
     };
 }
 
-fn collect_shapes(shape: &Shape) -> Vec<Vec<(f64, f64)>> {
+fn collect_shapes(shape: &Shape) -> ShapeSet {
     let mut shapes = Vec::new();
     let polygon = if let Shape::Polygon(p) = shape { p } else { panic!("non polygon") };
     let rings = polygon.rings();
@@ -113,11 +123,7 @@ fn parse_country_data(record: dbase::Record) -> (CountryData, CountryStyle) {
     let tag = get_char_entry!("GU_A3", record);
     let name = get_char_entry!("GEOUNIT", record);
     let name_short = get_char_entry!("ABBREV", record);
-    let mut name_long = get_char_entry!("FORMAL_EN", record);
-    if name_long == "unknown" { 
-        //eprintln!("Substituting for {}", name);
-        name_long = name.clone() 
-    }
+    let name_long = get_char_entry!("FORMAL_EN", record);
     let adm_type = get_char_entry!("TYPE", record);
     let adm_name = get_char_entry!("SOVEREIGNT", record);
     let economy = get_char_entry!("ECONOMY", record);
@@ -153,30 +159,3 @@ fn parse_country_data(record: dbase::Record) -> (CountryData, CountryStyle) {
       }
     )
 }
-
-/*
-pub struct StyleCountry<'a> {
-    pub country: &'a Country,
-    pub style: Color,
-}
-
-impl tui::widgets::canvas::Shape for Country {
-    fn draw(&self, painter: &mut Painter) {
-        for (x, y) in &self.shape {
-            if let Some((x, y)) = painter.get_point(*x, *y) {
-                painter.paint(x, y, Color::Reset);
-            }
-        }
-    }
-}
-
-impl tui::widgets::canvas::Shape for StyleCountry <'_> {
-    fn draw(&self, painter: &mut Painter) {
-        for (x, y) in &self.country.shape {
-            if let Some((x, y)) = painter.get_point(*x, *y) {
-                painter.paint(x, y, self.style);
-            }
-        }
-    }
-}
-*/
