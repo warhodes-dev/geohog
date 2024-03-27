@@ -921,6 +921,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "geohog"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "crossterm 0.24.0",
+ "env_logger",
+ "geo-types",
+ "ipgeolocate",
+ "itertools 0.11.0",
+ "log",
+ "procfs",
+ "public-ip",
+ "ratatui",
+ "serde",
+ "serde_derive",
+ "shapefile",
+ "simple-logging",
+ "tokio",
+ "toml",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.1.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1390,28 +1412,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d3262e75e648fce39813cb56ac41f3c3e3f65217ebf3844d818d1f9398cfb0dc"
 dependencies = [
  "hashbrown",
-]
-
-[[package]]
-name = "map_view"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "crossterm 0.24.0",
- "env_logger",
- "geo-types",
- "ipgeolocate",
- "itertools 0.11.0",
- "log",
- "procfs",
- "public-ip",
- "ratatui",
- "serde",
- "serde_derive",
- "shapefile",
- "simple-logging",
- "tokio",
- "toml",
 ]
 
 [[package]]

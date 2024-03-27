@@ -3,8 +3,8 @@
 use std::net::IpAddr;
 use std::sync::{Arc, Mutex};
 use std::{error::Error, collections::BTreeMap};
-use map_view::map_load::{countries_from_shapefile, Country };
-use map_view::net;
+use geohog::map_load::{countries_from_shapefile, Country };
+use geohog::net;
 use itertools::*;
 
 use crossterm::{event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},execute,terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},};
@@ -48,9 +48,9 @@ impl App {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let low = countries_from_shapefile("ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")?;
-    let med = countries_from_shapefile("ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")?;
-    let high = countries_from_shapefile("ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp")?;
+    let low = countries_from_shapefile("assets/ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")?;
+    let med = countries_from_shapefile("assets/ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")?;
+    let high = countries_from_shapefile("assets/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp")?;
 
     let countries = [low, med, high];
 
