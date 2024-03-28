@@ -52,6 +52,23 @@ pub struct RingLOD {
     pub high: Vec<Ring>,
 }
 
+#[derive(Copy, Clone)]
+pub enum GeoResolution {
+    Low,
+    Med,
+    High,
+}
+
+impl RingLOD {
+    pub fn by_resolution(&self, res: GeoResolution) -> &Vec<Ring> {
+        match res {
+            GeoResolution::Low if self.low.is_some() => self.low.as_ref().unwrap(),
+            GeoResolution::Med if self.med.is_some() => self.med.as_ref().unwrap(),
+            GeoResolution::High | _ => &self.high,
+        }
+    }
+}
+
 /// A full loop of points that comprise a geographic boundary
 pub type Ring = Vec<(f64, f64)>;
 

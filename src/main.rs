@@ -4,7 +4,7 @@ use std::net::IpAddr;
 use std::sync::{Arc, Mutex};
 use std::{error::Error, collections::BTreeMap};
 use geohog::geography::get_geography;
-use geohog::geography::map_load::{countries_from_shapefile, Country };
+use geohog::geography::map_load::{countries_from_shapefile, Country, GeoResolution};
 use geohog::net;
 use geohog::net::geolocate::{geolocate_host, geolocate_endpoints, GeoLocation};
 use itertools::*;
@@ -20,12 +20,6 @@ struct App {
     viewport: ViewPort,
     host: Arc<Mutex<Option<GeoLocation>>>, 
     endpoints: Arc<Mutex<Vec<GeoLocation>>>,
-}
-
-enum GeoResolution {
-    Low,
-    Med,
-    High,
 }
 
 impl App {
@@ -163,15 +157,12 @@ fn ui(f: &mut Frame, app: &App) {
                 _ => GeoResolution::Low,
             };
 
+
             // Paint base map
             for country in app.geography.values() {
-                let shapeset = match resolution {
-                    GeoResolution::Low if country.rings.low.is_some() => country.rings.low.as_ref().unwrap(),
-                    GeoResolution::Med if country.rings.med.is_some() => country.rings.med.as_ref().unwrap(),
-                    GeoResolution::High | _ => &country.rings.high,
-                };
-                for shape in shapeset {
-                    let point_pairs = shape.iter().tuple_windows();
+                let rings = country.rings.by_resolution(resolution);
+                for ring in rings {
+                    let point_pairs = ring.iter().tuple_windows();
 
                     for (&(x1, y1), &(x2, y2)) in point_pairs {
                         let segment = line!( 
