@@ -14,12 +14,12 @@ pub struct CountryData {
     pub name: String,
     pub name_short: String,
     pub name_long: String,
-    pub adm_type: String, // for now
-    pub adm_name: String, // for now. this should be adm_tag eventually
-    pub economy: String, // definitely for now
-    pub income_group: String, // definitely for now
+    pub adm_type: String,
+    pub adm_name: String,
+    pub economy: String,
+    pub income_group: String,
     pub population: u64,
-    pub gdp: i64, 
+    pub gdp: i64,
     pub continent: String,
     pub subregion: String,
 }
@@ -43,7 +43,7 @@ pub struct ShapeData {
     pub high: ShapeSet,
 }
 
-type ShapeSet = Vec<Vec<(f64, f64)>>;
+pub type ShapeSet = Vec<Vec<(f64, f64)>>;
 
 pub fn countries_from_shapefile(
     low_res_path: &str,
@@ -64,9 +64,12 @@ pub fn countries_from_shapefile(
 
     for (high_record, med_record, low_record) in records {
         // Use high resolution record as the base
-        let (high_shape_data, record) = high_record.expect("Could not load high record");
-        let (med_shape_data, _) = med_record.expect("Could not load med record");
-        let (low_shape_data, _) = low_record.expect("Could not load low record");
+        let (high_shape_data, record) = high_record?;
+        let (med_shape_data, _) = med_record?;
+        let (low_shape_data, _) = low_record?;
+
+        let (data, style) = parse_country_data(record);
+        let tag = data.tag.clone();
 
         let shape_data = ShapeData {
             low: collect_shapes(&low_shape_data),
@@ -74,13 +77,9 @@ pub fn countries_from_shapefile(
             high: collect_shapes(&high_shape_data),
         };
 
-        let (data, style) = parse_country_data(record);
-        let tag = data.tag.clone();
-
         let country = Country{ data, shape_data, style };
         countries.insert(tag, country);
     }
-    
 
     Ok(countries)
 }
@@ -107,7 +106,10 @@ macro_rules! get_numeric_entry {
 
 fn collect_shapes(shape: &Shape) -> ShapeSet {
     let mut shapes = Vec::new();
-    let polygon = if let Shape::Polygon(p) = shape { p } else { panic!("non polygon") };
+    let polygon = match shape {
+        Shape::Polygon(p) => p,
+        _ => panic!("non polygon"),
+    };
     let rings = polygon.rings();
     for ring in rings {
         let ringvec = match ring {
