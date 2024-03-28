@@ -9,6 +9,14 @@ use std::fs;
 use anyhow::Result;
 use itertools::izip;
 
+/// A collection of country data, both quantitative and geospatial
+pub struct Country {
+    pub data: CountryData,
+    pub style: CountryStyle,
+    pub rings: RingLOD,
+}
+
+/// Demographic, political, and administrative data about a country
 pub struct CountryData {
     pub tag: String,
     pub name: String,
@@ -24,6 +32,7 @@ pub struct CountryData {
     pub subregion: String,
 }
 
+/// Style suggestions regarding labeling and rendering a country
 pub struct CountryStyle {
     pub label: String,
     pub label_x: f64, 
@@ -31,19 +40,20 @@ pub struct CountryStyle {
     //pub color: ?
 }
 
-pub struct Country {
-    pub data: CountryData,
-    pub style: CountryStyle,
-    pub shape_data: ShapeData,
+/// Contains 3 levels of detail of country border/'ring' data
+// 
+// A 'ring' in this context is a full loop of points that comprise a
+// geographic boundary, such as the official outer borders of a country,
+// enclave/exclave borders, or borders surrounding a natural boundary
+// such as islands (exterior boundary) or lakes (interior boundary).
+pub struct RingLOD {
+    pub low: Option<Vec<Ring>>,
+    pub med: Option<Vec<Ring>>,
+    pub high: Vec<Ring>,
 }
 
-pub struct ShapeData {
-    pub low: ShapeSet,
-    pub med: ShapeSet,
-    pub high: ShapeSet,
-}
-
-pub type ShapeSet = Vec<Vec<(f64, f64)>>;
+/// A full loop of points that comprise a geographic boundary
+pub type Ring = Vec<(f64, f64)>;
 
 pub fn countries_from_shapefile(
     low_res_path: &str,
@@ -71,13 +81,13 @@ pub fn countries_from_shapefile(
         let (data, style) = parse_country_data(record);
         let tag = data.tag.clone();
 
-        let shape_data = ShapeData {
-            low: collect_shapes(&low_shape_data),
-            med: collect_shapes(&med_shape_data),
-            high: collect_shapes(&high_shape_data),
+        let rings = RingLOD {
+            low: Some(collect_rings(&low_shape_data)),
+            med: Some(collect_rings(&med_shape_data)),
+            high: collect_rings(&high_shape_data),
         };
 
-        let country = Country{ data, shape_data, style };
+        let country = Country{ data, rings, style };
         countries.insert(tag, country);
     }
 
@@ -104,21 +114,22 @@ macro_rules! get_numeric_entry {
     };
 }
 
-fn collect_shapes(shape: &Shape) -> ShapeSet {
-    let mut shapes = Vec::new();
-    let polygon = match shape {
+/// Collect a shape record into a more managable Vector of Rings
+fn collect_rings(shape: &Shape) -> Vec<Ring> {
+    let mut simple_rings = Vec::new();
+    let polygonal_shape = match shape {
         Shape::Polygon(p) => p,
         _ => panic!("non polygon"),
     };
-    let rings = polygon.rings();
-    for ring in rings {
-        let ringvec = match ring {
+    let shape_rings = polygonal_shape.rings();
+    for shape_ring in shape_rings {
+        let simple_ring = match shape_ring {
             PolygonRing::Outer(rv) => rv,
             PolygonRing::Inner(rv) => rv,
         }.iter().map(|vp| { (vp.x, vp.y) }).collect();
-        shapes.push(ringvec);
+        simple_rings.push(simple_ring);
     }
-    shapes
+    simple_rings
 }
 
 fn parse_country_data(record: dbase::Record) -> (CountryData, CountryStyle) {

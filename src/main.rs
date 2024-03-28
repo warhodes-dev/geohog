@@ -166,9 +166,9 @@ fn ui(f: &mut Frame, app: &App) {
             // Paint base map
             for country in app.geography.values() {
                 let shapeset = match resolution {
-                    GeoResolution::Low => &country.shape_data.low,
-                    GeoResolution::Med => &country.shape_data.med,
-                    GeoResolution::High => &country.shape_data.high,
+                    GeoResolution::Low if country.rings.low.is_some() => country.rings.low.as_ref().unwrap(),
+                    GeoResolution::Med if country.rings.med.is_some() => country.rings.med.as_ref().unwrap(),
+                    GeoResolution::High | _ => &country.rings.high,
                 };
                 for shape in shapeset {
                     let point_pairs = shape.iter().tuple_windows();
@@ -184,9 +184,7 @@ fn ui(f: &mut Frame, app: &App) {
                 }
             }
 
-            // Paint geolocated lines
-            let host_lock = app.host.lock().unwrap();
-            if let Some(host) = host_lock.as_ref() {
+            if let Some(host) = app.host.lock().unwrap().as_ref() {
                 for endpoint in app.endpoints.lock().unwrap().iter() {
                     let line = line!(
                         host.long, host.lat,
@@ -196,20 +194,19 @@ fn ui(f: &mut Frame, app: &App) {
                     ctx.draw(line);
                 }
             }
-            std::mem::drop(host_lock);
 
             // Paint additional countries
             let paint_queue = vec!["USA", "FRA", "BRA", "RUS", "CHN", "NGA", "GMB"];
 
             for tag in paint_queue {
                 if let Some(country) = app.geography.get(tag) {
-                    let shapeset = match resolution {
-                        GeoResolution::Low => &country.shape_data.low,
-                        GeoResolution::Med => &country.shape_data.med,
-                        GeoResolution::High => &country.shape_data.high,
+                    let rings = match resolution {
+                        GeoResolution::Low if country.rings.low.is_some() => country.rings.low.as_ref().unwrap(),
+                        GeoResolution::Med if country.rings.med.is_some() => country.rings.med.as_ref().unwrap(),
+                        GeoResolution::High | _ => &country.rings.high,
                     };
-                    for shape in shapeset {
-                        let point_pairs = shape.iter().tuple_windows();
+                    for ring in rings {
+                        let point_pairs = ring.iter().tuple_windows();
 
                         let color = match tag {
                             "USA" => Color::Cyan,
