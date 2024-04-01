@@ -47,8 +47,8 @@ pub struct CountryStyle {
 // enclave/exclave borders, or borders surrounding a natural boundary
 // such as islands (exterior boundary) or lakes (interior boundary).
 pub struct RingLOD {
-    pub low: Option<Vec<Ring>>,
-    pub med: Option<Vec<Ring>>,
+    pub low: Vec<Ring>,
+    pub med: Vec<Ring>,
     pub high: Vec<Ring>,
 }
 
@@ -61,11 +61,24 @@ pub enum GeoResolution {
 
 impl RingLOD {
     pub fn by_resolution(&self, res: GeoResolution) -> &Vec<Ring> {
+        use GeoResolution::{Low, Med, High};
         match res {
-            GeoResolution::Low if self.low.is_some() => self.low.as_ref().unwrap(),
-            GeoResolution::Med if self.med.is_some() => self.med.as_ref().unwrap(),
-            GeoResolution::High | _ => &self.high,
+            Low  => &self.low,
+            Med  => if self.med.is_empty() { &self.high } else { &self.med },
+            High => &self.high,
         }
+    }
+
+    pub fn get_low(&self) -> &Vec<Ring> {
+        self.by_resolution(GeoResolution::Low)
+    }
+
+    pub fn get_med(&self) -> &Vec<Ring> {
+        self.by_resolution(GeoResolution::Med)
+    }
+
+    pub fn get_high(&self) -> &Vec<Ring> {
+        self.by_resolution(GeoResolution::High)
     }
 }
 
@@ -99,8 +112,8 @@ pub fn countries_from_shapefile(
         let tag = data.tag.clone();
 
         let rings = RingLOD {
-            low: Some(collect_rings(&low_shape_data)),
-            med: Some(collect_rings(&med_shape_data)),
+            low: collect_rings(&low_shape_data),
+            med: collect_rings(&med_shape_data),
             high: collect_rings(&high_shape_data),
         };
 

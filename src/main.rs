@@ -157,10 +157,12 @@ fn ui(f: &mut Frame, app: &App) {
                 _ => GeoResolution::Low,
             };
 
-
             // Paint base map
             for country in app.geography.values() {
                 let rings = country.rings.by_resolution(resolution);
+                if country.data.tag == "VEN" {
+                    println!("VEN rings: {}", rings.len())
+                }
                 for ring in rings {
                     let point_pairs = ring.iter().tuple_windows();
 
@@ -186,16 +188,12 @@ fn ui(f: &mut Frame, app: &App) {
                 }
             }
 
-            // Paint additional countries
+            /* Paint additional countries
             let paint_queue = vec!["USA", "FRA", "BRA", "RUS", "CHN", "NGA", "GMB"];
 
             for tag in paint_queue {
                 if let Some(country) = app.geography.get(tag) {
-                    let rings = match resolution {
-                        GeoResolution::Low if country.rings.low.is_some() => country.rings.low.as_ref().unwrap(),
-                        GeoResolution::Med if country.rings.med.is_some() => country.rings.med.as_ref().unwrap(),
-                        GeoResolution::High | _ => &country.rings.high,
-                    };
+                    let rings = country.rings.by_resolution(resolution);
                     for ring in rings {
                         let point_pairs = ring.iter().tuple_windows();
 
@@ -229,6 +227,7 @@ fn ui(f: &mut Frame, app: &App) {
 
                 }
             }
+            */
         
             
         })
@@ -245,10 +244,6 @@ struct ViewPort {
 }
 
 impl ViewPort {
-    fn new(x: f64, y: f64, width: f64, height: f64) -> Self {
-        ViewPort { x, y, width, height }
-    }
-
     fn zoom_in(&mut self) {
         self.x += 2.0;
         self.y += 1.0;
@@ -263,20 +258,28 @@ impl ViewPort {
         self.height += 2.0;
     }
 
+    fn move_distance_horizontal(&self) -> f64 {
+        self.width / 20.0
+    }
+
+    fn move_distance_vertical(&self) -> f64 {
+        self.height / 20.0
+    }
+
     fn move_up(&mut self) {
-        self.y += 2.0;
+        self.y += self.move_distance_vertical();
     }
 
     fn move_down(&mut self) {
-        self.y -= 2.0;
+        self.y -= self.move_distance_vertical();
     }
 
     fn move_west(&mut self) {
-        self.x -= 2.0;
+        self.x -= self.move_distance_horizontal();
     }
 
     fn move_east(&mut self) {
-        self.x += 2.0;
+        self.x += self.move_distance_horizontal();
     }
 
     fn x_bounds(&self) -> [f64; 2] {
