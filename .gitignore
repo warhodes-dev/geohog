@@ -1,1 +1,11 @@
-/target
+# Rust
+Cargo.lock
+debug/
+target/
+**/*.rs.bk
+
+# Junk
+.DS_Store
+.vscode
+
+last.log
