@@ -160,9 +160,6 @@ fn ui(f: &mut Frame, app: &App) {
             // Paint base map
             for country in app.geography.values() {
                 let rings = country.rings.by_resolution(resolution);
-                if country.data.tag == "VEN" {
-                    println!("VEN rings: {}", rings.len())
-                }
                 for ring in rings {
                     let point_pairs = ring.iter().tuple_windows();
 
