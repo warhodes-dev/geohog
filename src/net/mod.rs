@@ -1,6 +1,8 @@
 use std::{collections::HashMap, io, time::{Duration, Instant}};
 use procfs::process::{FDTarget, Stat};
 
+use anyhow::Result;
+
 pub mod geolocate;
 
 pub struct Connection {
@@ -14,8 +16,7 @@ pub struct Connection {
     pub comm: String,
 }
 
-pub fn get_tcp() -> Result<Vec<Connection>, Box<dyn std::error::Error>> {
-
+pub fn get_tcp() -> Result<Vec<Connection>> {
     let all_procs = procfs::process::all_processes().unwrap();
 
     let mut map: HashMap<u64, Stat> = HashMap::new();
@@ -34,12 +35,6 @@ pub fn get_tcp() -> Result<Vec<Connection>, Box<dyn std::error::Error>> {
 
     let tcp = procfs::net::tcp().unwrap();
 
-    /*
-    println!(
-        "{:<26} {:<26} {:<15} {:<8} {}",
-        "Local address", "Remote address", "State", "Inode", "PID/Program name"
-    );
-    */
     let mut connections = Vec::new();
 
     for entry in tcp.iter() {
@@ -55,12 +50,6 @@ pub fn get_tcp() -> Result<Vec<Connection>, Box<dyn std::error::Error>> {
 
         let state = format!("{:?}", entry.state);
         if let Some(stat) = map.get(&entry.inode) {
-            /*
-            println!(
-                "{:<26} {:<26} {:<15} {:<12} {}/{}",
-                local_address, remote_address, state, entry.inode, stat.pid, stat.comm
-            );
-            */
             let connection = Connection {
                 local_address,
                 local_address_port,
