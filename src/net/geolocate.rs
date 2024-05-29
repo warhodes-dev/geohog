@@ -1,17 +1,29 @@
 use std::net::IpAddr;
 use std::sync::{Arc, Mutex};
-use std::{error::Error, collections::BTreeMap};
-//use itertools::*;
 
 use ipgeolocate::{Locator, Service};
 
+use anyhow::Result;
+
 use crate::net;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GeoLocation {
     pub ip: String,
     pub lat: f64,
     pub long: f64,
+}
+
+pub async fn geolocate_ip(ip: &str) -> Result<GeoLocation> {
+    let service = Service::IpApi;
+
+    let response = Locator::get(ip, service).await?;
+
+    Ok(GeoLocation {
+        ip: ip.to_owned(),
+        lat: response.latitude.parse::<f64>().unwrap(),
+        long: response.longitude.parse::<f64>().unwrap(),
+    })
 }
 
 pub async fn geolocate_endpoints(
@@ -43,12 +55,12 @@ pub async fn geolocate_endpoints(
     Ok(())
 }
 
-pub async fn geolocate_host(host_location: Arc<Mutex<Option<GeoLocation>>>) -> Result<(), String> {
+pub async fn geolocate_host(host_location: Arc<Mutex<Option<GeoLocation>>>) -> Result<()> {
     let service = Service::IpApi;
 
     let ip_raw = match public_ip::addr().await.unwrap() {
         IpAddr::V4(ipaddr) => ipaddr,
-        IpAddr::V6(_) => { return Err("IPV6 not supported".to_owned())}
+        IpAddr::V6(_) => { anyhow::bail!("IPV6 not supported") }
     };
 
     let ip = ip_raw.octets()
