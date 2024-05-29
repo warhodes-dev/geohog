@@ -4,6 +4,7 @@ use procfs::process::{FDTarget, Stat};
 use anyhow::Result;
 
 pub mod geolocate;
+pub mod public_ip;
 
 pub struct Connection {
     pub local_address: String,
