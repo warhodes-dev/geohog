@@ -15,6 +15,9 @@ use std::{io,time::{Duration, Instant},};
 use ratatui::{backend::{Backend, CrosstermBackend},layout::{Constraint, Direction, Layout, Rect},style::{Color, Style},text::Span,widgets::{canvas::{Canvas, Map, MapResolution, Rectangle, Shape, Painter, Line},Block, Borders,},Frame, Terminal,};
 use ipgeolocate::{Locator, Service};
 
+use geohog::config::Config;
+use clap::Parser;
+
 struct App {
     geography: BTreeMap<String, Country>,
     viewport: ViewPort,
@@ -44,6 +47,8 @@ impl App {
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let config = Config::parse();
+
     let geography = get_geography()?;
 
     // set up terminal
