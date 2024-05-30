@@ -1,5 +1,7 @@
-use std::{collections::HashMap, io, time::{Duration, Instant}};
+use std::{collections::HashMap, io, sync::{Arc, Mutex}, time::{Duration, Instant}};
 use procfs::process::{FDTarget, Stat};
+
+use ipgeolocate::Locator;
 
 use anyhow::Result;
 
@@ -15,6 +17,7 @@ pub struct Connection {
     pub inode: u64,
     pub pid: i32,
     pub comm: String,
+    pub geolocation: Arc<Mutex<Option<Locator>>>
 }
 
 pub fn get_tcp() -> Result<Vec<Connection>> {
@@ -23,7 +26,6 @@ pub fn get_tcp() -> Result<Vec<Connection>> {
     let all_procs = procfs::process::all_processes().unwrap();
 
     let mut proc_map: HashMap<u64, Stat> = HashMap::new();
-
     for process_result in all_procs {
         if let Ok(process) = process_result 
         && let (Ok(stat), Ok(fdt)) = (process.stat(), process.fd()) {
@@ -59,6 +61,7 @@ pub fn get_tcp() -> Result<Vec<Connection>> {
                 inode: entry.inode,
                 pid: stat.pid,
                 comm: stat.comm.clone(),
+                geolocation: Arc::new(Mutex::new(None))
             };
 
             connections.push(connection);

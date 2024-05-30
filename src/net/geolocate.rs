@@ -5,27 +5,28 @@ use ipgeolocate::{Locator, Service};
 
 use anyhow::Result;
 
-use crate::net;
-
 #[derive(Clone, Debug)]
 pub struct GeoLocation {
     pub ip: String,
     pub lat: f64,
     pub long: f64,
+    pub city: String,
+    pub region: String,
+    pub country: String,
+    pub timezone: String,
+    pub isp: String,
 }
 
-pub async fn geolocate_ip(ip: &str) -> Result<GeoLocation> {
+pub async fn geolocate_ip(ip: String) -> Result<Locator> {
     let service = Service::IpApi;
 
-    let response = Locator::get(ip, service).await?;
-
-    Ok(GeoLocation {
-        ip: ip.to_owned(),
-        lat: response.latitude.parse::<f64>().unwrap(),
-        long: response.longitude.parse::<f64>().unwrap(),
-    })
+    //TODO: Drop the dependency, manual GET 
+    //TODO: Add config for multiple providers
+    let response = Locator::get(ip.as_str(), service).await?;
+    Ok(response)
 }
 
+/*
 pub async fn geolocate_endpoints(
     endpoint_locations: Arc<Mutex<Vec<GeoLocation>>>,
 ) -> Result<(), String> {
@@ -83,3 +84,4 @@ pub async fn geolocate_host(host_location: Arc<Mutex<Option<GeoLocation>>>) -> R
     *host_location.lock().unwrap() = geolocate;
     Ok(())
 }
+*/
