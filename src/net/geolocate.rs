@@ -1,30 +1,70 @@
+use std::collections::HashMap;
 use std::net::IpAddr;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::LazyLock;
+use tokio::sync::RwLock;
 
 use ipgeolocate::{Locator, Service};
 
 use anyhow::Result;
 
-#[derive(Clone, Debug)]
-pub struct GeoLocation {
-    pub ip: String,
-    pub lat: f64,
-    pub long: f64,
-    pub city: String,
-    pub region: String,
-    pub country: String,
-    pub timezone: String,
-    pub isp: String,
+//TODO: Refactor this into a client structure:
+// struct GeoLocator {
+//   cache: HashMap<ip, Locator>
+// } impl GeoLocator {
+//   fn geolocate_ip(ip) -> Result<Locator> {
+//     ...
+//   }
+// }
+
+pub struct GeolocationClient {
+    cache: Arc<RwLock<HashMap<String, Locator>>>
 }
 
-pub async fn geolocate_ip(ip: String) -> Result<Locator> {
-    let service = Service::IpApi;
+impl GeolocationClient {
+    pub fn new() -> Self {
+        GeolocationClient {
+            cache: Arc::new(RwLock::new(HashMap::new())),
+        }
+    }
 
-    //TODO: Drop the dependency, manual GET 
-    //TODO: Add config for multiple providers
-    let response = Locator::get(ip.as_str(), service).await?;
-    Ok(response)
+    /*
+    pub fn geolocate_from_cache(&self, ip: &str) -> Option<Locator> {
+        self.cache.blocking_read().get(ip).cloned()
+    }
+    */
+
+    pub async fn geolocate_ip_from_cache(&self, ip: &str) -> Option<Locator> {
+        self.cache_get(ip).await
+    }
+
+    pub async fn geolocate_ip(&self, ip: &str) -> Result<Locator> {
+        let locator = self.cache_get(ip).await;
+        if locator.is_some() {
+            Ok(locator.unwrap())
+        } else {
+            let locator = self.geolocate_query(ip).await?;
+            self.cache.write().await.insert(ip.to_owned(), locator.to_owned());
+            Ok(locator)
+        }
+    }
+
+    async fn cache_get(&self, ip: &str) -> Option<Locator> {
+        self.cache.read().await.get(ip).cloned()
+    }
+    
+    async fn geolocate_query(&self, ip: &str) -> Result<Locator> {
+        tracing::info!("Querying IpApi for {ip}");
+        let service = Service::IpApi;
+
+        //TODO: Drop the dependency, manual GET 
+        //TODO: Add config for multiple providers
+        let response = Locator::get(ip, service).await?;
+        Ok(response)
+    }
 }
+
+
 
 /*
 pub async fn geolocate_endpoints(
