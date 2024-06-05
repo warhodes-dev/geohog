@@ -1,7 +1,5 @@
 use clap::{ValueEnum, Parser};
 
-
-
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 pub struct Config {
