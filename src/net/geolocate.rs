@@ -1,7 +1,5 @@
 use std::collections::HashMap;
-use std::net::IpAddr;
 use std::sync::Arc;
-use std::sync::LazyLock;
 use tokio::sync::RwLock;
 
 use ipgeolocate::{Locator, Service};
@@ -18,12 +16,6 @@ impl GeolocationClient {
             cache: Arc::new(RwLock::new(HashMap::new())),
         }
     }
-
-    /*
-    pub fn geolocate_from_cache(&self, ip: &str) -> Option<Locator> {
-        self.cache.blocking_read().get(ip).cloned()
-    }
-    */
 
     pub async fn geolocate_ip_from_cache(&self, ip: &str) -> Option<Locator> {
         self.cache_get(ip).await
