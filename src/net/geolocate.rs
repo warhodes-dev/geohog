@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{borrow::Borrow, collections::HashMap};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -17,7 +17,11 @@ impl GeolocationClient {
         }
     }
 
-    pub async fn geolocate_ip_from_cache(&self, ip: &str) -> Option<Locator> {
+    pub fn from_cache(&self, ip: &str) -> Option<Locator> {
+        self.cache.blocking_read().get(ip).cloned()
+    }
+
+    pub async fn async_from_cache(&self, ip: &str) -> Option<Locator> {
         self.cache_get(ip).await
     }
 
@@ -37,7 +41,7 @@ impl GeolocationClient {
     }
     
     async fn geolocate_query(&self, ip: &str) -> Result<Locator> {
-        tracing::info!("Querying IpApi for {ip}");
+        tracing::debug!("Querying IpApi for {ip}");
         let service = Service::IpApi;
 
         //TODO: Drop the dependency, manual GET 
