@@ -6,65 +6,17 @@ use geohog::{
     config::Config,
     log, 
     net::{
-        geolocate::GeolocationClient, get_tcp, Connection
+        NetClient,
+        Connection,
+        geolocate::GeolocationClient
     },
 };
+use tokio::runtime::Runtime;
 
-#[tokio::main]
-async fn main() {
+fn main() {
 
     let config = Config::parse();
     log::setup_trace(&config);
-
-    let connections = get_tcp().unwrap();
-    println!("=== Active TCP Connections ===");
-    println!("{:<26} {:<26} {:<15} {:<8} {:<8} {}", "Local address", "Remote address", "State", "Inode", "PID", "Program name");
-    for con in &connections {
-        println!("{:<26} {:<26} {:<15} {:<8} {:<8} {}", 
-            format!("{}:{}", con.local_address, con.local_address_port),
-            format!("{}:{}", con.remote_address, con.remote_address_port),
-            con.state,
-            con.inode,
-            con.pid,
-            con.comm,
-        );
-    }
-
-    async fn get_connections(loc_client: Arc<GeolocationClient>) -> Vec<Connection> {
-        let mut connections = get_tcp().unwrap();
-        for con in connections.iter_mut() {
-            let remote_address = &con.remote_address;
-            let mut geo_lock = con.geolocation.lock().unwrap();
-            *geo_lock = loc_client.geolocate_ip_from_cache(remote_address).await;
-        }
-        connections
-    }
-
-    let mut handles = vec![];
-    fn geolocate_connections<'a>(
-        client: Arc<GeolocationClient>, 
-        connections: impl Iterator<Item = &'a Connection>,
-        handles: &mut Vec<tokio::task::JoinHandle<()>>
-    ) {
-        tracing::info!("Geolocating connections");
-        for con in connections {
-            let remote_address = con.remote_address.clone();
-            let current_geo = &con.geolocation.lock().unwrap();
-            if current_geo.is_none() {
-                let handle = tokio::spawn({
-                    let geo = Arc::clone(&con.geolocation);
-                    let client = Arc::clone(&client);
-                    async move {
-                        if let Ok(new_geo) = client.geolocate_ip(&remote_address).await {
-                            let mut geo_lock = geo.lock().unwrap();
-                            *geo_lock = Some(new_geo);
-                        }
-                    }
-                });
-                handles.push(handle);
-            }
-        }
-    }
 
     fn print_geolocations<'a>(connections: impl Iterator<Item = &'a Connection>) {
         println!("=== Geolocated Sockets ===");
@@ -94,25 +46,26 @@ async fn main() {
         println!();
     }
 
-    let loc_client = Arc::new(GeolocationClient::new());
+    let runtime = Runtime::new().unwrap();
 
-    let connections = get_connections(loc_client.clone()).await;
+    let mut netstat = NetClient::new(&runtime);
 
-    print_geolocations(connections.iter());
+    for _ in 0..2 {
+        netstat.refresh().unwrap();
 
-    std::thread::sleep(std::time::Duration::from_millis(500));
+        print_geolocations(netstat.connections());
 
-    geolocate_connections(loc_client.clone(), connections.iter(), &mut handles);
+        std::thread::sleep(std::time::Duration::from_millis(500));
 
-    std::thread::sleep(std::time::Duration::from_millis(500));
+        netstat.geolocate_connections();
 
-    print_geolocations(connections.iter());
+        std::thread::sleep(std::time::Duration::from_millis(500));
 
+        print_geolocations(netstat.connections());
 
-    for handle in handles {
-        if let Err(e) = handle.await {
-            tracing::error!("Task failed: {:?}", e);
-        }
+        println!("\n\n*** Refreshing Socket Table ***\n\n")
+
     }
+
 
 }
