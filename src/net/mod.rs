@@ -1,4 +1,5 @@
 use std::{collections::HashMap, sync::{Arc, Mutex}};
+use netstat2::{get_sockets_info, iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo};
 use procfs::process::{FDTarget, Stat};
 
 use ipgeolocate::Locator;
@@ -6,6 +7,7 @@ use ipgeolocate::Locator;
 use anyhow::Result;
 
 use geolocate::GeolocationClient;
+use sysinfo::{Pid, ProcessRefreshKind, System};
 
 pub mod geolocate;
 pub mod public_ip;
@@ -16,9 +18,9 @@ pub struct Connection {
     pub remote_address: String,
     pub remote_address_port: String,
     pub state: String,
-    pub inode: u64,
-    pub pid: i32,
-    pub comm: String,
+    pub inode: u32,
+    pub pid: Option<u32>,
+    pub process: Option<Process>,
     pub geolocation: Arc<Mutex<Option<Locator>>>
 }
 
@@ -26,6 +28,11 @@ impl Connection {
     pub fn display(&self) -> ConnectionDisplay {
         todo!()
     }
+}
+
+pub struct Process {
+    pub name: Option<String>,
+    pub exe: Option<String>,
 }
 
 pub struct ConnectionDisplay { /* TODO: fill this out */ }
@@ -53,7 +60,7 @@ impl NetClient {
     }
 
     pub fn refresh(&mut self) -> Result<()> {
-        self.get_proc_connections()?;
+        self.get_net_connections()?;
         self.restore_geolocations();
 
         Ok(())
@@ -86,55 +93,60 @@ impl NetClient {
         }
     }
 
-    fn get_proc_connections(&mut self) -> Result<()> {
-        tracing::debug!("Getting TCP connections");
+    fn get_net_connections(&mut self) -> Result<()> {
+        tracing::debug!("Getting network connections");
 
-        let all_procs = procfs::process::all_processes().unwrap();
+        let af_flags = AddressFamilyFlags::IPV4; // IPV6 is not supported
+        let proto_flags = ProtocolFlags::TCP; // UDP is not supported
+        let tcp_sockets_info = iterate_sockets_info(af_flags, proto_flags)?
+            .flatten()
+            .filter_map(|socket| match socket.protocol_socket_info {
+                ProtocolSocketInfo::Tcp(ref tcp) => Some((tcp.clone(), socket)),
+                _ => None
+            });
 
-        let mut proc_map: HashMap<u64, Stat> = HashMap::new();
-        for process_result in all_procs {
-            if let Ok(process) = process_result 
-            && let (Ok(stat), Ok(fdt)) = (process.stat(), process.fd()) {
-                for fd_result in fdt {
-                    if let Ok(fd) = fd_result
-                    && let FDTarget::Socket(inode) = fd.target {
-                        proc_map.insert(inode, stat.clone());
-                    }
-                }
-            }
-        }
-
-        let tcp = procfs::net::tcp().unwrap();
-
+        // Build connection list from scratch
         self.connections.clear();
 
-        for entry in tcp.iter() {
-            let local_address_string = entry.local_address.to_string();
-            let (local_address, local_address_port) = local_address_string.split_once(':').unwrap();
+        for (tcp, socket) in tcp_sockets_info {
+            let pid = socket.associated_pids.first().cloned();
 
-            let remote_address_string = entry.remote_address.to_string();
-            let (remote_address, remote_address_port) = remote_address_string.split_once(':').unwrap();
+            let process = pid.map(|pid| get_proc_info(pid));
 
-            //TODO: Actually format this
-            let state = format!("{:?}", entry.state);
-            if let Some(stat) = proc_map.get(&entry.inode) {
-                let connection = Connection {
-                    local_address: local_address.to_owned(),
-                    local_address_port: local_address_port.to_owned(),
-                    remote_address: remote_address.to_owned(),
-                    remote_address_port: remote_address_port.to_owned(),
-                    state,
-                    inode: entry.inode,
-                    pid: stat.pid,
-                    comm: stat.comm.clone(),
-                    geolocation: Arc::new(Mutex::new(None))
-                };
-
-                self.connections.push(connection);
-            }
+            let connection = Connection {
+                local_address: tcp.local_addr.to_string(),
+                local_address_port: tcp.local_port.to_string(),
+                remote_address: tcp.remote_addr.to_string(),
+                remote_address_port: tcp.remote_port.to_string(),
+                state: tcp.state.to_string(),
+                inode: socket.inode,
+                pid: pid,
+                process,
+                geolocation: Arc::new(Mutex::new(None)),
+            };
+            self.connections.push(connection);
         }
+
         Ok(())
     }
 }
 
+//TODO: Change this to be a method of NetClient,
+//      call 
+fn get_proc_info(pid: u32) -> Process {
+    let mut sys = System::new();
+    sys.refresh_process_specifics(
+        Pid::from(pid as usize),
+        ProcessRefreshKind::new()//with_nothing()
+    );
+    let proc = sys.process(sysinfo::Pid::from(pid as usize));
 
+    let name = proc.map(|p| p.name().to_owned());
+    let exe = proc.map(|proc| {
+        proc.exe().map(|path| {
+            path.to_string_lossy().into_owned()
+        })
+    }).flatten();
+
+    Process { name, exe }
+}

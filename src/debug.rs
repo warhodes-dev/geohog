@@ -20,7 +20,7 @@ fn main() {
 
     fn print_geolocations<'a>(connections: impl Iterator<Item = &'a Connection>) {
         println!("=== Geolocated Sockets ===");
-        println!("{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<25}", 
+        println!("{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<15} {:<25}", 
             "Socket", 
             "Remote address", 
             "City", 
@@ -28,19 +28,21 @@ fn main() {
             "Country", 
             "Status",
             "PID",
-            "Program Name"
+            "Program Name",
+            "Path"
         );
         for con in connections {
             let geolocation = con.geolocation.lock().unwrap();
-            println!("{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<25}", 
+            println!("{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<15} {:<25}", 
                 con.local_address_port,
                 format!("{}:{}", con.remote_address, con.remote_address_port),
                 geolocation.as_ref().map_or("", |g| &g.city),
                 geolocation.as_ref().map_or("", |g| &g.region),
                 geolocation.as_ref().map_or("", |g| &g.country),
                 con.state,
-                con.pid,
-                con.comm,
+                con.pid.as_ref().map_or("".to_owned(), |pid| pid.to_string()),
+                con.process.as_ref().map_or("".to_owned(), |proc| proc.name.as_ref().map_or("".to_owned(), |name| name.to_string())),
+                con.process.as_ref().map_or("".to_owned(), |proc| proc.exe.as_ref().map_or("".to_owned(), |name| name.to_string())),
             );
         }
         println!();
@@ -67,5 +69,6 @@ fn main() {
 
     }
 
+    runtime.shutdown_background();
 
 }
