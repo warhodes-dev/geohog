@@ -70,5 +70,4 @@ fn main() {
     }
 
     runtime.shutdown_background();
-
 }
