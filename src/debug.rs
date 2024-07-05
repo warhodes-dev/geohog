@@ -48,6 +48,7 @@ fn main() {
     let mut netstat = NetClient::new(&runtime);
 
     for _ in 0..2 {
+        println!("\n\n*** Refreshing Socket Table ***\n\n");
         netstat.refresh().unwrap();
 
         print_geolocations(netstat.connections());
@@ -59,9 +60,6 @@ fn main() {
         std::thread::sleep(std::time::Duration::from_millis(500));
 
         print_geolocations(netstat.connections());
-
-        println!("\n\n*** Refreshing Socket Table ***\n\n")
-
     }
 
     runtime.shutdown_background();

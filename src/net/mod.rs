@@ -6,10 +6,11 @@ use ipgeolocate::Locator;
 use sysinfo;
 use netstat2::{iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, SocketInfo, TcpSocketInfo};
 
-use geolocate::GeolocationClient;
+use geolocate::{GeolocationClient, GeolocationTask};
 
 pub mod geolocate;
 pub mod public_ip;
+mod api;
 
 pub struct Connection {
     pub local_address: String,
@@ -63,7 +64,7 @@ pub struct NetClient {
 impl NetClient {
     pub fn new(runtime: &tokio::runtime::Runtime) -> Self {
         let connections = vec![];
-        let geolocation_client = Arc::new(GeolocationClient::new());
+        let geolocation_client = Arc::new(GeolocationClient::new(runtime.handle().clone()));
         let sysinfo = sysinfo::System::new();
         let handle = runtime.handle().clone();
         NetClient {
@@ -86,23 +87,21 @@ impl NetClient {
         Ok(())
     }
 
-    pub fn geolocate_connections(&self) {
-        for con in self.connections.iter() {
-            let remote_address = con.remote_address.clone();
-            let current_geo = &con.geolocation.lock().unwrap();
-            if current_geo.is_none() {
-                self.runtime.spawn({
-                    let geo = Arc::clone(&con.geolocation);
-                    let client = Arc::clone(&self.geolocation_client);
-                    async move {
-                        if let Ok(new_geo) = client.geolocate_ip(&remote_address).await {
-                            let mut geo_lock = geo.lock().unwrap();
-                            *geo_lock = Some(new_geo);
-                        }
-                    }
-                });
-            }
-        }
+    pub fn geolocate_connections(&self) -> Result<()> {
+        let geolocation_tasks = self.connections.iter()
+            .filter_map(|con| {
+                // Filter out all already-geolocated connections
+                let current_geolocation = &con.geolocation.lock().unwrap();
+                if current_geolocation.is_none() {
+                    let ip = con.remote_address.to_owned();
+                    let locator = Arc::clone(&con.geolocation);
+                    Some( GeolocationTask::new(ip, locator) )
+                } else {
+                    None
+                }
+            });
+        self.geolocation_client.geolocate_ips(geolocation_tasks)?;
+        Ok(())
     }
 
     fn restore_geolocations(&mut self) {
