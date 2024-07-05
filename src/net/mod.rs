@@ -1,12 +1,12 @@
 use std::sync::{Arc, Mutex};
-use netstat2::{iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, SocketInfo, TcpSocketInfo};
-
-use ipgeolocate::Locator;
 
 use anyhow::Result;
 
+use ipgeolocate::Locator;
+use sysinfo;
+use netstat2::{iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, SocketInfo, TcpSocketInfo};
+
 use geolocate::GeolocationClient;
-use sysinfo::{Pid, ProcessRefreshKind, System};
 
 pub mod geolocate;
 pub mod public_ip;
@@ -24,10 +24,7 @@ pub struct Connection {
 }
 
 impl Connection {
-    fn new(
-        tcp: &TcpSocketInfo, 
-        socket: &SocketInfo, 
-    ) -> Self {
+    fn new(tcp: &TcpSocketInfo, socket: &SocketInfo, pid: Option<u32>) -> Self {
         Connection {
             local_address: tcp.local_addr.to_string(),
             local_address_port: tcp.local_port.to_string(),
@@ -35,17 +32,18 @@ impl Connection {
             remote_address_port: tcp.remote_port.to_string(),
             state: tcp.state.to_string(),
             inode: socket.inode,
-            pid: None,
+            pid,
             process_name: None,
             geolocation: Arc::new(Mutex::new(None)),
         }
     }
 
-    fn with_pid(mut self, net_client: &NetClient, pid: u32) -> Self {
-        let process_name = get_proc_name(pid);
-        self.pid = Some(pid);
-        self.process_name = process_name;
-        self
+    fn with_pid(tcp: &TcpSocketInfo, socket: &SocketInfo, pid: u32) -> Self {
+        Connection::new(&tcp, &socket, Some(pid))
+    }
+
+    fn without_pid(tcp: &TcpSocketInfo, socket: &SocketInfo) -> Self {
+        Connection::new(&tcp, &socket, None)
     }
 
     pub fn display(&self) -> ConnectionDisplay {
@@ -83,6 +81,7 @@ impl NetClient {
     pub fn refresh(&mut self) -> Result<()> {
         self.get_net_connections()?;
         self.restore_geolocations();
+        self.refresh_proc_names();
 
         Ok(())
     }
@@ -107,6 +106,8 @@ impl NetClient {
     }
 
     fn restore_geolocations(&mut self) {
+        tracing::debug!("Restoring geolocations from cache");
+
         for con in self.connections.iter_mut() {
             let remote_address = &con.remote_address;
             let mut geo_lock = con.geolocation.lock().unwrap();
@@ -128,32 +129,41 @@ impl NetClient {
 
         // Build connection list from scratch
         self.connections.clear();
-
         for (tcp, socket) in tcp_sockets_info {
             if socket.associated_pids.is_empty() {
-                let connection = Connection::new(&tcp, &socket);
+                let connection = Connection::without_pid(&tcp, &socket);
                 self.connections.push(connection);
-            } else { for pid in socket.associated_pids.iter() {
-                let connection = Connection::new(&tcp, &socket).with_pid(&self, *pid);
-                self.connections.push(connection);
-            }}
+            } else { 
+                for pid in socket.associated_pids.iter() {
+                    let connection = Connection::with_pid(&tcp, &socket, *pid);
+                    self.connections.push(connection);
+                }
+            }
         }
 
         Ok(())
     }
-}
 
-//TODO: Change this to be a method of NetClient,
-//      call 
-fn get_proc_name(pid: u32) -> Option<String> {
-    let mut sys = System::new();
-    sys.refresh_process_specifics(
-        Pid::from(pid as usize),
-        ProcessRefreshKind::new()//with_nothing()
-    );
-    let proc = sys.process(sysinfo::Pid::from(pid as usize));
+    fn refresh_proc_names(&mut self) {
+        tracing::debug!("Refreshing process names from PIDs");
 
-    let name = proc.map(|p| p.name().to_owned());
+        let all_pids = self.connections
+            .iter()
+            .filter_map(|conn| conn.pid)
+            .map(|pid| sysinfo::Pid::from_u32(pid))
+            .collect::<Vec<sysinfo::Pid>>();
 
-    name
+        self.sysinfo.refresh_pids_specifics(
+            all_pids.as_slice(),
+            sysinfo::ProcessRefreshKind::new() // with_nothing()
+        );
+
+        for connection in self.connections.iter_mut() {
+            if let Some(pid) = connection.pid {
+                let pid = sysinfo::Pid::from_u32(pid);
+                let proc = self.sysinfo.process(pid);
+                connection.process_name = proc.map(|p| p.name().to_owned());
+            }
+        }
+    }
 }
