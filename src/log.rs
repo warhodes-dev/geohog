@@ -9,7 +9,7 @@ pub fn setup_trace(config: &Config) {
         LogLevel::Warn  => filter::LevelFilter::WARN,
         LogLevel::Error => filter::LevelFilter::ERROR,
     };
-    let (filter, reload_handle) = reload::Layer::new(filter);
+    let (filter, _reload_handle) = reload::Layer::new(filter);
     let time_format = time::macros::format_description!(
         "[hour]:[minute]:[second].[subsecond digits:5]"
     );

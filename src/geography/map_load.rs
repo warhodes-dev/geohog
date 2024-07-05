@@ -1,11 +1,5 @@
-use std::error::Error;
-use std::io::Write;
 use std::collections::BTreeMap;
-use geo_types::Polygon;
-use shapefile::{Reader, dbase, Shape, PolygonRing};
-use serde_derive::Serialize;
-use ratatui::{widgets::canvas::Painter, style::Color};
-use std::fs;
+use shapefile::{dbase, Shape, PolygonRing};
 use anyhow::Result;
 use itertools::izip;
 

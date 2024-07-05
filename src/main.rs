@@ -1,3 +1,4 @@
+#![allow(unused_variables)]
 use anyhow::Result;
 
 pub mod ui {

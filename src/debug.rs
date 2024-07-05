@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use clap::Parser;
 
 use geohog::{
@@ -8,7 +6,6 @@ use geohog::{
     net::{
         NetClient,
         Connection,
-        geolocate::GeolocationClient
     },
 };
 use tokio::runtime::Runtime;
@@ -20,7 +17,7 @@ fn main() {
 
     fn print_geolocations<'a>(connections: impl Iterator<Item = &'a Connection>) {
         println!("=== Geolocated Sockets ===");
-        println!("{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<15} {:<25}", 
+        println!("{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<15}", 
             "Socket", 
             "Remote address", 
             "City", 
@@ -29,11 +26,10 @@ fn main() {
             "Status",
             "PID",
             "Program Name",
-            "Path"
         );
         for con in connections {
             let geolocation = con.geolocation.lock().unwrap();
-            println!("{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<15} {:<25}", 
+            println!("{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<15}", 
                 con.local_address_port,
                 format!("{}:{}", con.remote_address, con.remote_address_port),
                 geolocation.as_ref().map_or("", |g| &g.city),
@@ -41,8 +37,7 @@ fn main() {
                 geolocation.as_ref().map_or("", |g| &g.country),
                 con.state,
                 con.pid.as_ref().map_or("".to_owned(), |pid| pid.to_string()),
-                con.process.as_ref().map_or("".to_owned(), |proc| proc.name.as_ref().map_or("".to_owned(), |name| name.to_string())),
-                con.process.as_ref().map_or("".to_owned(), |proc| proc.exe.as_ref().map_or("".to_owned(), |name| name.to_string())),
+                con.process_name.as_ref().map_or("".to_owned(), |pid| pid.to_string()),
             );
         }
         println!();
