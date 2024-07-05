@@ -1,6 +1,5 @@
-use std::{collections::HashMap, sync::{Arc, Mutex}};
-use netstat2::{get_sockets_info, iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo};
-use procfs::process::{FDTarget, Stat};
+use std::sync::{Arc, Mutex};
+use netstat2::{iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, SocketInfo, TcpSocketInfo};
 
 use ipgeolocate::Locator;
 
@@ -20,19 +19,38 @@ pub struct Connection {
     pub state: String,
     pub inode: u32,
     pub pid: Option<u32>,
-    pub process: Option<Process>,
+    pub process_name: Option<String>,
     pub geolocation: Arc<Mutex<Option<Locator>>>
 }
 
 impl Connection {
+    fn new(
+        tcp: &TcpSocketInfo, 
+        socket: &SocketInfo, 
+    ) -> Self {
+        Connection {
+            local_address: tcp.local_addr.to_string(),
+            local_address_port: tcp.local_port.to_string(),
+            remote_address: tcp.remote_addr.to_string(),
+            remote_address_port: tcp.remote_port.to_string(),
+            state: tcp.state.to_string(),
+            inode: socket.inode,
+            pid: None,
+            process_name: None,
+            geolocation: Arc::new(Mutex::new(None)),
+        }
+    }
+
+    fn with_pid(mut self, net_client: &NetClient, pid: u32) -> Self {
+        let process_name = get_proc_name(pid);
+        self.pid = Some(pid);
+        self.process_name = process_name;
+        self
+    }
+
     pub fn display(&self) -> ConnectionDisplay {
         todo!()
     }
-}
-
-pub struct Process {
-    pub name: Option<String>,
-    pub exe: Option<String>,
 }
 
 pub struct ConnectionDisplay { /* TODO: fill this out */ }
@@ -40,6 +58,7 @@ pub struct ConnectionDisplay { /* TODO: fill this out */ }
 pub struct NetClient {
     connections: Vec<Connection>,
     geolocation_client: Arc<GeolocationClient>,
+    sysinfo: sysinfo::System,
     runtime: tokio::runtime::Handle,
 }
 
@@ -47,10 +66,12 @@ impl NetClient {
     pub fn new(runtime: &tokio::runtime::Runtime) -> Self {
         let connections = vec![];
         let geolocation_client = Arc::new(GeolocationClient::new());
+        let sysinfo = sysinfo::System::new();
         let handle = runtime.handle().clone();
         NetClient {
             connections,
             geolocation_client,
+            sysinfo,
             runtime: handle,
         }
     }
@@ -109,22 +130,13 @@ impl NetClient {
         self.connections.clear();
 
         for (tcp, socket) in tcp_sockets_info {
-            let pid = socket.associated_pids.first().cloned();
-
-            let process = pid.map(|pid| get_proc_info(pid));
-
-            let connection = Connection {
-                local_address: tcp.local_addr.to_string(),
-                local_address_port: tcp.local_port.to_string(),
-                remote_address: tcp.remote_addr.to_string(),
-                remote_address_port: tcp.remote_port.to_string(),
-                state: tcp.state.to_string(),
-                inode: socket.inode,
-                pid: pid,
-                process,
-                geolocation: Arc::new(Mutex::new(None)),
-            };
-            self.connections.push(connection);
+            if socket.associated_pids.is_empty() {
+                let connection = Connection::new(&tcp, &socket);
+                self.connections.push(connection);
+            } else { for pid in socket.associated_pids.iter() {
+                let connection = Connection::new(&tcp, &socket).with_pid(&self, *pid);
+                self.connections.push(connection);
+            }}
         }
 
         Ok(())
@@ -133,7 +145,7 @@ impl NetClient {
 
 //TODO: Change this to be a method of NetClient,
 //      call 
-fn get_proc_info(pid: u32) -> Process {
+fn get_proc_name(pid: u32) -> Option<String> {
     let mut sys = System::new();
     sys.refresh_process_specifics(
         Pid::from(pid as usize),
@@ -142,11 +154,6 @@ fn get_proc_info(pid: u32) -> Process {
     let proc = sys.process(sysinfo::Pid::from(pid as usize));
 
     let name = proc.map(|p| p.name().to_owned());
-    let exe = proc.map(|proc| {
-        proc.exe().map(|path| {
-            path.to_string_lossy().into_owned()
-        })
-    }).flatten();
 
-    Process { name, exe }
+    name
 }
