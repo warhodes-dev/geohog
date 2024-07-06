@@ -10,7 +10,6 @@ use geolocate::{GeolocationClient, GeolocationTask};
 
 pub mod geolocate;
 pub mod public_ip;
-mod api;
 
 pub struct Connection {
     pub local_address: String,
@@ -56,7 +55,7 @@ pub struct ConnectionDisplay { /* TODO: fill this out */ }
 
 pub struct NetClient {
     connections: Vec<Connection>,
-    geolocation_client: Arc<GeolocationClient>,
+    geolocation_client: GeolocationClient,
     sysinfo: sysinfo::System,
     runtime: tokio::runtime::Handle,
 }
@@ -64,7 +63,7 @@ pub struct NetClient {
 impl NetClient {
     pub fn new(runtime: &tokio::runtime::Runtime) -> Self {
         let connections = vec![];
-        let geolocation_client = Arc::new(GeolocationClient::new(runtime.handle().clone()));
+        let geolocation_client = GeolocationClient::new(runtime.handle().clone());
         let sysinfo = sysinfo::System::new();
         let handle = runtime.handle().clone();
         NetClient {
@@ -87,7 +86,7 @@ impl NetClient {
         Ok(())
     }
 
-    pub fn geolocate_connections(&self) -> Result<()> {
+    pub fn geolocate_connections(&mut self) -> Result<()> {
         let geolocation_tasks = self.connections.iter()
             .filter_map(|con| {
                 // Filter out all already-geolocated connections
@@ -110,7 +109,7 @@ impl NetClient {
         for con in self.connections.iter_mut() {
             let remote_address = &con.remote_address;
             let mut geo_lock = con.geolocation.lock().unwrap();
-            *geo_lock = self.geolocation_client.from_cache(remote_address);
+            *geo_lock = self.geolocation_client.cache_get(remote_address);
         }
     }
 

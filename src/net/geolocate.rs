@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, VecDeque}, sync::{Arc, Mutex}};
+use std::{cell::RefCell, collections::{HashMap, VecDeque}, sync::{Arc, Mutex}};
 use tokio::sync::RwLock;
 
 use ipgeolocate::{Locator, Service};
@@ -31,24 +31,24 @@ impl GeolocationClient {
         }
     }
 
-    pub fn from_cache(&self, ip: &str) -> Option<Locator> {
+    pub fn cache_get(&self, ip: &str) -> Option<Locator> {
         self.cache.blocking_read().get(ip).cloned()
     }
 
-    pub async fn async_from_cache(&self, ip: &str) -> Option<Locator> {
-        self.cache_get(ip).await
+    async fn async_cache_get(&self, ip: &str) -> Option<Locator> {
+        self.cache.read().await.get(ip).cloned()
     }
 
-    pub fn queue_tasks(&mut self, tasks: impl Iterator<Item = GeolocationTask>) {
-        for task in tasks {
-            self.task_queue.push_back(task);
-        }
+    fn enqueue_task(&mut self, task: GeolocationTask) {
+        self.task_queue.push_back(task);
     }
 
-    pub fn geolocate_ips(&self, task_queue: impl Iterator<Item = GeolocationTask>) -> Result<()> {
+    pub fn geolocate_ips(&mut self, tasks: impl Iterator<Item = GeolocationTask>) -> Result<()> {
+        let client = RefCell::new(self);
+
         // Complete any tasks that can be resolved from cache, filter these tasks out
-        let task_queue = task_queue.filter_map(|task| {
-                let cached_locator = self.from_cache(&task.ip);
+        tasks.filter_map(|task| {
+                let cached_locator = client.borrow().cache_get(&task.ip);
                 if cached_locator.is_some() {
                     let mut loc = task.locator.lock().unwrap();
                     *loc = cached_locator;
@@ -57,13 +57,13 @@ impl GeolocationClient {
                     Some(task) // further work required
                 }
             })
-            .collect::<Vec<GeolocationTask>>();
+            .for_each(|task| {
+                client.borrow_mut().enqueue_task(task);
+            });
 
-        // Batch large jobs to avoid rate limit
-        if task_queue.len() > 5 {
-            for task_batch in task_queue.chunks(100) {
-
-            }
+        /* Batch large jobs to avoid rate limit
+        if tasks.len() > 5 {
+            // do batch
         } else {
             for task in task_queue {
                 self.runtime.spawn({
@@ -77,15 +77,9 @@ impl GeolocationClient {
                     }
                 });
             }
-        }
+        } */
 
         Ok(())
-    }
-
-
-
-    async fn cache_get(&self, ip: &str) -> Option<Locator> {
-        self.cache.read().await.get(ip).cloned()
     }
 }
 
