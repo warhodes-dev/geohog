@@ -28,7 +28,7 @@ fn main() {
             "Program Name",
         );
         for con in connections {
-            let geolocation = con.geolocation.lock().unwrap();
+            let geolocation = &con.geolocation;
             println!("{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<15}", 
                 con.local_address_port,
                 format!("{}:{}", con.remote_address, con.remote_address_port),
@@ -55,7 +55,7 @@ fn main() {
 
         std::thread::sleep(std::time::Duration::from_millis(500));
 
-        netstat.geolocate_connections();
+        //netstat.geolocate_connections();
 
         std::thread::sleep(std::time::Duration::from_millis(500));
 

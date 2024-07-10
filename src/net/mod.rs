@@ -1,12 +1,10 @@
-use std::sync::{Arc, Mutex};
-
 use anyhow::Result;
 
 use ipgeolocate::Locator;
 use sysinfo;
 use netstat2::{iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, SocketInfo, TcpSocketInfo};
 
-use geolocate::{GeolocationClient, GeolocationTask};
+use geolocate::GeolocationClient;
 
 pub mod geolocate;
 pub mod public_ip;
@@ -20,7 +18,7 @@ pub struct Connection {
     pub inode: u32,
     pub pid: Option<u32>,
     pub process_name: Option<String>,
-    pub geolocation: Arc<Mutex<Option<Locator>>>
+    pub geolocation: Option<Locator>
 }
 
 impl Connection {
@@ -34,7 +32,7 @@ impl Connection {
             inode: socket.inode,
             pid,
             process_name: None,
-            geolocation: Arc::new(Mutex::new(None)),
+            geolocation: None,
         }
     }
 
@@ -55,22 +53,19 @@ pub struct ConnectionDisplay { /* TODO: fill this out */ }
 
 pub struct NetClient {
     connections: Vec<Connection>,
-    geolocation_client: GeolocationClient,
+    geo_client: GeolocationClient,
     sysinfo: sysinfo::System,
-    runtime: tokio::runtime::Handle,
 }
 
 impl NetClient {
     pub fn new(runtime: &tokio::runtime::Runtime) -> Self {
         let connections = vec![];
-        let geolocation_client = GeolocationClient::new(runtime.handle().clone());
+        let geo_client = GeolocationClient::new(runtime.handle().clone());
         let sysinfo = sysinfo::System::new();
-        let handle = runtime.handle().clone();
         NetClient {
             connections,
-            geolocation_client,
+            geo_client,
             sysinfo,
-            runtime: handle,
         }
     }
 
@@ -82,40 +77,16 @@ impl NetClient {
         self.get_net_connections()?;
         self.restore_geolocations();
         self.refresh_proc_names();
-
-        Ok(())
-    }
-
-    pub fn geolocate_connections(&mut self) -> Result<()> {
-        let geolocation_tasks = self.connections.iter()
-            .filter_map(|con| {
-                // Filter out all already-geolocated connections
-                let current_geolocation = &con.geolocation.lock().unwrap();
-                if current_geolocation.is_none() {
-                    let ip = con.remote_address.to_owned();
-                    let locator = Arc::clone(&con.geolocation);
-                    Some( GeolocationTask::new(ip, locator) )
-                } else {
-                    None
-                }
-            });
-        self.geolocation_client.geolocate_ips(geolocation_tasks)?;
         Ok(())
     }
 
     fn restore_geolocations(&mut self) {
-        tracing::debug!("Restoring geolocations from cache");
-
-        for con in self.connections.iter_mut() {
-            let remote_address = &con.remote_address;
-            let mut geo_lock = con.geolocation.lock().unwrap();
-            *geo_lock = self.geolocation_client.cache_get(remote_address);
+        for conn in self.connections.iter_mut() {
+            conn.geolocation = self.geo_client.geolocate_ip(&conn.remote_address);
         }
     }
 
     fn get_net_connections(&mut self) -> Result<()> {
-        tracing::debug!("Getting network connections");
-
         let af_flags = AddressFamilyFlags::IPV4; // IPV6 is not supported
         let proto_flags = ProtocolFlags::TCP; // UDP is not supported
         let tcp_sockets_info = iterate_sockets_info(af_flags, proto_flags)?
@@ -143,8 +114,6 @@ impl NetClient {
     }
 
     fn refresh_proc_names(&mut self) {
-        tracing::debug!("Refreshing process names from PIDs");
-
         let all_pids = self.connections
             .iter()
             .filter_map(|conn| conn.pid)
@@ -153,7 +122,7 @@ impl NetClient {
 
         self.sysinfo.refresh_pids_specifics(
             all_pids.as_slice(),
-            sysinfo::ProcessRefreshKind::new() // with_nothing()
+            sysinfo::ProcessRefreshKind::new() // essentially 'with_nothing()'
         );
 
         for connection in self.connections.iter_mut() {

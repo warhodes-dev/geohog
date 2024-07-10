@@ -1,5 +1,5 @@
-use std::{cell::RefCell, collections::{HashMap, VecDeque}, sync::{Arc, Mutex}};
-use tokio::sync::{mpsc, RwLock};
+use std::{cell::RefCell, collections::HashMap, sync::{mpsc::Receiver, Arc, Mutex}};
+use tokio::{sync::{mpsc, RwLock}, task::JoinHandle};
 
 use ipgeolocate::{Locator, Service};
 
@@ -18,79 +18,74 @@ impl GeolocationTask {
 
 pub struct GeolocationClient {
     cache: Arc<RwLock<HashMap<String, Locator>>>,
-    task_queue: VecDeque<GeolocationTask>,
+    task_queue: mpsc::Sender<String>,
     runtime: tokio::runtime::Handle,
 }
 
 impl GeolocationClient {
     pub fn new(runtime: tokio::runtime::Handle) -> Self {
+
+        let cache = Arc::new(RwLock::new(HashMap::new()));
+
+        let (sender, receiver) = mpsc::channel::<String>(1024);
+
+        RequestHandler::init(
+            runtime.clone(), 
+            receiver,
+            Arc::clone(&cache),
+        );
+
         GeolocationClient {
-            cache: Arc::new(RwLock::new(HashMap::new())),
-            task_queue: VecDeque::new(),
-            runtime
+            cache,
+            task_queue: sender,
+            runtime,
         }
     }
 
-    fn _init_request_handler(&self) {
-        let (tx, mut rx) = mpsc::channel::<GeolocationTask>(128);
-        let request_handler = self.runtime.spawn(async move {
-
-        });
+    pub fn geolocate_ip(&mut self, ip: &str) -> Option<Locator> {
+        let geolocation = self.cache_get(ip);
+        if geolocation.is_none() {
+            self.enqueue_task(ip);
+        }
+        geolocation
     }
 
-    pub fn cache_get(&self, ip: &str) -> Option<Locator> {
+    fn cache_get(&self, ip: &str) -> Option<Locator> {
         self.cache.blocking_read().get(ip).cloned()
     }
 
-    async fn async_cache_get(&self, ip: &str) -> Option<Locator> {
-        self.cache.read().await.get(ip).cloned()
+    fn enqueue_task(&self, task: &str) {
+        let task_queue = self.task_queue.clone();
+        let task = task.to_owned();
+        self.runtime.spawn(async move {
+            task_queue.send(task).await.expect("Task queue no longer exists");
+        });
+    }
+}
+
+/// Handles 
+struct RequestHandler;
+impl RequestHandler {
+    fn init(
+        runtime: tokio::runtime::Handle,
+        receiver: mpsc::Receiver<String>, 
+        cache: Arc<RwLock<HashMap<String, Locator>>>,
+    ) -> JoinHandle<Result<()>> {
+        runtime.spawn(RequestHandler::worker_task(receiver, cache))
     }
 
-    fn enqueue_task(&mut self, task: GeolocationTask) {
-        self.task_queue.push_back(task);
-    }
-
-    pub fn geolocate_ips(&mut self, tasks: impl Iterator<Item = GeolocationTask>) -> Result<()> {
-        let client = RefCell::new(self);
-
-        // Complete any tasks that can be resolved from cache, filter these tasks out
-        tasks.filter_map(|task| {
-                let cached_locator = client.borrow().cache_get(&task.ip);
-                if cached_locator.is_some() {
-                    let mut loc = task.locator.lock().unwrap();
-                    *loc = cached_locator;
-                    None // job done, remove this task from queue
-                } else {
-                    Some(task) // further work required
-                }
-            })
-            .for_each(|task| {
-                client.borrow_mut().enqueue_task(task);
-            });
-
-        /* Batch large jobs to avoid rate limit
-        if tasks.len() > 5 {
-            // do batch
-        } else {
-            for task in task_queue {
-                self.runtime.spawn({
-                    let cache = Arc::clone(&self.cache);
-                    let locator = Arc::clone(&task.locator);
-                    async move {
-                        if let Ok(new_locator) = geolocate_ip(&task.ip, &cache).await {
-                            let mut locator_lock = locator.lock().unwrap();
-                            *locator_lock = Some(new_locator);
-                        }
-                    }
-                });
-            }
-        } */
-
+    async fn worker_task(
+        mut receiver: mpsc::Receiver<String>,
+        cache: Arc<RwLock<HashMap<String, Locator>>>,
+    ) -> Result<()> {
+        while let Some(ip) = receiver.recv().await {
+            let _ = geolocate_and_cache_ip(&ip, &cache).await?;
+        }
         Ok(())
     }
 }
 
-async fn geolocate_ip(
+async fn geolocate_and_cache_ip(
     ip: &str, 
     cache: &Arc<RwLock<HashMap<String, Locator>>>
 ) -> Result<Locator> {
