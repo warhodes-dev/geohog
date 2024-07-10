@@ -1,5 +1,5 @@
 use std::{cell::RefCell, collections::{HashMap, VecDeque}, sync::{Arc, Mutex}};
-use tokio::sync::RwLock;
+use tokio::sync::{mpsc, RwLock};
 
 use ipgeolocate::{Locator, Service};
 
@@ -29,6 +29,13 @@ impl GeolocationClient {
             task_queue: VecDeque::new(),
             runtime
         }
+    }
+
+    fn _init_request_handler(&self) {
+        let (tx, mut rx) = mpsc::channel::<GeolocationTask>(128);
+        let request_handler = self.runtime.spawn(async move {
+
+        });
     }
 
     pub fn cache_get(&self, ip: &str) -> Option<Locator> {
