@@ -1,20 +1,9 @@
-use std::{cell::RefCell, collections::HashMap, sync::{mpsc::Receiver, Arc, Mutex}};
+use std::{borrow::Borrow, cell::RefCell, collections::{HashMap, HashSet}, sync::{mpsc::Receiver, Arc, Mutex}};
 use tokio::{sync::{mpsc, RwLock}, task::JoinHandle};
 
 use ipgeolocate::{Locator, Service};
 
 use anyhow::Result;
-
-pub struct GeolocationTask {
-    ip: String,
-    locator: Arc<Mutex<Option<Locator>>>,
-}
-
-impl GeolocationTask {
-    pub fn new(ip: String, locator: Arc<Mutex<Option<Locator>>>) -> Self {
-        GeolocationTask { ip, locator }
-    }
-}
 
 pub struct GeolocationClient {
     cache: Arc<RwLock<HashMap<String, Locator>>>,
@@ -45,7 +34,10 @@ impl GeolocationClient {
     pub fn geolocate_ip(&mut self, ip: &str) -> Option<Locator> {
         let geolocation = self.cache_get(ip);
         if geolocation.is_none() {
+            tracing::debug!("Cache miss for {ip}. Enqueuing task.");
             self.enqueue_task(ip);
+        } else {
+            tracing::debug!("Cache hit for {ip}. Returning");
         }
         geolocation
     }
@@ -63,35 +55,35 @@ impl GeolocationClient {
     }
 }
 
-/// Handles 
+/// Handles Ip-Api requests
 struct RequestHandler;
 impl RequestHandler {
     fn init(
         runtime: tokio::runtime::Handle,
         receiver: mpsc::Receiver<String>, 
         cache: Arc<RwLock<HashMap<String, Locator>>>,
-    ) -> JoinHandle<Result<()>> {
+    ) -> JoinHandle<()> {
         runtime.spawn(RequestHandler::worker_task(receiver, cache))
     }
 
     async fn worker_task(
         mut receiver: mpsc::Receiver<String>,
         cache: Arc<RwLock<HashMap<String, Locator>>>,
-    ) -> Result<()> {
+    ) {
         while let Some(ip) = receiver.recv().await {
-            let _ = geolocate_and_cache_ip(&ip, &cache).await?;
+            tokio::spawn(geolocate_and_cache_ip(ip.to_owned(), cache.clone()));
         }
-        Ok(())
     }
 }
 
 async fn geolocate_and_cache_ip(
-    ip: &str, 
-    cache: &Arc<RwLock<HashMap<String, Locator>>>
-) -> Result<Locator> {
-    let locator = single_query(ip).await?;
-    cache.write().await.insert(ip.to_owned(), locator.to_owned());
-    Ok(locator)
+    ip: String, 
+    cache: Arc<RwLock<HashMap<String, Locator>>>
+) {
+    if let Ok(locator) = single_query(&ip).await {
+        cache.write().await.insert(ip.to_owned(), locator.to_owned());
+        tracing::debug!("Entry for {ip} cached successfully");
+    }
 }
     
 async fn single_query(ip: &str) -> Result<Locator> {
@@ -100,8 +92,7 @@ async fn single_query(ip: &str) -> Result<Locator> {
 
     //TODO: Drop the dependency, manual GET 
     //TODO: Add config for multiple providers
-    let response = Locator::get(ip, service).await?;
-    Ok(response)
+    Locator::get(ip, service).await.map_err(anyhow::Error::msg)
 }
 
 async fn batch_query(ip: &str) -> Result<Vec<Locator>> {

@@ -11,7 +11,6 @@ use geohog::{
 use tokio::runtime::Runtime;
 
 fn main() {
-
     let config = Config::parse();
     log::setup_trace(&config);
 
@@ -48,7 +47,7 @@ fn main() {
     let mut netstat = NetClient::new(&runtime);
 
     for _ in 0..2 {
-        println!("\n\n*** Refreshing Socket Table ***\n\n");
+        println!("------------ *** Refreshing Socket Table *** ------------");
         netstat.refresh().unwrap();
 
         print_geolocations(netstat.connections());
