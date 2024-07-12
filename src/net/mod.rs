@@ -1,4 +1,6 @@
-use anyhow::Result;
+use std::net::{IpAddr, Ipv4Addr};
+
+use anyhow::{bail, Result};
 
 use ipgeolocate::Locator;
 use sysinfo;
@@ -10,10 +12,10 @@ pub mod geolocate;
 pub mod public_ip;
 
 pub struct Connection {
-    pub local_address: String,
-    pub local_address_port: String,
-    pub remote_address: String,
-    pub remote_address_port: String,
+    pub local_address: Ipv4Addr,
+    pub local_address_port: u16,
+    pub remote_address: Ipv4Addr,
+    pub remote_address_port: u16,
     pub state: String,
     pub inode: u32,
     pub pid: Option<u32>,
@@ -22,25 +24,35 @@ pub struct Connection {
 }
 
 impl Connection {
-    fn new(tcp: &TcpSocketInfo, socket: &SocketInfo, pid: Option<u32>) -> Self {
-        Connection {
-            local_address: tcp.local_addr.to_string(),
-            local_address_port: tcp.local_port.to_string(),
-            remote_address: tcp.remote_addr.to_string(),
-            remote_address_port: tcp.remote_port.to_string(),
+    fn new(tcp: &TcpSocketInfo, socket: &SocketInfo, pid: Option<u32>) -> Result<Self> {
+        fn to_ipv4(ip: IpAddr) -> Result<Ipv4Addr> {
+            match ip {
+                IpAddr::V4(ip) => Ok(ip),
+                IpAddr::V6(ip) => match ip.to_canonical() {
+                    IpAddr::V4(ip) => Ok(ip),
+                    IpAddr::V6(ip) => bail!("IPV6 not supported"),
+                }
+            }
+        }
+
+        Ok( Connection {
+            local_address: to_ipv4(tcp.local_addr)?,
+            local_address_port: tcp.local_port,
+            remote_address: to_ipv4(tcp.remote_addr)?,
+            remote_address_port: tcp.remote_port,
             state: tcp.state.to_string(),
             inode: socket.inode,
             pid,
             process_name: None,
             geolocation: None,
-        }
+        })
     }
 
-    fn with_pid(tcp: &TcpSocketInfo, socket: &SocketInfo, pid: u32) -> Self {
+    fn with_pid(tcp: &TcpSocketInfo, socket: &SocketInfo, pid: u32) -> Result<Self> {
         Connection::new(&tcp, &socket, Some(pid))
     }
 
-    fn without_pid(tcp: &TcpSocketInfo, socket: &SocketInfo) -> Self {
+    fn without_pid(tcp: &TcpSocketInfo, socket: &SocketInfo) -> Result<Self> {
         Connection::new(&tcp, &socket, None)
     }
 
@@ -100,12 +112,14 @@ impl NetClient {
         self.connections.clear();
         for (tcp, socket) in tcp_sockets_info {
             if socket.associated_pids.is_empty() {
-                let connection = Connection::without_pid(&tcp, &socket);
-                self.connections.push(connection);
+                if let Ok(connection) = Connection::without_pid(&tcp, &socket) {
+                    self.connections.push(connection);
+                }
             } else { 
                 for pid in socket.associated_pids.iter() {
-                    let connection = Connection::with_pid(&tcp, &socket, *pid);
-                    self.connections.push(connection);
+                    if let Ok(connection) = Connection::with_pid(&tcp, &socket, *pid) {
+                        self.connections.push(connection);
+                    }
                 }
             }
         }

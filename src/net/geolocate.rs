@@ -1,4 +1,4 @@
-use std::{borrow::Borrow, cell::RefCell, collections::{HashMap, HashSet}, sync::{mpsc::Receiver, Arc, Mutex}};
+use std::{borrow::Borrow, cell::RefCell, collections::{HashMap, HashSet}, net::Ipv4Addr, sync::{mpsc::Receiver, Arc, Mutex}};
 use tokio::{sync::{mpsc, oneshot, RwLock}, task::JoinHandle};
 
 use ipgeolocate::{Locator, Service};
@@ -6,16 +6,16 @@ use ipgeolocate::{Locator, Service};
 use anyhow::Result;
 
 pub struct GeolocationClient {
-    cache: Arc<RwLock<HashMap<String, Locator>>>,
-    task_tx: mpsc::Sender<(String, oneshot::Sender<()>)>,
-    pending_requests: Arc<Mutex<HashSet<String>>>,
+    cache: Arc<RwLock<HashMap<Ipv4Addr, Locator>>>,
+    task_tx: mpsc::Sender<(Ipv4Addr, oneshot::Sender<()>)>,
+    pending_requests: Arc<Mutex<HashSet<Ipv4Addr>>>,
     runtime: tokio::runtime::Handle,
 }
 
 impl GeolocationClient {
     pub fn new(runtime: tokio::runtime::Handle) -> Self {
         let cache = Arc::new(RwLock::new(HashMap::new()));
-        let (task_tx, task_rx) = mpsc::channel::<(String, oneshot::Sender<()>)>(1024);
+        let (task_tx, task_rx) = mpsc::channel::<(Ipv4Addr, oneshot::Sender<()>)>(1024);
         let pending_requests = Arc::new(Mutex::new(HashSet::new()));
 
         RequestHandler::init(runtime.clone(), task_rx, cache.clone());
@@ -28,7 +28,7 @@ impl GeolocationClient {
         }
     }
 
-    pub fn geolocate_ip(&mut self, ip: &str) -> Option<Locator> {
+    pub fn geolocate_ip(&mut self, ip: &Ipv4Addr) -> Option<Locator> {
         let geolocation = self.cache_get(ip);
         if geolocation.is_none() {
             tracing::debug!("Cache miss for {ip}. Enqueuing task.");
@@ -39,12 +39,12 @@ impl GeolocationClient {
         geolocation
     }
 
-    fn cache_get(&self, ip: &str) -> Option<Locator> {
-        self.cache.blocking_read().get(ip).cloned()
+    fn cache_get(&self, ip: &Ipv4Addr) -> Option<Locator> {
+        self.cache.blocking_read().get(&ip).cloned()
     }
 
     /// Enqueue task for RequestHandler without duplicates
-    fn enqueue_task(&self, task: &str) {
+    fn enqueue_task(&self, task: &Ipv4Addr) {
         let is_request_pending = self.pending_requests.lock().unwrap().contains(task);
         if !is_request_pending {
             tracing::debug!("Enqueued task for {task}. Adding {task} to pending_queue.");
@@ -77,15 +77,15 @@ struct RequestHandler;
 impl RequestHandler {
     fn init(
         runtime: tokio::runtime::Handle,
-        receiver: mpsc::Receiver<(String, oneshot::Sender<()>)>, 
-        cache: Arc<RwLock<HashMap<String, Locator>>>,
+        receiver: mpsc::Receiver<(Ipv4Addr, oneshot::Sender<()>)>, 
+        cache: Arc<RwLock<HashMap<Ipv4Addr, Locator>>>,
     ) -> JoinHandle<()> {
         runtime.spawn(RequestHandler::worker_task(receiver, cache))
     }
 
     async fn worker_task(
-        mut receiver: mpsc::Receiver<(String, oneshot::Sender<()>)>, 
-        cache: Arc<RwLock<HashMap<String, Locator>>>,
+        mut receiver: mpsc::Receiver<(Ipv4Addr, oneshot::Sender<()>)>, 
+        cache: Arc<RwLock<HashMap<Ipv4Addr, Locator>>>,
     ) {
         while let Some((ip, response_tx)) = receiver.recv().await {
             tracing::debug!("Request receieved. Handling");
@@ -99,8 +99,8 @@ impl RequestHandler {
 }
 
 async fn geolocate_and_cache_ip(
-    ip: String, 
-    cache: Arc<RwLock<HashMap<String, Locator>>>
+    ip: Ipv4Addr, 
+    cache: Arc<RwLock<HashMap<Ipv4Addr, Locator>>>
 ) {
     if let Ok(locator) = single_query(&ip).await {
         cache.write().await.insert(ip.to_owned(), locator.to_owned());
@@ -108,13 +108,13 @@ async fn geolocate_and_cache_ip(
     }
 }
     
-async fn single_query(ip: &str) -> Result<Locator> {
+async fn single_query(ip: &Ipv4Addr) -> Result<Locator> {
     tracing::info!("Querying IpApi for {ip}");
     let service = Service::IpApi;
 
     //TODO: Drop the dependency, manual GET 
     //TODO: Add config for multiple providers
-    Locator::get(ip, service).await.map_err(anyhow::Error::msg)
+    Locator::get_ipv4(*ip, service).await.map_err(anyhow::Error::msg)
 }
 
 async fn batch_query(ip: &str) -> Result<Vec<Locator>> {
