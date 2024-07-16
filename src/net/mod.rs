@@ -3,8 +3,11 @@ use std::net::{IpAddr, Ipv4Addr};
 use anyhow::{bail, Result};
 
 use ipgeolocate::Locator;
+use netstat2::{
+    iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, SocketInfo,
+    TcpSocketInfo,
+};
 use sysinfo;
-use netstat2::{iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, SocketInfo, TcpSocketInfo};
 
 use geolocate::GeolocationClient;
 
@@ -17,10 +20,11 @@ pub struct Connection {
     pub remote_address: Ipv4Addr,
     pub remote_address_port: u16,
     pub state: String,
+    #[cfg(any(target_os = "linux", target_os = "android"))]
     pub inode: u32,
     pub pid: Option<u32>,
     pub process_name: Option<String>,
-    pub geolocation: Option<Locator>
+    pub geolocation: Option<Locator>,
 }
 
 impl Connection {
@@ -31,16 +35,17 @@ impl Connection {
                 IpAddr::V6(ip) => match ip.to_canonical() {
                     IpAddr::V4(ip) => Ok(ip),
                     IpAddr::V6(ip) => bail!("IPV6 not supported"),
-                }
+                },
             }
         }
 
-        Ok( Connection {
+        Ok(Connection {
             local_address: to_ipv4(tcp.local_addr)?,
             local_address_port: tcp.local_port,
             remote_address: to_ipv4(tcp.remote_addr)?,
             remote_address_port: tcp.remote_port,
             state: tcp.state.to_string(),
+            #[cfg(any(target_os = "linux", target_os = "android"))]
             inode: socket.inode,
             pid,
             process_name: None,
@@ -61,7 +66,7 @@ impl Connection {
     }
 }
 
-pub struct ConnectionDisplay { /* TODO: fill this out */ }
+pub struct ConnectionDisplay {/* TODO: fill this out */}
 
 pub struct NetClient {
     connections: Vec<Connection>,
@@ -105,7 +110,7 @@ impl NetClient {
             .flatten()
             .filter_map(|socket| match socket.protocol_socket_info {
                 ProtocolSocketInfo::Tcp(ref tcp) => Some((tcp.clone(), socket)),
-                _ => None
+                _ => None,
             });
 
         // Build connection list from scratch
@@ -115,7 +120,7 @@ impl NetClient {
                 if let Ok(connection) = Connection::without_pid(&tcp, &socket) {
                     self.connections.push(connection);
                 }
-            } else { 
+            } else {
                 for pid in socket.associated_pids.iter() {
                     if let Ok(connection) = Connection::with_pid(&tcp, &socket, *pid) {
                         self.connections.push(connection);
@@ -128,7 +133,8 @@ impl NetClient {
     }
 
     fn refresh_proc_names(&mut self) {
-        let all_pids = self.connections
+        let all_pids = self
+            .connections
             .iter()
             .filter_map(|conn| conn.pid)
             .map(|pid| sysinfo::Pid::from_u32(pid))
@@ -136,7 +142,7 @@ impl NetClient {
 
         self.sysinfo.refresh_pids_specifics(
             all_pids.as_slice(),
-            sysinfo::ProcessRefreshKind::new() // essentially 'with_nothing()'
+            sysinfo::ProcessRefreshKind::new(), // essentially 'with_nothing()'
         );
 
         for connection in self.connections.iter_mut() {
