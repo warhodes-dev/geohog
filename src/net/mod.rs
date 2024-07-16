@@ -1,4 +1,7 @@
-use std::net::{IpAddr, Ipv4Addr};
+use std::{
+    net::{IpAddr, Ipv4Addr},
+    sync::Arc,
+};
 
 use anyhow::{bail, Result};
 
@@ -7,66 +10,13 @@ use netstat2::{
     iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, SocketInfo,
     TcpSocketInfo,
 };
-use sysinfo;
+use sysinfo::{self, ProcessRefreshKind};
 
 use geolocate::GeolocationClient;
+use tokio::sync::Mutex;
 
 pub mod geolocate;
 pub mod public_ip;
-
-pub struct Connection {
-    pub local_address: Ipv4Addr,
-    pub local_address_port: u16,
-    pub remote_address: Ipv4Addr,
-    pub remote_address_port: u16,
-    pub state: String,
-    #[cfg(any(target_os = "linux", target_os = "android"))]
-    pub inode: u32,
-    pub pid: Option<u32>,
-    pub process_name: Option<String>,
-    pub geolocation: Option<Locator>,
-}
-
-impl Connection {
-    fn new(tcp: &TcpSocketInfo, socket: &SocketInfo, pid: Option<u32>) -> Result<Self> {
-        fn to_ipv4(ip: IpAddr) -> Result<Ipv4Addr> {
-            match ip {
-                IpAddr::V4(ip) => Ok(ip),
-                IpAddr::V6(ip) => match ip.to_canonical() {
-                    IpAddr::V4(ip) => Ok(ip),
-                    IpAddr::V6(_) => bail!("IPV6 not supported"),
-                },
-            }
-        }
-
-        Ok(Connection {
-            local_address: to_ipv4(tcp.local_addr)?,
-            local_address_port: tcp.local_port,
-            remote_address: to_ipv4(tcp.remote_addr)?,
-            remote_address_port: tcp.remote_port,
-            state: tcp.state.to_string(),
-            #[cfg(any(target_os = "linux", target_os = "android"))]
-            inode: socket.inode,
-            pid,
-            process_name: None,
-            geolocation: None,
-        })
-    }
-
-    fn with_pid(tcp: &TcpSocketInfo, socket: &SocketInfo, pid: u32) -> Result<Self> {
-        Connection::new(&tcp, &socket, Some(pid))
-    }
-
-    fn without_pid(tcp: &TcpSocketInfo, socket: &SocketInfo) -> Result<Self> {
-        Connection::new(&tcp, &socket, None)
-    }
-
-    pub fn display(&self) -> ConnectionDisplay {
-        todo!()
-    }
-}
-
-pub struct ConnectionDisplay {/* TODO: fill this out */}
 
 pub struct NetClient {
     connections: Vec<Connection>,
@@ -92,14 +42,16 @@ impl NetClient {
 
     pub fn refresh(&mut self) -> Result<()> {
         self.get_net_connections()?;
-        self.restore_geolocations();
-        self.refresh_proc_names();
+        self.get_geolocations();
         Ok(())
     }
 
-    fn restore_geolocations(&mut self) {
-        for conn in self.connections.iter_mut() {
-            conn.geolocation = self.geo_client.geolocate_ip(&conn.remote_address);
+    fn get_geolocations(&mut self) {
+        for conn in self.connections.iter() {
+            if conn.geolocation.blocking_lock().is_none() {
+                self.geo_client
+                    .geolocate_ip(&conn.remote_address, conn.geolocation.clone());
+            }
         }
     }
 
@@ -116,41 +68,83 @@ impl NetClient {
         // Build connection list from scratch
         self.connections.clear();
         for (tcp, socket) in tcp_sockets_info {
-            if socket.associated_pids.is_empty() {
-                if let Ok(connection) = Connection::without_pid(&tcp, &socket) {
-                    self.connections.push(connection);
-                }
-            } else {
-                for pid in socket.associated_pids.iter() {
-                    if let Ok(connection) = Connection::with_pid(&tcp, &socket, *pid) {
-                        self.connections.push(connection);
-                    }
-                }
+            let processes = self.get_process_info(&socket.associated_pids);
+            if let Ok(connection) = Connection::new(&tcp, &socket, processes) {
+                self.connections.push(connection)
             }
         }
 
         Ok(())
     }
 
-    fn refresh_proc_names(&mut self) {
-        let all_pids = self
-            .connections
+    fn get_process_info(&mut self, pids: &[u32]) -> Vec<Process> {
+        let pids = pids
             .iter()
-            .filter_map(|conn| conn.pid)
-            .map(|pid| sysinfo::Pid::from_u32(pid))
+            .map(|pid_u32| sysinfo::Pid::from_u32(*pid_u32))
             .collect::<Vec<sysinfo::Pid>>();
 
-        self.sysinfo.refresh_pids_specifics(
-            all_pids.as_slice(),
-            sysinfo::ProcessRefreshKind::new(), // essentially 'with_nothing()'
-        );
+        self.sysinfo
+            .refresh_pids_specifics(&pids, ProcessRefreshKind::new()); // essentially `.with_nothing()`
 
-        for connection in self.connections.iter_mut() {
-            if let Some(pid) = connection.pid {
-                let pid = sysinfo::Pid::from_u32(pid);
-                let proc = self.sysinfo.process(pid);
-                connection.process_name = proc.map(|p| p.name().to_owned());
+        pids.iter()
+            .map(|pid| {
+                let proc = self.sysinfo.process(*pid);
+                Process {
+                    pid: proc.map_or(pid.as_u32(), |proc| proc.pid().as_u32()),
+                    name: proc.map(|proc| proc.name().to_owned()),
+                }
+            })
+            .collect::<Vec<Process>>()
+    }
+}
+
+pub struct Connection {
+    pub local_address: Ipv4Addr,
+    pub local_address_port: u16,
+    pub remote_address: Ipv4Addr,
+    pub remote_address_port: u16,
+    pub state: String,
+    #[cfg(any(target_os = "linux", target_os = "android"))]
+    pub inode: u32,
+    pub processes: Vec<Process>,
+    pub geolocation: Arc<Mutex<Option<Locator>>>,
+}
+
+impl Connection {
+    fn new(tcp: &TcpSocketInfo, socket: &SocketInfo, processes: Vec<Process>) -> Result<Self> {
+        fn to_ipv4(ip: IpAddr) -> Result<Ipv4Addr> {
+            match ip {
+                IpAddr::V4(ip) => Ok(ip),
+                IpAddr::V6(ip) => match ip.to_canonical() {
+                    IpAddr::V4(ip) => Ok(ip),
+                    IpAddr::V6(_) => bail!("IPV6 not supported"),
+                },
             }
         }
+
+        let geolocation = Arc::new(Mutex::new(None));
+
+        Ok(Connection {
+            local_address: to_ipv4(tcp.local_addr)?,
+            local_address_port: tcp.local_port,
+            remote_address: to_ipv4(tcp.remote_addr)?,
+            remote_address_port: tcp.remote_port,
+            state: tcp.state.to_string(),
+            #[cfg(any(target_os = "linux", target_os = "android"))]
+            inode: socket.inode,
+            processes,
+            geolocation,
+        })
     }
+
+    pub fn display(&self) -> ConnectionDisplay {
+        todo!()
+    }
+}
+
+pub struct ConnectionDisplay {/* TODO: fill this out */}
+
+pub struct Process {
+    pid: u32,
+    name: Option<String>,
 }
