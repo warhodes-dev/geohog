@@ -16,22 +16,20 @@ pub struct GeolocationClient {
     cache: Arc<RwLock<HashMap<Ipv4Addr, Locator>>>,
     task_tx: mpsc::Sender<(Ipv4Addr, oneshot::Sender<()>)>,
     pending_requests: Arc<Mutex<HashSet<Ipv4Addr>>>,
-    runtime: tokio::runtime::Handle,
 }
 
 impl GeolocationClient {
-    pub fn new(runtime: tokio::runtime::Handle) -> Self {
+    pub fn new() -> Self {
         let cache = Arc::new(RwLock::new(HashMap::new()));
         let (task_tx, task_rx) = mpsc::channel::<(Ipv4Addr, oneshot::Sender<()>)>(1024);
         let pending_requests = Arc::new(Mutex::new(HashSet::new()));
 
-        RequestHandler::init(runtime.clone(), task_rx, cache.clone());
+        RequestHandler::init(task_rx, cache.clone());
 
         GeolocationClient {
             cache,
             pending_requests,
             task_tx,
-            runtime,
         }
     }
 
@@ -64,7 +62,7 @@ impl GeolocationClient {
             let pending_requests = Arc::clone(&self.pending_requests);
             let task_tx = self.task_tx.to_owned();
             let task = task.to_owned();
-            self.runtime.spawn(async move {
+            tokio::spawn(async move {
                 let (response_tx, response_rx) = oneshot::channel();
                 let msg = (task.clone(), response_tx);
 
@@ -86,11 +84,10 @@ impl GeolocationClient {
 struct RequestHandler;
 impl RequestHandler {
     fn init(
-        runtime: tokio::runtime::Handle,
         receiver: mpsc::Receiver<(Ipv4Addr, oneshot::Sender<()>)>,
         cache: Arc<RwLock<HashMap<Ipv4Addr, Locator>>>,
     ) -> JoinHandle<()> {
-        runtime.spawn(RequestHandler::worker_task(receiver, cache))
+        tokio::spawn(RequestHandler::worker_task(receiver, cache))
     }
 
     async fn worker_task(

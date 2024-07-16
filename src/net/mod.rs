@@ -75,9 +75,9 @@ pub struct NetClient {
 }
 
 impl NetClient {
-    pub fn new(runtime: &tokio::runtime::Runtime) -> Self {
+    pub fn new() -> Self {
         let connections = vec![];
-        let geo_client = GeolocationClient::new(runtime.handle().clone());
+        let geo_client = GeolocationClient::new();
         let sysinfo = sysinfo::System::new();
         NetClient {
             connections,
