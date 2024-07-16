@@ -1,5 +1,12 @@
-use std::{borrow::Borrow, cell::RefCell, collections::{HashMap, HashSet}, net::Ipv4Addr, sync::{mpsc::Receiver, Arc, Mutex}};
-use tokio::{sync::{mpsc, oneshot, RwLock}, task::JoinHandle};
+use std::{
+    collections::{HashMap, HashSet},
+    net::Ipv4Addr,
+    sync::{Arc, Mutex},
+};
+use tokio::{
+    sync::{mpsc, oneshot, RwLock},
+    task::JoinHandle,
+};
 
 use ipgeolocate::{Locator, Service};
 
@@ -48,7 +55,10 @@ impl GeolocationClient {
         let is_request_pending = self.pending_requests.lock().unwrap().contains(task);
         if !is_request_pending {
             tracing::debug!("Enqueued task for {task}. Adding {task} to pending_queue.");
-            self.pending_requests.lock().unwrap().insert(task.to_owned());
+            self.pending_requests
+                .lock()
+                .unwrap()
+                .insert(task.to_owned());
 
             // Spawn task to 1. enqueue task 2. maintain pending_requests
             let pending_requests = Arc::clone(&self.pending_requests);
@@ -77,14 +87,14 @@ struct RequestHandler;
 impl RequestHandler {
     fn init(
         runtime: tokio::runtime::Handle,
-        receiver: mpsc::Receiver<(Ipv4Addr, oneshot::Sender<()>)>, 
+        receiver: mpsc::Receiver<(Ipv4Addr, oneshot::Sender<()>)>,
         cache: Arc<RwLock<HashMap<Ipv4Addr, Locator>>>,
     ) -> JoinHandle<()> {
         runtime.spawn(RequestHandler::worker_task(receiver, cache))
     }
 
     async fn worker_task(
-        mut receiver: mpsc::Receiver<(Ipv4Addr, oneshot::Sender<()>)>, 
+        mut receiver: mpsc::Receiver<(Ipv4Addr, oneshot::Sender<()>)>,
         cache: Arc<RwLock<HashMap<Ipv4Addr, Locator>>>,
     ) {
         while let Some((ip, response_tx)) = receiver.recv().await {
@@ -98,23 +108,25 @@ impl RequestHandler {
     }
 }
 
-async fn geolocate_and_cache_ip(
-    ip: Ipv4Addr, 
-    cache: Arc<RwLock<HashMap<Ipv4Addr, Locator>>>
-) {
+async fn geolocate_and_cache_ip(ip: Ipv4Addr, cache: Arc<RwLock<HashMap<Ipv4Addr, Locator>>>) {
     if let Ok(locator) = single_query(&ip).await {
-        cache.write().await.insert(ip.to_owned(), locator.to_owned());
+        cache
+            .write()
+            .await
+            .insert(ip.to_owned(), locator.to_owned());
         tracing::debug!("Locator for {ip} cached successfully");
     }
 }
-    
+
 async fn single_query(ip: &Ipv4Addr) -> Result<Locator> {
     tracing::info!("Querying IpApi for {ip}");
     let service = Service::IpApi;
 
-    //TODO: Drop the dependency, manual GET 
+    //TODO: Drop the dependency, manual GET
     //TODO: Add config for multiple providers
-    Locator::get_ipv4(*ip, service).await.map_err(anyhow::Error::msg)
+    Locator::get_ipv4(*ip, service)
+        .await
+        .map_err(anyhow::Error::msg)
 }
 
 async fn batch_query(ip: &str) -> Result<Vec<Locator>> {

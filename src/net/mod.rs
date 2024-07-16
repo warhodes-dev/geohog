@@ -34,7 +34,7 @@ impl Connection {
                 IpAddr::V4(ip) => Ok(ip),
                 IpAddr::V6(ip) => match ip.to_canonical() {
                     IpAddr::V4(ip) => Ok(ip),
-                    IpAddr::V6(ip) => bail!("IPV6 not supported"),
+                    IpAddr::V6(_) => bail!("IPV6 not supported"),
                 },
             }
         }
