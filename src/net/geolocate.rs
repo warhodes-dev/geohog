@@ -12,7 +12,7 @@ use ipgeolocate::{Locator, Service};
 
 use anyhow::Result;
 
-type SharedLocator = Arc<std::sync::Mutex<Option<Locator>>>;
+type SharedLocator = Arc<Mutex<Option<Locator>>>;
 
 pub struct GeolocationClient {
     cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
@@ -71,44 +71,62 @@ impl RequestHandler {
         task_queue: Arc<Mutex<IndexMap<Ipv4Addr, SharedLocator>>>,
         cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
     ) {
-        let (response_tx, response_rx) = mpsc::channel::<Locator>(128);
-        tokio::spawn(RequestHandler::batcher_task(
-            response_tx,
-            task_queue.clone(),
-        ));
-        tokio::spawn(RequestHandler::joiner_task(response_rx, cache.clone()));
+        let (response_tx, response_rx) = mpsc::channel::<(Ipv4Addr, Locator)>(128);
+        tokio::spawn(RequestHandler::batcher_task(response_tx, task_queue.clone()));
+        tokio::spawn(RequestHandler::joiner_task(response_rx, task_queue.clone(), cache.clone()));
     }
 
     /// On interval, takes a batch of tasks and issues the appropriate API query to be
     // handled later in `joiner_task`
     async fn batcher_task(
-        response_tx: Sender<Locator>,
+        response_tx: Sender<(Ipv4Addr, Locator)>,
         task_queue: Arc<Mutex<IndexMap<Ipv4Addr, SharedLocator>>>,
     ) {
         let mut interval = tokio::time::interval(Duration::from_secs(1));
         loop {
-            let mut task_queue_lock = task_queue.lock().unwrap();
-            drop(task_queue_lock);
+            {
+                let tasks = task_queue.lock().unwrap();
+
+                // TODO: Batch tasks to avoid rate limit
+                for ip in tasks.keys().cloned() {
+                    let tx = response_tx.clone();
+                    tokio::spawn(async move {
+                        if let Ok(response) = single_query(ip).await {
+                            tx.send((ip, response)).await.unwrap();
+                        }
+                    });
+                }
+            }
             interval.tick().await;
         }
     }
 
     /// Completes finished API queries by caching response and updating `SharedLocator`
     async fn joiner_task(
-        response_rx: Receiver<Locator>,
+        mut response_rx: Receiver<(Ipv4Addr, Locator)>,
+        task_queue: Arc<Mutex<IndexMap<Ipv4Addr, SharedLocator>>>,
         cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
     ) {
-        todo!();
+        while let Some((ip, locator)) = response_rx.recv().await {
+            let task_lock = task_queue.lock().unwrap();
+            if let Some(shared_locator) = task_lock.get_mut(&ip) {
+                *shared_locator.lock().unwrap() = Some(locator);
+            }
+            shared_locator
+            let cache_lock = cache.lock().unwrap();
+
+
+        }
     }
 }
 
-async fn single_query(ip: &Ipv4Addr) -> Result<Locator> {
+async fn single_query(ip: Ipv4Addr) -> Result<Locator> {
     tracing::info!("Querying IpApi for {ip}");
     let service = Service::IpApi;
 
     //TODO: Drop the dependency, manual GET
     //TODO: Add config for multiple providers
-    Locator::get_ipv4(*ip, service)
+    Locator::get_ipv4(ip, service)
         .await
         .map_err(anyhow::Error::msg)
 }
