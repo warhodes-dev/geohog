@@ -25,7 +25,7 @@ async fn main() {
             "Program Name",
         );
         for con in connections {
-            let geolocation = &con.geolocation;
+            let geolocation = &con.geolocation.lock().unwrap();
             println!(
                 "{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<15}",
                 con.local_address_port,
@@ -34,12 +34,8 @@ async fn main() {
                 geolocation.as_ref().map_or("", |g| &g.region),
                 geolocation.as_ref().map_or("", |g| &g.country),
                 con.state,
-                con.pid
-                    .as_ref()
-                    .map_or("".to_owned(), |pid| pid.to_string()),
-                con.process_name
-                    .as_ref()
-                    .map_or("".to_owned(), |pid| pid.to_string()),
+                con.processes.first().map_or("".to_owned(), |p| p.pid.to_string()),
+                con.processes.first().map(|p| &p.name).cloned().flatten().map_or("".to_owned(), |s| s),
             );
         }
         println!();

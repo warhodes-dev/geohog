@@ -1,9 +1,9 @@
 use indexmap::IndexMap;
-use std::{collections::HashMap, net::Ipv4Addr, sync::Arc, time::Duration};
+use std::{collections::HashMap, net::Ipv4Addr, sync::Arc, sync::Mutex, time::Duration};
 use tokio::{
     sync::{
         mpsc::{self, Receiver, Sender},
-        oneshot, Mutex,
+        oneshot,
     },
     task::JoinHandle,
 };
@@ -29,14 +29,23 @@ impl GeolocationClient {
         GeolocationClient { cache, task_queue }
     }
 
-    pub fn geolocate_ip(&mut self, ip: &Ipv4Addr, locator: Arc<Mutex<Option<Locator>>>) {
-        let cached_locator = self.cache_get(ip);
-        if cached_locator.is_some() {
-            tracing::debug!("Cache hit for {ip}. Setting locator to cached value.");
-            *locator.lock().unwrap() = cached_locator;
+    pub fn geolocate_ip(&mut self, 
+        ip: &Ipv4Addr, 
+    ) -> SharedLocator {
+        if let Some(cached_locator) = self.cache_get(ip) {
+            tracing::trace!("Cache hit for {ip}. Setting locator to cached value.");
+            Arc::new(Mutex::new(Some(cached_locator)))
         } else {
-            tracing::debug!("Cache miss for {ip}. Enqueuing task.");
-            self.enqueue_task(ip, locator);
+            tracing::trace!("Cache miss for {ip}. Checking task queue...");
+            if let Some(in_progress_locator) = self.get_task(ip) {
+                tracing::trace!("Task already in queue. in-progress SharedLocator.");
+                return in_progress_locator;
+            } else {
+                tracing::trace!("Task not found in queue. Enqueueing new task.");
+                let empty_locator = Arc::new(Mutex::new(None));
+                self.enqueue_task(ip, empty_locator.clone());
+                return empty_locator;
+            }
         }
     }
 
@@ -45,8 +54,13 @@ impl GeolocationClient {
     }
 
     /// Enqueue task for RequestHandler without duplicates
-    fn enqueue_task(&mut self, ip: &Ipv4Addr, locator: Arc<Mutex<Option<Locator>>>) {
-        self.task_queue.blocking_lock().insert(*ip, locator.clone());
+    fn enqueue_task(&mut self, ip: &Ipv4Addr, locator: SharedLocator) {
+        self.task_queue.lock().unwrap().insert(*ip, locator.clone());
+    }
+
+    /// Gets an existing task currently in the queue
+    fn get_task(&self, ip: &Ipv4Addr) -> Option<SharedLocator> {
+        self.task_queue.lock().unwrap().get(ip).cloned()
     }
 }
 
@@ -60,8 +74,7 @@ impl RequestHandler {
         let (response_tx, response_rx) = mpsc::channel::<Locator>(128);
         tokio::spawn(RequestHandler::batcher_task(
             response_tx,
-            task_queue,
-            cache.clone(),
+            task_queue.clone(),
         ));
         tokio::spawn(RequestHandler::joiner_task(response_rx, cache.clone()));
     }
@@ -71,13 +84,10 @@ impl RequestHandler {
     async fn batcher_task(
         response_tx: Sender<Locator>,
         task_queue: Arc<Mutex<IndexMap<Ipv4Addr, SharedLocator>>>,
-        cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
     ) {
         let mut interval = tokio::time::interval(Duration::from_secs(1));
         loop {
             let mut task_queue_lock = task_queue.lock().unwrap();
-            let tasks = task_queue_lock.iter().map(|pair| pair.1).cloned();
-            drop(tasks);
             drop(task_queue_lock);
             interval.tick().await;
         }

@@ -1,6 +1,7 @@
 use std::{
     net::{IpAddr, Ipv4Addr},
     sync::Arc,
+    sync::Mutex,
 };
 
 use anyhow::{bail, Result};
@@ -13,7 +14,6 @@ use netstat2::{
 use sysinfo::{self, ProcessRefreshKind};
 
 use geolocate::GeolocationClient;
-use tokio::sync::Mutex;
 
 pub mod geolocate;
 pub mod public_ip;
@@ -42,15 +42,14 @@ impl NetClient {
 
     pub fn refresh(&mut self) -> Result<()> {
         self.get_net_connections()?;
-        self.get_geolocations();
+        //self.get_geolocations(); No need to use this after refactoring
         Ok(())
     }
 
     fn get_geolocations(&mut self) {
-        for conn in self.connections.iter() {
-            if conn.geolocation.blocking_lock().is_none() {
-                self.geo_client
-                    .geolocate_ip(&conn.remote_address, conn.geolocation.clone());
+        for conn in self.connections.iter_mut() {
+            if conn.geolocation.lock().unwrap().is_none() {
+                conn.geolocation = self.geo_client.geolocate_ip(&conn.remote_address);
             }
         }
     }
@@ -68,8 +67,7 @@ impl NetClient {
         // Build connection list from scratch
         self.connections.clear();
         for (tcp, socket) in tcp_sockets_info {
-            let processes = self.get_process_info(&socket.associated_pids);
-            if let Ok(connection) = Connection::new(&tcp, &socket, processes) {
+            if let Ok(connection) = Connection::new(self, &tcp, &socket) {
                 self.connections.push(connection)
             }
         }
@@ -111,20 +109,17 @@ pub struct Connection {
 }
 
 impl Connection {
-    fn new(tcp: &TcpSocketInfo, socket: &SocketInfo, processes: Vec<Process>) -> Result<Self> {
-        fn to_ipv4(ip: IpAddr) -> Result<Ipv4Addr> {
-            match ip {
-                IpAddr::V4(ip) => Ok(ip),
-                IpAddr::V6(ip) => match ip.to_canonical() {
-                    IpAddr::V4(ip) => Ok(ip),
-                    IpAddr::V6(_) => bail!("IPV6 not supported"),
-                },
-            }
-        }
+    fn new(
+        net_client: &mut NetClient, 
+        tcp: &TcpSocketInfo, 
+        socket: &SocketInfo
+    ) -> Result<Self> {
+        let remote_ip = to_ipv4(tcp.remote_addr)?;
 
-        let geolocation = Arc::new(Mutex::new(None));
+        let processes = net_client.get_process_info(&socket.associated_pids);
+        let geolocation = net_client.geo_client.geolocate_ip(&remote_ip);
 
-        Ok(Connection {
+        return Ok(Connection {
             local_address: to_ipv4(tcp.local_addr)?,
             local_address_port: tcp.local_port,
             remote_address: to_ipv4(tcp.remote_addr)?,
@@ -134,7 +129,17 @@ impl Connection {
             inode: socket.inode,
             processes,
             geolocation,
-        })
+        });
+
+        fn to_ipv4(ip: IpAddr) -> Result<Ipv4Addr> {
+            match ip {
+                IpAddr::V4(ip) => Ok(ip),
+                IpAddr::V6(ip) => match ip.to_canonical() {
+                    IpAddr::V4(ip) => Ok(ip),
+                    IpAddr::V6(_) => bail!("IPV6 not supported"),
+                },
+            }
+        }
     }
 
     pub fn display(&self) -> ConnectionDisplay {
@@ -145,6 +150,6 @@ impl Connection {
 pub struct ConnectionDisplay {/* TODO: fill this out */}
 
 pub struct Process {
-    pid: u32,
-    name: Option<String>,
+    pub pid: u32,
+    pub name: Option<String>,
 }
