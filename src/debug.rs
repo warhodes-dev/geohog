@@ -7,7 +7,7 @@ use geohog::{
 };
 
 #[tokio::main]
-fn main() {
+async fn main() {
     let config = Config::parse();
     log::setup_trace(&config);
 
