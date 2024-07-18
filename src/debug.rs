@@ -49,11 +49,11 @@ async fn main() {
 
         print_geolocations(netstat.connections());
 
-        std::thread::sleep(std::time::Duration::from_millis(500));
+        tokio::time::sleep(std::time::Duration::from_millis(1000)).await;
 
         //netstat.geolocate_connections();
 
-        std::thread::sleep(std::time::Duration::from_millis(500));
+        tokio::time::sleep(std::time::Duration::from_millis(1000)).await;
 
         print_geolocations(netstat.connections());
     }

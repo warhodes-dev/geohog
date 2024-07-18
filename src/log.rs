@@ -22,7 +22,7 @@ pub fn setup_trace(config: &Config) {
     let formatted_layer = tracing_subscriber::fmt::layer()
         .event_format(format().compact())
         .with_timer(timer)
-        .without_time();
+        .with_thread_ids(true);
     tracing_subscriber::registry()
         .with(level_filter)
         .with(env_filter)

@@ -96,6 +96,8 @@ impl NetClient {
     }
 }
 
+
+
 pub struct Connection {
     pub local_address: Ipv4Addr,
     pub local_address_port: u16,
@@ -115,6 +117,11 @@ impl Connection {
         socket: &SocketInfo
     ) -> Result<Self> {
         let remote_ip = to_ipv4(tcp.remote_addr)?;
+
+        if !remote_ip.is_global() {
+            tracing::debug!("Ignoring connection to {remote_ip}: non-global address.");
+            bail!("Non-global IP. Ignoring.");
+        }
 
         let processes = net_client.get_process_info(&socket.associated_pids);
         let geolocation = net_client.geo_client.geolocate_ip(&remote_ip);
