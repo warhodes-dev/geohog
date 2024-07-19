@@ -17,7 +17,7 @@ type SharedLocator = Arc<Mutex<Option<Locator>>>;
 
 pub struct GeolocationClient {
     cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
-    task_queue: Arc<Mutex<QueueMap<Ipv4Addr, SharedLocator>>>,
+    task_queue: Arc<Mutex<QueueMap<Ipv4Addr, Task>>>,
 }
 
 impl GeolocationClient {
@@ -38,9 +38,9 @@ impl GeolocationClient {
             return Arc::new(Mutex::new(Some(cached_locator)));
         } else {
             tracing::trace!("{ip:15}: Cache miss. Checking task queue...");
-            if let Some(in_progress_locator) = self.get_task(ip) {
+            if let Some(in_progress_task) = self.get_task(ip) {
                 tracing::trace!("{ip:15}: Task already in queue. Returning in-progress SharedLocator.");
-                return in_progress_locator;
+                return in_progress_task.locator;
             } else {
                 tracing::trace!("{ip:15}: Task not found in queue. Enqueueing new task.");
                 let empty_locator = Arc::new(Mutex::new(None));
@@ -56,12 +56,26 @@ impl GeolocationClient {
 
     /// Enqueue task for RequestHandler without duplicates
     fn enqueue_task(&mut self, ip: &Ipv4Addr, locator: SharedLocator) {
-        self.task_queue.lock().unwrap().push_back(*ip, locator.clone());
+        let task = Task::new(*ip, locator);
+        self.task_queue.lock().unwrap().push_back(task.ip, task);
     }
 
     /// Gets an existing task currently in the queue
-    fn get_task(&self, ip: &Ipv4Addr) -> Option<SharedLocator> {
+    fn get_task(&self, ip: &Ipv4Addr) -> Option<Task> {
         self.task_queue.lock().unwrap().get(ip).cloned()
+    }
+}
+
+#[derive(Clone)]
+struct Task {
+    pub ip: Ipv4Addr,
+    pub locator: SharedLocator,
+    pending: bool,
+}
+
+impl Task {
+    fn new(ip: Ipv4Addr, locator: SharedLocator) -> Self {
+        Task { ip, locator, pending: false }
     }
 }
 
@@ -69,7 +83,7 @@ impl GeolocationClient {
 struct RequestHandler;
 impl RequestHandler {
     fn init(
-        task_queue: Arc<Mutex<QueueMap<Ipv4Addr, SharedLocator>>>,
+        task_queue: Arc<Mutex<QueueMap<Ipv4Addr, Task>>>,
         cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
     ) {
         let (tx, rx) = mpsc::channel::<(Ipv4Addr, Locator)>(128);
@@ -78,7 +92,6 @@ impl RequestHandler {
         tokio::spawn(async move {
             tracing::debug!("Spawning batching worker task.");
             RequestHandler::batcher_task(tx, pending_tasks_1, task_queue.clone()).await;
-
         });
         tokio::spawn(async move {
             tracing::debug!("Spawning joining worker task.");
@@ -89,8 +102,7 @@ impl RequestHandler {
     /// On interval, takes a batch of tasks and issues the appropriate API query 
     async fn batcher_task(
         response_tx: Sender<(Ipv4Addr, Locator)>,
-        pending_tasks: Arc<Mutex<HashMap<Ipv4Addr, SharedLocator>>>,
-        task_queue: Arc<Mutex<QueueMap<Ipv4Addr, SharedLocator>>>,
+        task_queue: Arc<Mutex<QueueMap<Ipv4Addr, Task>>>,
     ) {
         let mut interval = tokio::time::interval(Duration::from_secs(3));
         loop {
@@ -98,10 +110,9 @@ impl RequestHandler {
             tracing::trace!("Polling task queue...");
             {
                 let mut task_queue = task_queue.lock().unwrap();
-                let mut pending_tasks = pending_tasks.lock().unwrap();
 
                 // TODO: Batch queries to avoid raid limit
-                while let Some((ip, shared_locator)) = task_queue.pop_front() {
+                for task in task_queue.iter() {
                     pending_tasks.insert(ip, shared_locator);
                     let tx = response_tx.clone();
                     tokio::spawn(async move {
@@ -141,13 +152,17 @@ impl RequestHandler {
 
 async fn single_query(ip: Ipv4Addr) -> Result<Locator> {
     tracing::info!("{ip:15}: Issuing single query to IpApi...");
-    let service = Service::IpApi;
+    let url = format!("http://ip-api.com/json/{ip}");
 
-    //TODO: Drop the dependency, manual GET
-    //TODO: Add config for multiple providers
-    Locator::get_ipv4(ip, service)
-        .await
-        .map_err(anyhow::Error::msg)
+    let response = reqwest::get(&url).await
+        .map_err(|err| {
+            tracing::error!("ip-api error: {err}");
+            err
+        })?;
+
+    
+
+    todo!()
 }
 
 async fn batch_query(ips: &[Ipv4Addr]) -> Result<Vec<Locator>> {
