@@ -6,14 +6,13 @@ use std::{
 
 use anyhow::{bail, Result};
 
-use ipgeolocate::Locator;
 use netstat2::{
     iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, SocketInfo,
     TcpSocketInfo,
 };
 use sysinfo::{self, ProcessRefreshKind};
 
-use geolocate::GeolocationClient;
+use geolocate::{GeolocationClient, Locator};
 
 pub mod geolocate;
 pub mod public_ip;

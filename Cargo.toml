@@ -12,7 +12,7 @@ path = "src/debug.rs"
 [dependencies]
 shapefile = "0.6.0"
 serde_derive = "1.0.141"
-serde = "1.0.141"
+serde = { version = "1.0.141", features = ["derive"] }
 toml = "0.5.9"
 geo-types = "0.7.4"
 crossterm = "0.24.0"
@@ -35,4 +35,5 @@ lazy_static = "1.4.0"
 netstat2 = "0.9.1"
 sysinfo = "0.30.12"
 indexmap = "2.2.6"
-reqwest = "0.12.5"
+reqwest = { version = "0.12.5", features = ["json"] }
+hashlink = "0.9.1"
