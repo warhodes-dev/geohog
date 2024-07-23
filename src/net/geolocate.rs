@@ -1,19 +1,13 @@
-use std::{collections::{HashMap, HashSet}, net::Ipv4Addr, sync::{Arc, Mutex}, time::Duration};
-use serde::Deserialize;
-use tokio::{
-    sync::{
-        mpsc::{self, Receiver, Sender},
-        oneshot,
-    },
-    task::JoinHandle,
-};
+use std::{borrow::Borrow, collections::{HashMap, HashSet}, net::Ipv4Addr, ops::Deref, sync::{Arc, Mutex}, time::Duration};
+use ip_api::schema::IpApiResponse;
+use tokio::sync::mpsc::{self, Receiver, Sender};
 use hashlink::LinkedHashMap;
-use anyhow::{Result, anyhow, bail};
+use anyhow::Result;
 
-type SharedLocator = Arc<Mutex<Option<Locator>>>;
+pub type SharedLocator = Arc<Mutex<Locator>>;
 
 pub struct GeolocationClient {
-    cache: Arc<Mutex<HashMap<Ipv4Addr, CachedLocator>>>,
+    cache: Arc<Mutex<HashMap<Ipv4Addr, SharedLocator>>>,
     blacklist: Arc<Mutex<HashSet<Ipv4Addr>>>,
     job_queue: Arc<Mutex<LinkedHashMap<Ipv4Addr, Job>>>,
 }
@@ -31,23 +25,19 @@ impl GeolocationClient {
 
     pub fn geolocate_ip(&mut self, ip: &Ipv4Addr) -> SharedLocator {
         if let Some(cached_locator) = self.cache_get(ip) {
-            match cached_locator {
-                CachedLocator::Valid(locator) => {
-                    tracing::trace!("{ip:15}: Cache hit. Setting locator to cached value.");
-                    Arc::new(Mutex::new(Some(locator)))
-                },
-                CachedLocator::Refused(reason) => {
-                    tracing::debug!("{ip:15}: Cache hit, but API recently refused this IP for {reason}. Returning doomed locator.");
-                    Arc::new(Mutex::new(None))
-                }
-            }
+            match cached_locator.lock().unwrap().deref() {
+                Locator::Some(_) => tracing::trace!("{ip:15}: Cache hit"),
+                Locator::Refused(reason) => tracing::debug!("{ip:15}: Cache hit, but API recently refused this IP for {reason}"),
+                Locator::Pending => tracing::warn!("{ip:15}: Pending job is cached, which sould never happen!"),
+            };
+            cached_locator
         } else {
             tracing::trace!("{ip:15}: Cache miss. Checking job queue...");
             self.enqueue_job(ip)
         }
     }
 
-    fn cache_get(&self, ip: &Ipv4Addr) -> Option<CachedLocator> {
+    fn cache_get(&self, ip: &Ipv4Addr) -> Option<SharedLocator> {
         self.cache.lock().unwrap().get(&ip).cloned()
     }
 
@@ -60,7 +50,7 @@ impl GeolocationClient {
             return in_progress_locator;
         } else {
             tracing::trace!("Enqueueing job. Returning new locator.");
-            let new_locator = Arc::new(Mutex::new(None));
+            let new_locator = Arc::new(Mutex::new(Locator::Pending));
             let job = Job::new(*ip, new_locator.clone());
             job_queue.insert(job.ip, job);
             return new_locator;
@@ -69,7 +59,14 @@ impl GeolocationClient {
 }
 
 #[derive(Debug, Clone)]
-pub struct Locator {
+pub enum Locator {
+    Some(Geolocation),
+    Refused(String),
+    Pending,
+}
+
+#[derive(Debug, Clone)]
+pub struct Geolocation {
     pub ip: String,
     pub latitude: f64,
     pub longitude: f64,
@@ -84,41 +81,28 @@ pub struct Locator {
     pub isp: String,
 }
 
-impl Locator {
-    fn from_ip_api(res: IpApiSuccess) -> Self {
-        Locator {
-            ip:             res.query,
-            latitude:       res.lat,
-            longitude:      res.lon,
-            continent:      res.continent,
-            continent_code: res.continentCode,
-            country:        res.country,
-            country_code:   res.countryCode,
-            region:         res.regionName,
-            region_code:    res.region,
-            city:           res.city,
-            timezone:       res.timezone,
-            isp:            res.isp,
-        }
-    }
-}
-
-#[derive(Clone)]
-enum CachedLocator {
-    Valid(Locator),
-    Refused(IpApiError),
-}
-
-impl TryFrom<Result<Locator>> for CachedLocator {
-    type Error = anyhow::Error;
-    
-    fn try_from(value: Result<Locator>) -> std::result::Result<Self, Self::Error> {
+impl From<ip_api::schema::IpApiResponse> for Locator {
+    fn from(value: ip_api::schema::IpApiResponse) -> Self {
         match value {
-            Ok(locator) => Ok(CachedLocator::Valid(locator)),
-            Err(err) => {
-                let ip_api_error = err.downcast::<IpApiError>()?;
-                Ok(CachedLocator::Refused(ip_api_error))
-            }
+            ip_api::schema::IpApiResponse::Success(res) => {
+                Self::Some(Geolocation {
+                    ip:             res.query,
+                    latitude:       res.lat,
+                    longitude:      res.lon,
+                    continent:      res.continent,
+                    continent_code: res.continentCode,
+                    country:        res.country,
+                    country_code:   res.countryCode,
+                    region:         res.regionName,
+                    region_code:    res.region,
+                    city:           res.city,
+                    timezone:       res.timezone,
+                    isp:            res.isp,
+                })
+            },
+            ip_api::schema::IpApiResponse::Fail(res) => {
+                Self::Refused(res.message)
+            },
         }
     }
 }
@@ -141,9 +125,9 @@ struct RequestHandler;
 impl RequestHandler {
     fn init(
         job_queue: Arc<Mutex<LinkedHashMap<Ipv4Addr, Job>>>,
-        cache: Arc<Mutex<HashMap<Ipv4Addr, CachedLocator>>>,
+        cache: Arc<Mutex<HashMap<Ipv4Addr, SharedLocator>>>,
     ) {
-        let (tx, rx) = mpsc::channel::<(Ipv4Addr, Result<Locator>)>(128);
+        let (tx, rx) = mpsc::channel::<(Ipv4Addr, Result<ip_api::schema::IpApiResponse>)>(128);
 
         tokio::spawn({ // Batching Task
             let job_queue = job_queue.clone();
@@ -159,14 +143,14 @@ impl RequestHandler {
 
     /// On interval, takes a batch of tasks and issues the appropriate API query 
     async fn batching_worker(
-        response_tx: Sender<(Ipv4Addr, Result<Locator>)>,
+        response_tx: Sender<(Ipv4Addr, Result<ip_api::schema::IpApiResponse>)>,
         job_queue: Arc<Mutex<LinkedHashMap<Ipv4Addr, Job>>>,
     ) {
         tracing::debug!("Spawning 'batch' worker task.");
         let mut interval = tokio::time::interval(Duration::from_secs(3));
         loop {
-            tracing::trace!("Polling task queue...");
             interval.tick().await;
+            tracing::trace!("Polling task queue...");
             {
                 let mut job_queue = job_queue.lock().unwrap();
 
@@ -177,7 +161,7 @@ impl RequestHandler {
                     tokio::spawn({
                         let tx = response_tx.clone();
                         async move {
-                            let response = single_query(ip).await;
+                            let response = ip_api::single_query(ip).await;
                             tx.send((ip, response)).await.unwrap();
                         }
                     });
@@ -188,118 +172,91 @@ impl RequestHandler {
 
     /// Completes finished API queries by caching response and updating `SharedLocator`
     async fn joining_worker(
-        mut response_rx: Receiver<(Ipv4Addr, Result<Locator>)>,
+        mut response_rx: Receiver<(Ipv4Addr, Result<IpApiResponse>)>,
         job_queue: Arc<Mutex<LinkedHashMap<Ipv4Addr, Job>>>,
-        cache: Arc<Mutex<HashMap<Ipv4Addr, CachedLocator>>>,
+        cache: Arc<Mutex<HashMap<Ipv4Addr, SharedLocator>>>,
     ) {
         tracing::debug!("Spawning 'join' worker task.");
         while let Some((ip, response)) = response_rx.recv().await {
 
-            // Set shared locator to API result and remove pending job from job queue
-            tracing::trace!("{ip:15} Job complete. Removing job from pending queue.");
-            let job = job_queue.lock().unwrap()
+            // Remove pending job from job queue
+            tracing::trace!("{ip:15}: Removing job from pending queue.");
+            let shared_locator = job_queue.lock().unwrap()
                 .remove(&ip)
-                .expect("Job joined but not found in task queue.");
+                .expect("Job joined but not found in task queue.")
+                .locator;
 
-            // Set shared locator which presumably exists and is in-use elsewhere.
-            // TODO: Set this to some kind of trinary state like Pending/Done(val)/Refused(why)
-            if let Ok(ref locator) = response {
-                *job.locator.lock().unwrap() = Some(locator.clone());
-            }
+            if let Ok(response) = response {
+                tracing::trace!("{ip:15}: Setting shared locator");
+                *shared_locator.lock().unwrap() = Locator::from(response);
 
-            // Only cache Ok or Err(IpApiError). Other errors (e.g. reqwest)
-            // should be fine to re-attempt later. 
-            if let Ok(cacheable_locator) = CachedLocator::try_from(response) {
-                cache.lock().unwrap().insert(ip, cacheable_locator);
+                tracing::trace!("{ip:15}: Adding shared locator to cache");
+                cache.lock().unwrap().insert(ip, shared_locator);
             } else {
-                tracing::warn!("Request failure for {ip}. Ignoring.");
+                response.inspect_err(|e| tracing::error!("Ip-Api request error:\n{e:?}")).ok();
             }
         }
     }
 }
 
-#[derive(Deserialize)]
-#[serde(untagged)]
-enum IpApiResponse {
-    Success(IpApiSuccess),
-    Fail(IpApiFail),
-}
+mod ip_api {
+    use std::net::Ipv4Addr;
+    use anyhow::Result;
 
-#[derive(Deserialize)]
-struct IpApiFail {
-    status: String,
-    message: String,
-    query: String,
-}
+    pub mod schema {
+        use serde::Deserialize;
+        #[derive(Deserialize)]
+        #[serde(tag = "status", rename_all = "lowercase")]
+        pub enum IpApiResponse {
+            Success(IpApiSuccess),
+            Fail(IpApiFail),
+        }
 
-#[allow(non_snake_case)]
-#[derive(Deserialize)]
-struct IpApiSuccess {
-    continent: String,
-    continentCode: String,
-    country: String,
-    countryCode: String,
-    region: String,
-    regionName: String,
-    city: String,
-    lat: f64,
-    lon: f64,
-    timezone: String,
-    isp: String,
-    query: String,
-}
+        #[derive(Deserialize)]
+        pub struct IpApiFail {
+            pub message: String,
+            pub query: String,
+        }
 
-#[derive(Debug, Clone)]
-enum IpApiError {
-    PrivateRange,
-    ReservedRange,
-    InvalidQuery,
-    Unknown,
-}
-
-impl<T: AsRef<str>> From<T> for IpApiError {
-    fn from(value: T) -> Self {
-        match value.as_ref() {
-            "private range" => IpApiError::PrivateRange,
-            "reserved range" => IpApiError::ReservedRange,
-            "invalid query" => IpApiError::InvalidQuery,
-            _ => IpApiError::Unknown,
+        #[allow(non_snake_case)]
+        #[derive(Deserialize)]
+        pub struct IpApiSuccess {
+            pub continent: String,
+            pub continentCode: String,
+            pub country: String,
+            pub countryCode: String,
+            pub region: String,
+            pub regionName: String,
+            pub city: String,
+            pub lat: f64,
+            pub lon: f64,
+            pub timezone: String,
+            pub isp: String,
+            pub query: String,
         }
     }
-}
+    
+    const DEFAULT_FIELDS: &str = "status,message,continent,continentCode,\
+                                country,countryCode,region,regionName,city,\
+                                lat,lon,timezone,isp,query";
 
-impl std::fmt::Display for IpApiError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let msg = match self {
-            IpApiError::PrivateRange => "private range",
-            IpApiError::ReservedRange => "reserved range",
-            IpApiError::InvalidQuery => "invalid query",
-            IpApiError::Unknown => "unknown server error",
-        };
-        write!(f, "{msg}")
+    pub async fn single_query(ip: Ipv4Addr) -> Result<schema::IpApiResponse> {
+        tracing::info!("{ip:15}: Issuing single query to IpApi...");
+        let url = format!("http://ip-api.com/json/{ip}?fields={DEFAULT_FIELDS}");
+
+        let response_text = reqwest::get(&url).await?
+            .text().await?;
+
+        let response = serde_json::from_str(&response_text)
+            .map_err(|e| anyhow::anyhow!(format!("{e:?}\n\nResponse text:\n{response_text}")))?; 
+        Ok(response)
     }
-}
 
-async fn single_query(ip: Ipv4Addr) -> Result<Locator> {
-    tracing::info!("{ip:15}: Issuing single query to IpApi...");
-    let url = format!("http://ip-api.com/json/{ip}?fields=status,message,continent,\
-                       continentCode,country,countryCode,region,regionName,city,\
-                       lat,lon,timezone,isp,query");
+    /*
+        async fn batch_query(ips: &[Ipv4Addr]) -> Result<Vec<Locator>> {
+            tracing::info!("({:15}): Issuing BATCH query to IpApi...", format!("{} jobs", ips.len()));
+            let url = format!("http://ip-api.com/batch/{ip}?fields={DEFAULT_FIELDS}");
+        }
+    */
 
-    let response = reqwest::get(&url).await
-        .inspect_err(|err| tracing::error!("ip-api error: {err}"))?
-        .json::<IpApiResponse>()
-        .await
-        .inspect_err(|err| tracing::error!("serde json parse error: {err:?}"))?;
-
-
-    match response {
-        IpApiResponse::Success(success) => Ok(Locator::from_ip_api(success)),
-        IpApiResponse::Fail(fail) => bail!(IpApiError::from(&fail.message)),
-    }
-}
-
-async fn batch_query(ips: &[Ipv4Addr]) -> Result<Vec<Locator>> {
-    tracing::info!("({:15}): Issuing BATCH query to IpApi...", format!("{} jobs", ips.len()));
-    todo!();
 }

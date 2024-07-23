@@ -1,8 +1,4 @@
-use std::{
-    net::{IpAddr, Ipv4Addr},
-    sync::Arc,
-    sync::Mutex,
-};
+use std::net::{IpAddr, Ipv4Addr};
 
 use anyhow::{bail, Result};
 
@@ -12,7 +8,7 @@ use netstat2::{
 };
 use sysinfo::{self, ProcessRefreshKind};
 
-use geolocate::{GeolocationClient, Locator};
+use geolocate::{SharedLocator, GeolocationClient};
 
 pub mod geolocate;
 pub mod public_ip;
@@ -43,14 +39,6 @@ impl NetClient {
         self.get_net_connections()?;
         //self.get_geolocations(); No need to use this after refactoring
         Ok(())
-    }
-
-    fn get_geolocations(&mut self) {
-        for conn in self.connections.iter_mut() {
-            if conn.geolocation.lock().unwrap().is_none() {
-                conn.geolocation = self.geo_client.geolocate_ip(&conn.remote_address);
-            }
-        }
     }
 
     fn get_net_connections(&mut self) -> Result<()> {
@@ -106,7 +94,7 @@ pub struct Connection {
     #[cfg(any(target_os = "linux", target_os = "android"))]
     pub inode: u32,
     pub processes: Vec<Process>,
-    pub geolocation: Arc<Mutex<Option<Locator>>>,
+    pub geolocation: SharedLocator,
 }
 
 impl Connection {
