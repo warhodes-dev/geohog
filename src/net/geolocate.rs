@@ -146,61 +146,49 @@ impl RequestHandler {
         let client = reqwest::Client::new();
         let mut interval = tokio::time::interval(Duration::from_secs(3));
 
-        loop {
-            interval.tick().await;
-            tracing::trace!("Polling task queue...");
-            {
-                let jobs = job_queue.lock().unwrap()
-                    .iter_mut()
-                    .filter(|(_, job)| matches!(job.status, JobProgress::Queued))
-                    .take(100)
-                    .map(|(ip, job)| {
-                        job.status = JobProgress::Issued;
-                        *ip
-                    })
-                    .collect::<Vec<_>>();
+        loop { 
+            interval.tick().await; 
 
-                if jobs.len() > 5 {
-                    // Batch query
-                    tracing::trace!("{} job(s): Spawning batch task.", jobs.len());
+            let ips = job_queue.lock().unwrap()
+                .iter_mut()
+                .filter(|(_, job)| matches!(job.status, JobProgress::Queued))
+                .take(100)
+                .map(|(ip, job)| {
+                    job.status = JobProgress::Issued;
+                    *ip
+                })
+                .collect::<Vec<_>>();
+
+            if ips.len() > 5 {
+
+                // Batch query
+                tokio::spawn({
+                    let tx = response_tx.clone();
+                    let client = client.clone();
+                    async move {
+                        if let Ok(responses) = ip_api::batch(ips.as_slice(), client).await {
+                            for response in responses {
+                                let response_ip = Ipv4Addr::from_str(&response.query).unwrap();
+                                tx.send((response_ip, response)).await.unwrap();
+                            }
+                        }
+                    }
+                });
+
+            } else {
+
+                // Issue several single queries
+                for ip in ips {
                     tokio::spawn({
                         let tx = response_tx.clone();
                         let client = client.clone();
                         async move {
-                            let job_ips = jobs.as_slice();
-                            match ip_api::batch_query(job_ips, client).await {
-                                Ok(responses) => {
-                                    let responses = job_ips.iter().zip(responses);
-                                    for (&job_ip, response) in responses {
-                                        let response_ip = Ipv4Addr::from_str(&response.query).unwrap();
-                                        assert_eq!(job_ip, response_ip);
-                                        tx.send((response_ip, response)).await.unwrap();
-                                    }
-                                },
-                                Err(e) => tracing::error!("Query error:\n{e:?}")
+                            if let Ok(response) = ip_api::single(ip, client).await {
+                                let response_ip = Ipv4Addr::from_str(&response.query).unwrap();
+                                tx.send((response_ip, response)).await.unwrap();
                             }
                         }
                     });
-                } else {
-                    // Issue several single queries
-                    for job in jobs {
-                        let job_ip = job;
-                        tracing::trace!("{job_ip:15}: Spawning single task.");
-                        tokio::spawn({
-                            let tx = response_tx.clone();
-                            let client = client.clone();
-                            async move {
-                                match ip_api::single_query(job_ip, client).await {
-                                    Ok(response) => {
-                                        let response_ip = Ipv4Addr::from_str(&response.query).unwrap();
-                                        assert_eq!(job_ip, response_ip);
-                                        tx.send((response_ip, response)).await.unwrap();
-                                    },
-                                    Err(e) => tracing::error!("Query error:\n{e:?}")
-                                }
-                            }
-                        });
-                    }
                 }
             }
         }
@@ -216,16 +204,13 @@ impl RequestHandler {
         while let Some((ip, response)) = response_rx.recv().await {
 
             // Remove pending job from job queue
-            tracing::trace!("{ip:15}: Removing job from pending queue.");
             let shared_locator = job_queue.lock().unwrap()
                 .remove(&ip)
                 .expect("Job joined but not found in task queue.")
                 .locator;
 
-            tracing::trace!("{ip:15}: Setting shared locator");
+            // update shared locator and store reference to it in the cache
             *shared_locator.lock().unwrap() = Locator::from(response);
-
-            tracing::trace!("{ip:15}: Adding shared locator to cache");
             cache.lock().unwrap().insert(ip, shared_locator);
         }
     }
@@ -278,7 +263,7 @@ mod ip_api {
                                 country,countryCode,region,regionName,city,\
                                 lat,lon,timezone,isp,query";
 
-    pub async fn single_query(ip: Ipv4Addr, client: reqwest::Client) -> Result<schema::IpApiResponse> {
+    pub async fn single(ip: Ipv4Addr, client: reqwest::Client) -> Result<schema::IpApiResponse> {
         tracing::info!("{ip:15}: Issuing SINGLE query to IpApi...");
         let url = format!("http://ip-api.com/json/{ip}?fields={DEFAULT_FIELDS}");
 
@@ -289,8 +274,8 @@ mod ip_api {
         Ok(response)
     }
 
-    pub async fn batch_query(ips: &[Ipv4Addr], client: reqwest::Client) -> Result<impl Iterator<Item = schema::IpApiResponse>> {
-        tracing::info!("({:15}): Issuing BATCH query to IpApi...", format!("{} jobs", ips.len()));
+    pub async fn batch(ips: &[Ipv4Addr], client: reqwest::Client) -> Result<impl Iterator<Item = schema::IpApiResponse>> {
+        tracing::info!("({:13}): Issuing BATCH query to IpApi...", format!("{} jobs", ips.len()));
         let url = format!("http://ip-api.com/batch?fields={DEFAULT_FIELDS}");
 
         let response = client.post(&url)

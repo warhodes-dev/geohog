@@ -105,8 +105,8 @@ impl Connection {
     ) -> Result<Self> {
         let remote_ip = to_ipv4(tcp.remote_addr)?;
 
+        // TODO: Support these, just don't query the API for them
         if !remote_ip.is_global() {
-            tracing::debug!("Ignoring connection to {remote_ip}: non-global address.");
             bail!("Non-global IP. Ignoring.");
         }
 
