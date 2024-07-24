@@ -9,11 +9,11 @@ pub mod ui {
         event::{DisableMouseCapture, EnableMouseCapture}, 
         terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}
     };
+    use geohog::net::NetClient;
     use ratatui::{
         backend::CrosstermBackend, prelude::*, widgets::{Block, Borders, Paragraph, Widget} 
     };
 
-    #[derive(Debug)]
     pub struct Tui {
         terminal: Terminal<CrosstermBackend<Stdout>>,
         app: App,
@@ -44,8 +44,6 @@ pub mod ui {
         pub fn run(&mut self) -> Result<()> {
             loop {
                 self.draw()?;
-
-                //check for keypresses
             }
         }
 
@@ -64,12 +62,15 @@ pub mod ui {
         }
     }
 
-    #[derive(Debug)]
-    struct App;
+    struct App {
+        net: NetClient
+    }
 
     impl App {
         fn new() -> Self {
-            App
+            App {
+                net: NetClient::new(),
+            }
         }
 
         fn render_header(&self, area: Rect, buf: &mut Buffer) {
@@ -124,11 +125,14 @@ use geohog::config::Config;
 use ui::Tui;
 use geohog::log;
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     let config = Config::parse();
     log::setup_trace(&config);
 
-    let tui = Tui::initialize()?;
+    let mut tui = Tui::initialize()?;
+
+    tui.run()?;
 
     Ok(())
 }

@@ -16,7 +16,7 @@ async fn main() {
     fn print_geolocations<'a>(connections: impl Iterator<Item = &'a Connection>) {
         println!("=== Geolocated Sockets ===");
         println!(
-            "{:<7} {:<20} {:<14} {:<12} {:<14} {:<12} {:<7} {:<15}",
+            "{:<7} {:<21} {:<14} {:<8} {:<8} {:<12} {:<7} {:<15}",
             "Socket",
             "Remote address",
             "City",
@@ -34,12 +34,12 @@ async fn main() {
                 geohog::net::geolocate::Locator::Pending => None,
             };
             println!(
-                "{:<7} {:<21} {:<14} {:<20} {:<14} {:<12} {:<7} {:<15}",
+                "{:<7} {:<21} {:<14} {:<8} {:<8} {:<12} {:<7} {:<15}",
                 con.local_address_port,
                 format!("{}:{}", con.remote_address, con.remote_address_port),
                 geo.as_ref().map_or("", |not_pending| not_pending.map_or("Refused", |g| &g.city)),
-                geo.as_ref().map_or("", |not_pending| not_pending.map_or("Refused", |g| &g.region)),
-                geo.as_ref().map_or("", |not_pending| not_pending.map_or("Refused", |g| &g.country)),
+                geo.as_ref().map_or("", |not_pending| not_pending.map_or("Refused", |g| &g.region_code)),
+                geo.as_ref().map_or("", |not_pending| not_pending.map_or("Refused", |g| &g.country_code)),
                 con.state,
                 con.processes.first().map_or("".to_owned(), |p| p.pid.to_string()),
                 con.processes.first().map(|p| &p.name).cloned().flatten().map_or("".to_owned(), |s| s),
