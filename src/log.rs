@@ -4,12 +4,12 @@ use tracing_subscriber::{fmt::format, filter, prelude::*};
 pub fn setup_trace(config: &Config) {
 
     // Message level
-    let (level_filter, level_str) = match config.log_level {
-        LogLevel::Trace => (filter::LevelFilter::TRACE, "trace"),
-        LogLevel::Debug => (filter::LevelFilter::DEBUG, "debug"),
-        LogLevel::Info  => (filter::LevelFilter::INFO, "info"),
-        LogLevel::Warn  => (filter::LevelFilter::WARN, "warn"), 
-        LogLevel::Error => (filter::LevelFilter::ERROR, "error"),
+    let level_filter = match config.log_level {
+        LogLevel::Trace => filter::LevelFilter::TRACE,
+        LogLevel::Debug => filter::LevelFilter::DEBUG,
+        LogLevel::Info  => filter::LevelFilter::INFO,
+        LogLevel::Warn  => filter::LevelFilter::WARN, 
+        LogLevel::Error => filter::LevelFilter::ERROR,
     };
 
     // Crate visibility

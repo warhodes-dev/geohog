@@ -1,10 +1,38 @@
-use std::{borrow::Borrow, collections::{HashMap, HashSet}, net::Ipv4Addr, ops::Deref, str::FromStr, sync::{Arc, Mutex}, time::Duration};
-use ip_api::schema::IpApiResponse;
-use tokio::sync::mpsc::{self, Receiver, Sender};
+use std::collections::HashMap;
+use std::net::Ipv4Addr; 
+use std::str::FromStr; 
+use std::sync::{Arc, Mutex}; 
+use std::time::Duration;
 use hashlink::LinkedHashMap;
-use anyhow::Result;
+use tokio::sync::mpsc::{self, Receiver, Sender};
+use ip_api::schema::IpApiResponse;
+
+mod ip_api;
 
 pub type SharedLocator = Arc<Mutex<Locator>>;
+
+#[derive(Debug, Clone)]
+pub enum Locator {
+    Some(Geolocation),
+    Refused(String),
+    Pending,
+}
+
+#[derive(Debug, Clone)]
+pub struct Geolocation {
+    pub ip: String,
+    pub latitude: f64,
+    pub longitude: f64,
+    pub continent: String,
+    pub continent_code: String,
+    pub country: String,
+    pub country_code: String,
+    pub region: String,
+    pub region_code: String,
+    pub city: String,
+    pub timezone: String,
+    pub isp: String,
+}
 
 pub struct GeolocationClient {
     cache: Arc<Mutex<HashMap<Ipv4Addr, SharedLocator>>>,
@@ -46,55 +74,6 @@ impl GeolocationClient {
     }
 }
 
-#[derive(Debug, Clone)]
-pub enum Locator {
-    Some(Geolocation),
-    Refused(String),
-    Pending,
-}
-
-#[derive(Debug, Clone)]
-pub struct Geolocation {
-    pub ip: String,
-    pub latitude: f64,
-    pub longitude: f64,
-    pub continent: String,
-    pub continent_code: String,
-    pub country: String,
-    pub country_code: String,
-    pub region: String,
-    pub region_code: String,
-    pub city: String,
-    pub timezone: String,
-    pub isp: String,
-}
-
-impl From<ip_api::schema::IpApiResponse> for Locator {
-    fn from(value: ip_api::schema::IpApiResponse) -> Self {
-        match value.variant {
-            ip_api::schema::IpApiVariant::Success(res) => {
-                Self::Some(Geolocation {
-                    ip:             value.query,
-                    latitude:       res.lat,
-                    longitude:      res.lon,
-                    continent:      res.continent,
-                    continent_code: res.continent_code,
-                    country:        res.country,
-                    country_code:   res.country_code,
-                    region:         res.region_name,
-                    region_code:    res.region,
-                    city:           res.city,
-                    timezone:       res.timezone,
-                    isp:            res.isp,
-                })
-            },
-            ip_api::schema::IpApiVariant::Fail(res) => {
-                Self::Refused(res.message)
-            },
-        }
-    }
-}
-
 #[derive(Clone)]
 struct Job {
     ip: Ipv4Addr,
@@ -115,7 +94,7 @@ impl Job {
     }
 }
 
-/// Handles Ip-Api requests
+/// Dispatches and joins Ip-Api request tasks
 struct RequestHandler;
 impl RequestHandler {
     fn init(
@@ -153,9 +132,9 @@ impl RequestHandler {
                 .iter_mut()
                 .filter(|(_, job)| matches!(job.status, JobProgress::Queued))
                 .take(100)
-                .map(|(ip, job)| {
+                .map(|(_, job)| {
                     job.status = JobProgress::Issued;
-                    *ip
+                    job.ip
                 })
                 .collect::<Vec<_>>();
 
@@ -206,7 +185,7 @@ impl RequestHandler {
             // Remove pending job from job queue
             let shared_locator = job_queue.lock().unwrap()
                 .remove(&ip)
-                .expect("Job joined but not found in task queue.")
+                .expect("Match completed job to entry in job queue")
                 .locator;
 
             // update shared locator and store reference to it in the cache
@@ -216,73 +195,28 @@ impl RequestHandler {
     }
 }
 
-mod ip_api {
-    use std::net::Ipv4Addr;
-    use anyhow::Result;
-
-    pub mod schema {
-        use serde::Deserialize;
-
-        #[derive(Deserialize)]
-        pub struct IpApiResponse {
-            pub query: String,
-            #[serde(flatten)]
-            pub variant: IpApiVariant,
+impl From<ip_api::schema::IpApiResponse> for Locator {
+    fn from(value: ip_api::schema::IpApiResponse) -> Self {
+        match value.variant {
+            ip_api::schema::IpApiVariant::Success(res) => {
+                Self::Some(Geolocation {
+                    ip:             value.query,
+                    latitude:       res.lat,
+                    longitude:      res.lon,
+                    continent:      res.continent,
+                    continent_code: res.continent_code,
+                    country:        res.country,
+                    country_code:   res.country_code,
+                    region:         res.region_name,
+                    region_code:    res.region,
+                    city:           res.city,
+                    timezone:       res.timezone,
+                    isp:            res.isp,
+                })
+            },
+            ip_api::schema::IpApiVariant::Fail(res) => {
+                Self::Refused(res.message)
+            },
         }
-
-        #[derive(Deserialize)]
-        #[serde(tag = "status", rename_all = "lowercase")]
-        pub enum IpApiVariant {
-            Success(IpApiSuccess),
-            Fail(IpApiFail),
-        }
-
-        #[derive(Deserialize)]
-        pub struct IpApiFail {
-            pub message: String,
-        }
-
-        #[derive(Deserialize)]
-        #[serde(rename_all = "camelCase")]
-        pub struct IpApiSuccess {
-            pub continent: String,
-            pub continent_code: String,
-            pub country: String,
-            pub country_code: String,
-            pub region: String,
-            pub region_name: String,
-            pub city: String,
-            pub lat: f64,
-            pub lon: f64,
-            pub timezone: String,
-            pub isp: String,
-        }
-    }
-    
-    const DEFAULT_FIELDS: &str = "status,message,continent,continentCode,\
-                                country,countryCode,region,regionName,city,\
-                                lat,lon,timezone,isp,query";
-
-    pub async fn single(ip: Ipv4Addr, client: reqwest::Client) -> Result<schema::IpApiResponse> {
-        tracing::info!("{ip:15}: Issuing SINGLE query to IpApi...");
-        let url = format!("http://ip-api.com/json/{ip}?fields={DEFAULT_FIELDS}");
-
-        let response = client.get(&url)
-            .send().await?
-            .json::<schema::IpApiResponse>().await?;
-
-        Ok(response)
-    }
-
-    pub async fn batch(ips: &[Ipv4Addr], client: reqwest::Client) -> Result<impl Iterator<Item = schema::IpApiResponse>> {
-        tracing::info!("({:13}): Issuing BATCH query to IpApi...", format!("{} jobs", ips.len()));
-        let url = format!("http://ip-api.com/batch?fields={DEFAULT_FIELDS}");
-
-        let response = client.post(&url)
-            .json(&ips)
-            .send().await?
-            .json::<Vec<schema::IpApiResponse>>().await?;
-
-        Ok(response.into_iter())
     }
 }

@@ -27,10 +27,10 @@ async fn main() {
             "Program Name",
         );
         for con in connections {
-            let geolocation = &con.geolocation.lock().unwrap();
-            let geo = match geolocation.deref() {
+            let geolocation = &con.geolocation();
+            let geo = match geolocation {
                 geohog::net::geolocate::Locator::Some(geo) => Some(Some(geo)),
-                geohog::net::geolocate::Locator::Refused(refusal) => Some(None),
+                geohog::net::geolocate::Locator::Refused(_) => Some(None),
                 geohog::net::geolocate::Locator::Pending => None,
             };
             println!(

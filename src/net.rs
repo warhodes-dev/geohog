@@ -8,7 +8,7 @@ use netstat2::{
 };
 use sysinfo::{self, ProcessRefreshKind};
 
-use geolocate::{SharedLocator, GeolocationClient};
+use geolocate::{Geolocation, GeolocationClient, Locator, SharedLocator};
 
 pub mod geolocate;
 pub mod public_ip;
@@ -94,7 +94,7 @@ pub struct Connection {
     #[cfg(any(target_os = "linux", target_os = "android"))]
     pub inode: u32,
     pub processes: Vec<Process>,
-    pub geolocation: SharedLocator,
+    geolocation: SharedLocator,
 }
 
 impl Connection {
@@ -134,6 +134,10 @@ impl Connection {
                 },
             }
         }
+    }
+
+    pub fn geolocation(&self) -> Locator {
+        self.geolocation.lock().unwrap().clone()
     }
 
     pub fn display(&self) -> ConnectionDisplay {

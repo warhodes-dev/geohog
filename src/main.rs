@@ -34,10 +34,10 @@ pub mod ui {
 
         pub fn restore_terminal() {
             terminal::disable_raw_mode()
-                .expect("Failed to disable raw mode");
+                .expect("Disable raw mode");
             let mut stdout = io::stdout();
             crossterm::execute!(stdout, LeaveAlternateScreen, DisableMouseCapture)
-                .expect("Failed to disable terminal features");
+                .expect("Disable terminal features");
             println!("Terminal restored.")
         }
 
@@ -101,7 +101,9 @@ pub mod ui {
 
     impl Widget for &mut App {
         fn render(self, area: Rect, buf: &mut Buffer)
-        where Self: Sized {
+        where
+            Self: Sized 
+        {
             let vertical = Layout::vertical([
                 Constraint::Length(2),
                 Constraint::Min(0),
