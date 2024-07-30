@@ -1,21 +1,20 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::net::Ipv4Addr; 
 use std::str::FromStr; 
 use std::sync::{Arc, Mutex}; 
 use std::time::Duration;
-use hashlink::LinkedHashMap;
+use hashlink::{LinkedHashMap, LinkedHashSet};
+use tokio::sync::broadcast;
 use tokio::sync::mpsc::{self, Receiver, Sender};
 use ip_api::schema::IpApiResponse;
 
 mod ip_api;
 
-pub type SharedLocator = Arc<Mutex<Locator>>;
-
 #[derive(Debug, Clone)]
 pub enum Locator {
-    Some(Geolocation),
-    Refused(String),
-    Pending,
+    Global(Geolocation),
+    // TODO: Make use an enum for this
+    NonGlobal(String),
 }
 
 #[derive(Debug, Clone)]
@@ -35,93 +34,295 @@ pub struct Geolocation {
 }
 
 pub struct GeolocationClient {
-    cache: Arc<Mutex<HashMap<Ipv4Addr, SharedLocator>>>,
-    job_queue: Arc<Mutex<LinkedHashMap<Ipv4Addr, Job>>>,
+    cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
+    //request_handler: todo!(),
 }
 
 impl GeolocationClient {
     pub fn new() -> Self {
-        let cache = Arc::new(Mutex::new(HashMap::new()));
-        let job_queue = Arc::new(Mutex::new(LinkedHashMap::new()));
+        let cache_inner = HashMap::new();
+        let cache = Arc::new(Mutex::new(cache_inner));
 
-        RequestHandler::init(job_queue.clone(), cache.clone());
-
-        GeolocationClient { cache, job_queue}
+        GeolocationClient { cache }
     }
 
-    pub fn geolocate_ip(&mut self, ip: &Ipv4Addr) -> SharedLocator {
+    pub fn geolocate(&mut self, ip: &Ipv4Addr) -> Option<Locator> {
         self.cache_get(ip)
-            .unwrap_or_else(|| self.enqueue_job(ip))
     }
 
-    fn cache_get(&self, ip: &Ipv4Addr) -> Option<SharedLocator> {
+    fn cache_get(&self, ip: &Ipv4Addr) -> Option<Locator> {
         self.cache
             .lock()
             .unwrap()
             .get(&ip)
             .cloned()
     }
-
-    /// Enqueue job for RequestHandler without duplicates
-    fn enqueue_job(&mut self, ip: &Ipv4Addr) -> SharedLocator {
-        self.job_queue
-            .lock()
-            .unwrap()
-            .entry(*ip)
-            .or_insert(Job::new(*ip))
-            .locator
-            .clone()
-    }
 }
 
-#[derive(Clone)]
-struct Job {
-    ip: Ipv4Addr,
-    locator: SharedLocator,
-    status: JobProgress,
+struct RequestHandler {
+    
 }
 
-#[derive(Clone)]
-enum JobProgress {
-    Queued,
-    Issued,
-}
-
-impl Job {
-    fn new(ip: Ipv4Addr) -> Self {
-        let locator = Arc::new(Mutex::new(Locator::Pending));
-        Job { ip, locator, status: JobProgress::Queued }
-    }
-}
-
-/// Dispatches and joins Ip-Api request tasks
-struct RequestHandler;
 impl RequestHandler {
-    fn init(
-        job_queue: Arc<Mutex<LinkedHashMap<Ipv4Addr, Job>>>,
-        cache: Arc<Mutex<HashMap<Ipv4Addr, SharedLocator>>>,
-    ) {
-        let (tx, rx) = mpsc::channel::<(Ipv4Addr, ip_api::schema::IpApiResponse)>(1024);
+    fn new() -> Self {
+        todo!()
+    }
+}
 
-        tokio::spawn({ // Batching Task
-            let job_queue = job_queue.clone();
-            async move { RequestHandler::batching_worker(tx, job_queue).await; }
-        });
 
-        tokio::spawn({ // Joiner Task
-            let job_queue = job_queue.clone();
-            let cache = cache.clone();
-            async move { RequestHandler::joining_worker(rx, job_queue, cache).await; }
-        });
+
+// * ============================================================
+
+#[derive(Message)]
+#[rtype(result = "()")]
+enum JobQueueMessage {
+    Insert(Ipv4Addr),
+    Remove(Ipv4Addr),
+}
+
+use actix::prelude::*;
+
+struct JobQueue {
+    active_jobs: HashSet<Ipv4Addr>,
+}
+
+impl JobQueue {
+    fn new() -> Self {
+        JobQueue { job_queue: HashSet::new() }
+    }
+}
+
+impl Actor for JobQueue {
+    type Context = Context<Self>;
+}
+
+impl Handler<JobQueueMessage> for JobQueue {
+    type Result = ();
+
+    fn handle(&mut self, msg: JobQueueMessage, _ctx: &mut Context<Self>) {
+        match msg {
+            JobQueueMessage::Insert(item) => {
+                if self.active_jobs.insert(item) {
+                    //send item --> dispatcher
+                }
+            },
+            JobQueueMessage::Remove(item) => { self.active_jobs.remove(&item); },
+        }
+    }
+}
+
+// * ============================================================
+
+    /*
+    pub struct RequestHandler {
+        job_queue: JobQueueHandle
     }
 
-    /// On interval, takes a batch of tasks and issues the appropriate API query 
-    async fn batching_worker(
-        response_tx: Sender<(Ipv4Addr, ip_api::schema::IpApiResponse)>,
-        job_queue: Arc<Mutex<LinkedHashMap<Ipv4Addr, Job>>>,
-    ) {
-        tracing::debug!("Spawning 'batch' worker task.");
+    impl RequestHandler {
+        pub fn new() -> Self {  
+            todo!()
+        }
+        pub fn start() -> Self {
+            todo!()
+        }
+    }
 
+
+
+
+    struct JobQueue {
+        active_jobs: HashSet<Ipv4Addr>,
+        // Input: job queue management commands 
+        input: mpsc::Receiver<JobQueueMessage>,
+        // Output: jobs to be dispatched
+        output: DispatchHandle,
+    }
+
+    impl JobQueue {
+        fn new(dispatcher: DispatchHandle) -> JobQueueHandle {
+            let active_jobs = HashSet::new();
+            let (tx, rx) = mpsc::channel(128);
+            let actor = JobQueue { 
+                active_jobs, 
+                input: rx, 
+                output: dispatcher 
+            };
+            tokio::spawn(actor.start());
+            JobQueueHandle { tx }
+        }
+        fn handle_message(&mut self, msg: JobQueueMessage) {
+            match msg {
+                JobQueueMessage::Insert(ip) => {
+                    // Filter out requests that are already pending
+                    if self.active_jobs.insert(ip) == true {
+                        self.output.send(ip);
+                    }
+                },
+                JobQueueMessage::Remove(ip) => {
+                    self.active_jobs.remove(&ip);
+                },
+            }
+        }
+        async fn start(mut self) {
+            while let Some(msg) = self.input.recv().await {
+                self.handle_message(msg)
+            }
+        }
+    }
+
+    struct JobQueueHandle {
+        tx: mpsc::Sender<JobQueueMessage>
+    }
+
+    impl JobQueueHandle {
+        pub fn insert(&self, ip: Ipv4Addr) {
+            self.send(JobQueueMessage::Insert(ip));
+        }
+        pub fn remove(&self, ip: Ipv4Addr) {
+            self.send(JobQueueMessage::Remove(ip));
+        }
+        fn send(&self, cmd: JobQueueMessage) {
+            tokio::spawn({
+                let tx = self.tx.clone();
+                async move { tx.send(cmd).await }
+            });
+        }
+    }
+
+    struct Dispatch {
+        // Input: Jobs to be dispatched
+        input: mpsc::Receiver<Ipv4Addr>,
+
+        // Forwarded output: Completed jobs to be joined
+        // This handle is forwarded to API query tasks.
+        output: JoinerHandle,
+    }
+
+    impl Dispatch {
+        fn new(joiner: JoinerHandle) -> DispatchHandle {
+            let (tx, rx) = mpsc::channel(128);
+            let actor = Dispatch { 
+                input: rx, 
+                output: joiner
+            };
+            tokio::spawn(actor.start());
+            DispatchHandle { tx }
+        }
+        fn handle_message(&mut self, msg: Ipv4Addr) {
+            msg;
+            todo!()
+        }
+        async fn start(mut self) {
+            while let Some(msg) = self.input.recv().await {
+                self.handle_message(msg)
+            }
+        }
+    }
+
+    struct DispatchHandle {
+        tx: mpsc::Sender<Ipv4Addr>
+    }
+
+    impl DispatchHandle {
+        fn send(&self, ip: Ipv4Addr) {
+            tokio::spawn({
+                let tx = self.tx.clone();
+                async move { tx.send(ip).await }
+            });
+        }
+    }
+
+    struct Joiner {
+        cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
+        // Input: Completed API queries (jobs)
+        input: mpsc::Receiver<ip_api::schema::IpApiResponse>,
+        // Output: Job queue management commands (removal)
+        output: JobQueueHandle,
+    }
+
+    impl Joiner {
+        fn new(
+            cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
+            rx: mpsc::Receiver<ip_api::schema::IpApiResponse>,
+            job_queue: JobQueueHandle,
+        ) -> JoinerHandle {
+            let (tx, rx) = mpsc::channel(128);
+            let actor = Joiner {
+                cache,
+                input: rx,
+                output: job_queue,
+            };
+            tokio::spawn(actor.start());
+            JoinerHandle { tx }
+        }
+        fn handle_message(&mut self, msg: ip_api::schema::IpApiResponse) {
+            let ip = Ipv4Addr::from_str(&msg.query).expect("Converting JSON IP to Ipv4Addr");
+            let locator = Locator::from(msg);
+            self.cache.lock().unwrap().insert(ip, locator);
+
+            self.output.remove(ip);
+        }
+        async fn start(mut self) {
+            while let Some(msg) = self.input.recv().await {
+                self.handle_message(msg)
+            }
+        }
+    }
+
+    struct JoinerHandle {
+        tx: mpsc::Sender<ip_api::schema::IpApiResponse>
+    }
+
+    impl JoinerHandle {
+        fn send(&self, ip: ip_api::schema::IpApiResponse) {
+            tokio::spawn({
+                let tx = self.tx.clone();
+                async move { tx.send(ip).await }
+            });
+        }
+    }
+}
+
+struct RequestHandler2;
+impl RequestHandler2 {
+    /// Initialize and spawn all request handler actors. Essentially, this actor system 
+    /// asynchronously updates the provided cache with the results of completed queries
+    /// Returns a request queue sender that can be used to enqueue jobs.
+    fn init(cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>) -> mpsc::Sender<JobQueueCommand> {
+
+        // Incoming jobs that need to be processed
+        let (job_queue_tx, job_queue_rx) = mpsc::channel::<JobQueueCommand>(1024);
+
+        // Filtered jobs that need to be dispatched
+        let (dispatch_tx, dispatch_rx) = mpsc::channel::<Ipv4Addr>(1024);
+
+        // Completed jobs that need to be joined, cached, and removed from job queue
+        let (join_tx, join_rx) = mpsc::channel::<(Ipv4Addr, ip_api::schema::IpApiResponse)>(1024);
+
+        tokio::spawn(RequestHandler2::request_listener(job_queue_rx, dispatch_tx));
+        tokio::spawn(RequestHandler2::dispatcher(job_queue_ptr.clone(), job_join_tx));
+        tokio::spawn(RequestHandler2::joiner(cache.clone(), job_queue_tx.clone(), job_join_rx));
+        job_queue_tx
+    }
+
+    /// Populates the job queue from receiving message channel.
+    async fn request_listener(
+        mut rx: mpsc::Receiver<JobQueueCommand>,
+        tx: mpsc::Sender<Ipv4Addr>,
+    ) {
+        tracing::debug!("Spawning 'job queue' actor.");
+        let mut active_jobs = HashSet::<Ipv4Addr>::new();
+        while let Some(command) = rx.recv().await {
+            
+        }
+    }
+
+    /// Dispatches API requests from job queue.
+    async fn dispatcher(
+        job_queue: Arc<Mutex<LinkedHashMap<Ipv4Addr, Job>>>, 
+        mut tx: mpsc::Sender<(Ipv4Addr, ip_api::schema::IpApiResponse)>
+    ) {
+        tracing::debug!("Spawning 'dispatcher' actor.");
         let client = reqwest::Client::new();
         let mut interval = tokio::time::interval(Duration::from_secs(3));
 
@@ -130,11 +331,11 @@ impl RequestHandler {
 
             let ips = job_queue.lock().unwrap()
                 .iter_mut()
-                .filter(|(_, job)| matches!(job.status, JobProgress::Queued))
+                .filter(|(_, job)| matches!(job.status, JobStatus::Queued))
                 .take(100)
-                .map(|(_, job)| {
-                    job.status = JobProgress::Issued;
-                    job.ip
+                .map(|(ip, job)| {
+                    job.issue();
+                    *ip
                 })
                 .collect::<Vec<_>>();
 
@@ -142,7 +343,7 @@ impl RequestHandler {
 
                 // Batch query
                 tokio::spawn({
-                    let tx = response_tx.clone();
+                    let tx = tx.clone();
                     let client = client.clone();
                     async move {
                         if let Ok(responses) = ip_api::batch(ips.as_slice(), client).await {
@@ -159,7 +360,7 @@ impl RequestHandler {
                 // Issue several single queries
                 for ip in ips {
                     tokio::spawn({
-                        let tx = response_tx.clone();
+                        let tx = tx.clone();
                         let client = client.clone();
                         async move {
                             if let Ok(response) = ip_api::single(ip, client).await {
@@ -173,33 +374,57 @@ impl RequestHandler {
         }
     }
 
-    /// Completes finished API queries by caching response and updating `SharedLocator`
-    async fn joining_worker(
-        mut response_rx: Receiver<(Ipv4Addr, IpApiResponse)>,
-        job_queue: Arc<Mutex<LinkedHashMap<Ipv4Addr, Job>>>,
-        cache: Arc<Mutex<HashMap<Ipv4Addr, SharedLocator>>>,
+    /// Updates the cache as request are completed.
+    async fn joiner(
+        cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
+        tx: mpsc::Sender<JobQueueCommand>,
+        mut rx: mpsc::Receiver<(Ipv4Addr, ip_api::schema::IpApiResponse)>,
     ) {
-        tracing::debug!("Spawning 'join' worker task.");
-        while let Some((ip, response)) = response_rx.recv().await {
+        tracing::debug!("Spawning 'joiner' actor.");
+        while let Some((ip, response)) = rx.recv().await {
 
-            // Remove pending job from job queue
-            let shared_locator = job_queue.lock().unwrap()
-                .remove(&ip)
-                .expect("Match completed job to entry in job queue")
-                .locator;
+            // Store locator in the cache
+            let locator = Locator::from(response);
+            cache.lock().unwrap().insert(ip, locator);
 
-            // update shared locator and store reference to it in the cache
-            *shared_locator.lock().unwrap() = Locator::from(response);
-            cache.lock().unwrap().insert(ip, shared_locator);
+            // Send command to remove ip from job queue.
+            tokio::spawn({
+                let tx = tx.clone();
+                async move { tx.send(JobQueueCommand::Remove(ip)).await }
+            });
         }
     }
 }
+    */
+
+
+struct Job {
+    status: JobStatus,
+}
+
+enum JobStatus {
+    Queued,
+    Issued,
+}
+
+impl Job {
+    fn new() -> Self {
+        Job{ status: JobStatus::Queued }
+    }
+
+    fn issue(&mut self) {
+        self.status = JobStatus::Issued;
+    }
+}
+
+// ====== Trait implementations =======================
+
 
 impl From<ip_api::schema::IpApiResponse> for Locator {
     fn from(value: ip_api::schema::IpApiResponse) -> Self {
         match value.variant {
             ip_api::schema::IpApiVariant::Success(res) => {
-                Self::Some(Geolocation {
+                Self::Global(Geolocation {
                     ip:             value.query,
                     latitude:       res.lat,
                     longitude:      res.lon,
@@ -215,7 +440,7 @@ impl From<ip_api::schema::IpApiResponse> for Locator {
                 })
             },
             ip_api::schema::IpApiVariant::Fail(res) => {
-                Self::Refused(res.message)
+                Self::NonGlobal(res.message)
             },
         }
     }

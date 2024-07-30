@@ -9,7 +9,7 @@ pub mod ui {
         event::{DisableMouseCapture, EnableMouseCapture}, 
         terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}
     };
-    use geohog::net::NetClient;
+    use geohog::net::Netstat;
     use ratatui::{
         backend::CrosstermBackend, prelude::*, widgets::{Block, Borders, Paragraph, Widget} 
     };
@@ -63,13 +63,13 @@ pub mod ui {
     }
 
     struct App {
-        net: NetClient
+        net: Netstat
     }
 
     impl App {
         fn new() -> Self {
             App {
-                net: NetClient::new(),
+                net: Netstat::new(),
             }
         }
 

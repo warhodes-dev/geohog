@@ -1,4 +1,4 @@
-use std::net::{IpAddr, Ipv4Addr};
+use std::{borrow::BorrowMut, cell::RefCell, net::{IpAddr, Ipv4Addr}};
 
 use anyhow::{bail, Result};
 
@@ -8,26 +8,27 @@ use netstat2::{
 };
 use sysinfo::{self, ProcessRefreshKind};
 
-use geolocate::{Geolocation, GeolocationClient, Locator, SharedLocator};
+use geolocate::{Geolocation, GeolocationClient, Locator};
+use tokio::sync::{broadcast, mpsc};
 
-pub mod geolocate;
 pub mod public_ip;
+pub mod geolocate;
 
-pub struct NetClient {
+pub struct Netstat {
     connections: Vec<Connection>,
-    geo_client: GeolocationClient,
     sysinfo: sysinfo::System,
+    geolocation_client: GeolocationClient,
 }
 
-impl NetClient {
+impl Netstat {
     pub fn new() -> Self {
         let connections = vec![];
-        let geo_client = GeolocationClient::new();
         let sysinfo = sysinfo::System::new();
-        NetClient {
+        let geolocation_client = GeolocationClient::new();
+        Netstat {
             connections,
-            geo_client,
             sysinfo,
+            geolocation_client,
         }
     }
 
@@ -37,7 +38,6 @@ impl NetClient {
 
     pub fn refresh(&mut self) -> Result<()> {
         self.get_net_connections()?;
-        //self.get_geolocations(); No need to use this after refactoring
         Ok(())
     }
 
@@ -54,32 +54,12 @@ impl NetClient {
         // Build connection list from scratch
         self.connections.clear();
         for (tcp, socket) in tcp_sockets_info {
-            if let Ok(connection) = Connection::new(self, &tcp, &socket) {
+            if let Ok(connection) = Connection::new(&mut self.sysinfo, &tcp, &socket) {
                 self.connections.push(connection)
             }
         }
 
         Ok(())
-    }
-
-    fn get_process_info(&mut self, pids: &[u32]) -> Vec<Process> {
-        let pids = pids
-            .iter()
-            .map(|pid_u32| sysinfo::Pid::from_u32(*pid_u32))
-            .collect::<Vec<sysinfo::Pid>>();
-
-        self.sysinfo
-            .refresh_pids_specifics(&pids, ProcessRefreshKind::new()); // essentially `.with_nothing()`
-
-        pids.iter()
-            .map(|pid| {
-                let proc = self.sysinfo.process(*pid);
-                Process {
-                    pid: proc.map_or(pid.as_u32(), |proc| proc.pid().as_u32()),
-                    name: proc.map(|proc| proc.name().to_owned()),
-                }
-            })
-            .collect::<Vec<Process>>()
     }
 }
 
@@ -94,12 +74,11 @@ pub struct Connection {
     #[cfg(any(target_os = "linux", target_os = "android"))]
     pub inode: u32,
     pub processes: Vec<Process>,
-    geolocation: SharedLocator,
 }
 
 impl Connection {
     fn new(
-        net_client: &mut NetClient, 
+        sysinfo: &mut sysinfo::System, 
         tcp: &TcpSocketInfo, 
         socket: &SocketInfo
     ) -> Result<Self> {
@@ -110,8 +89,7 @@ impl Connection {
             bail!("Non-global IP. Ignoring.");
         }
 
-        let processes = net_client.get_process_info(&socket.associated_pids);
-        let geolocation = net_client.geo_client.geolocate_ip(&remote_ip);
+        let processes = get_process_info(sysinfo, &socket.associated_pids);
 
         return Ok(Connection {
             local_address: to_ipv4(tcp.local_addr)?,
@@ -122,7 +100,6 @@ impl Connection {
             #[cfg(any(target_os = "linux", target_os = "android"))]
             inode: socket.inode,
             processes,
-            geolocation,
         });
 
         fn to_ipv4(ip: IpAddr) -> Result<Ipv4Addr> {
@@ -130,14 +107,14 @@ impl Connection {
                 IpAddr::V4(ip) => Ok(ip),
                 IpAddr::V6(ip) => match ip.to_canonical() {
                     IpAddr::V4(ip) => Ok(ip),
-                    IpAddr::V6(_) => bail!("IPV6 not supported"),
+                    IpAddr::V6(_) => bail!("Canonicalizing Ipv6 -> Ipv4"),
                 },
             }
         }
     }
 
-    pub fn geolocation(&self) -> Locator {
-        self.geolocation.lock().unwrap().clone()
+    pub fn geolocation(&self, geo_client: &mut GeolocationClient) -> Option<Locator> {
+        geo_client.geolocate(&self.remote_address)
     }
 
     pub fn display(&self) -> ConnectionDisplay {
@@ -150,4 +127,23 @@ pub struct ConnectionDisplay {/* TODO: fill this out */}
 pub struct Process {
     pub pid: u32,
     pub name: Option<String>,
+}
+
+fn get_process_info(sysinfo: &mut sysinfo::System, pids: &[u32]) -> Vec<Process> {
+    let pids = pids
+        .iter()
+        .map(|pid_u32| sysinfo::Pid::from_u32(*pid_u32))
+        .collect::<Vec<sysinfo::Pid>>();
+
+    sysinfo.refresh_pids_specifics(&pids, ProcessRefreshKind::new()); // essentially `.with_nothing()`
+
+    pids.iter()
+        .map(|pid| {
+            let proc = sysinfo.process(*pid);
+            Process {
+                pid: proc.map_or(pid.as_u32(), |proc| proc.pid().as_u32()),
+                name: proc.map(|proc| proc.name().to_owned()),
+            }
+        })
+        .collect::<Vec<Process>>()
 }
