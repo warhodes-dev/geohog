@@ -35,7 +35,7 @@ pub struct Geolocation {
 
 pub struct GeolocationClient {
     cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
-    request_channel: mpsc::Sender<Ipv4Addr>,
+    api_client: ip_api::Client,
 }
 
 impl GeolocationClient {
@@ -43,22 +43,28 @@ impl GeolocationClient {
         let cache_inner = HashMap::new();
         let cache = Arc::new(Mutex::new(cache_inner));
 
-        let (request_channel, rx) = mpsc::channel(128);
-        panic!("unfinished. remove this shit");
+        let api_client = ip_api::Client::new();
 
-        GeolocationClient { cache, request_channel }
+        GeolocationClient { cache, api_client }
     }
 
     pub fn geolocate(&mut self, ip: &Ipv4Addr) -> Option<Locator> {
-        self.cache_get(ip)
-            .or_else(|| {
-                tokio::spawn({
-                    let ip = *ip;
-                    let tx = self.request_channel.clone();
-                    async move { tx.send(ip).await }
-                });
-                None
-            })
+        let locator = self.cache_get(ip);
+        if locator.is_none() {
+            self.query_api(*ip);
+        }
+        locator
+    }
+
+    fn query_api(&self, ip: Ipv4Addr) {
+        let rx = self.api_client.request(ip);
+        let cache = self.cache.clone();
+        tokio::spawn(async move {
+            if let Ok(response) = rx.await {
+                let locator = Locator::from(response);
+                cache.lock().unwrap().insert(ip, locator);
+            }
+        });
     }
 
     fn cache_get(&self, ip: &Ipv4Addr) -> Option<Locator> {

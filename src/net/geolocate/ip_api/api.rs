@@ -8,7 +8,7 @@ const DEFAULT_FIELDS: &str = "status,message,continent,continentCode,\
 
 /// Queries a single IP address, returning a single geolocation.
 /// Rate limit: 45/min
-pub async fn single(ip: Ipv4Addr, client: reqwest::Client) -> Result<schema::Response> {
+pub async fn single(ip: &Ipv4Addr, client: reqwest::Client) -> Result<schema::Response> {
     tracing::info!("{ip:15}: Issuing SINGLE query to IpApi...");
     let url = format!("http://ip-api.com/json/{ip}?fields={DEFAULT_FIELDS}");
 
@@ -36,26 +36,26 @@ pub async fn batch(ips: &[Ipv4Addr], client: reqwest::Client) -> Result<impl Ite
 pub mod schema {
     use serde::Deserialize;
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Debug)]
     pub struct Response {
         pub query: String,
         #[serde(flatten)]
         pub status: Status,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Debug)]
     #[serde(tag = "status", rename_all = "lowercase")]
     pub enum Status {
         Success(Location),
         Fail(Error),
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Debug)]
     pub struct Error {
         pub message: String,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Debug)]
     #[serde(rename_all = "camelCase")]
     pub struct Location {
         pub continent: String,

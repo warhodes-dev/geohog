@@ -12,328 +12,225 @@ struct Job {
     tx: oneshot::Sender<api::schema::Response>,
 }
 
-struct Client {
-    event_broadcast: broadcast::Sender<Event>,
-    job_queue: mpsc::Sender<Job>,
+pub struct Client {
+    // event_broadcast: broadcast::Sender<Event>,
+    requester_handle: mpsc::UnboundedSender<Job>,
 }
 
 impl Client {
     pub fn new() -> Self {
-        todo!()
+        let request_handler = RequestHandler::new();
+        let requester_handle = request_handler.start();
+        Self { requester_handle }
     }
-    pub fn request(ip: Ipv4Addr) -> oneshot::Receiver<api::schema::Response> {
+    pub fn request(&self, ip: Ipv4Addr) -> oneshot::Receiver<api::schema::Response> {
         let (tx, rx) = oneshot::channel::<api::schema::Response>();
-
-
-
+        let job = Job { ip, tx };
+        self.requester_handle.send(job)
+            .expect("Queueing job into the request handler.");
         rx
     }
 }
 
-mod actor {
-    use std::collections::VecDeque;
-
-    use super::*;
-
-    /// Forwards any incoming jobs into the job queue.
-    /// The input to this actor is external to the `actor` module,
-    /// and should be used as the interface to issue requests.
-    struct JobQueueAdapter {
-        input: mpsc::Receiver<Job>,
-        output: mpsc::Sender<JobQueueMessage>,
-    }
-
-    impl JobQueueAdapter {
-        pub fn new(
-            input: mpsc::Receiver<Job>, 
-            output: mpsc::Sender<JobQueueMessage>
-        ) -> Self {
-            JobQueueAdapter { input, output }
-        }
-        pub async fn start(mut self) {
-            while let Some(incoming_job) = self.input.recv().await {
-                self.output.send(JobQueueMessage::Insert(incoming_job)).await.unwrap();
-            }
-        }
-    }
-
-    pub enum JobQueueMessage {
-        Insert(Job),
-        Remove(Ipv4Addr),
-    }
-
-    /// Manages the set of pending jobs. Denies new jobs that match
-    /// an already-pending job.
-    struct JobQueueManager {
-        active_jobs: HashSet<Ipv4Addr>,
-        input: mpsc::Receiver<JobQueueMessage>,
-        output: mpsc::Sender<Job>,
-    }
-
-    impl JobQueueManager {
-        pub fn new(
-            input: mpsc::Receiver<JobQueueMessage>, 
-            output: mpsc::Sender<Job>
-        ) -> Self {
-            let active_jobs = HashSet::new();
-            Self { active_jobs, input, output }
-        }
-        pub async fn start(mut self) {
-            while let Some(msg) = self.input.recv().await {
-                self.handle_message(msg).await;
-            }
-        }
-        async fn handle_message(&mut self, msg: JobQueueMessage) {
-            match msg {
-                JobQueueMessage::Insert(job) => {
-                    if self.active_jobs.insert(job.ip) == true {
-                        self.output.send(job).await.unwrap();
-                    }
-                }
-                JobQueueMessage::Remove(ip) => {
-                    self.active_jobs.remove(&ip);
-                }
-            }
-        }
-    }
-
-    /// Dispatches jobs to either BATCH or SINGLE queries.
-    /// TODO: - in accordance with rate limit
-    struct Dispatcher {
-        job_buffer: Vec<Job>,
-        client: reqwest::Client,
-        input: mpsc::Receiver<Job>,
-        output: mpsc::Sender<(Job, api::schema::Response)>,
-    }
-
-    impl Dispatcher {
-        pub fn new(
-            input: mpsc::Receiver<Job>, 
-            output: mpsc::Sender<(Job, api::schema::Response)>,
-        ) -> Self {
-            let job_buffer = Vec::new();
-            let client = reqwest::Client::new();
-            Self { job_buffer, client, input, output }
-        }
-        pub async fn start(mut self) {
-            let timeout = time::Duration::from_secs(1);
-            loop {
-                tokio::select! {
-                    Some(job) = self.input.recv() => {
-                        self.job_buffer.push(job);
-                    },
-                    _ = time::sleep(timeout), if !self.job_buffer.is_empty() => {
-                        self.dispatch_jobs();
-                    }
-                }
-            }
-        }
-        fn dispatch_jobs(&mut self) {
-            let jobs = self.job_buffer.drain(..).collect::<Vec<Job>>();
-            let batches = jobs.into_iter().chunks(100);
-            for batch in batches {
-
-            }
-            let remainder = batches.remainder() {
-
-            }
-            
-        }
-        fn spawn_batch(&self, jobs: &[Job]) {
-            tokio::spawn({
-                let ips = jobs.iter().map(|job| job.ip).collect::<Vec<Ipv4Addr>>();
-                let client = self.client.clone();
-                let output = self.output.clone();
-                async move {
-                    if let Ok(responses) = api::batch(&ips, client).await {
-                        for (response, job) in responses.zip(jobs) {
-                            assert_eq!(response.query, job.ip.to_string());
-                            output.send((job, response)).await;
-                        }
-                    }
-                }
-            });
-        }
-    }
-}
-
-/*
-struct Actors;
-
 struct RequestHandler {
-    job_queue: actors::JobQueue,
-    dispatcher: actors::Dispatcher,
-    joiner: actors::Joiner,
+    pub handle: mpsc::UnboundedSender<Job>,
+    adapter: JobQueueAdapter,
+    job_queue: JobQueueManager,
+    dispatcher: Dispatcher,
+    joiner: Joiner,
 }
 
 impl RequestHandler {
     fn new() -> Self {
-        todo!()
-    }
+        let (adapter_tx, adapter_rx) = mpsc::unbounded_channel();
+        let (job_queue_tx, job_queue_rx) = mpsc::channel(1);
+        let (dispatcher_tx, dispatcher_rx) = mpsc::channel(1);
+        let (joiner_tx, joiner_rx) = mpsc::channel(64);
 
-    fn start(self) -> mpsc::Sender<Ipv4Addr> {
-        let pipeline_input = self.job_queue.handle.clone();
-        let (tx, mut rx) = mpsc::channel(128);
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                pipeline_input.send(actors::JobQueueMessage::Insert { ip: msg }).await.unwrap();
-            }
-        });
+        // Don't cross your wires
+        Self {
+            handle: adapter_tx,
+            adapter:   JobQueueAdapter::new(adapter_rx,    job_queue_tx.clone()),
+            job_queue: JobQueueManager::new(job_queue_rx,  dispatcher_tx),
+            dispatcher:     Dispatcher::new(dispatcher_rx, joiner_tx),
+            joiner:             Joiner::new(joiner_rx,     job_queue_tx),
+        }
+    }
+    fn start(self) -> mpsc::UnboundedSender<Job> {
+        tokio::spawn(self.adapter.start());
         tokio::spawn(self.job_queue.start());
         tokio::spawn(self.dispatcher.start());
         tokio::spawn(self.joiner.start());
-        tx
+        self.handle
     }
 }
 
-// * ============================================================
+/// Forwards any incoming jobs into the job queue.
+/// The input to this actor is external to the `actor` module,
+/// and should be used as the interface to issue requests.
+struct JobQueueAdapter {
+    input: mpsc::UnboundedReceiver<Job>,
+    output: mpsc::Sender<JobQueueMessage>,
+}
 
-mod actors {
-    use std::{collections::{HashMap, HashSet}, net::Ipv4Addr, str::FromStr, sync::{Arc, Mutex}};
-
-    use tokio::sync::mpsc;
-
-    /// Initial receiver of requests. Filters out undesirable requests,
-    /// such as duplicates.
-    pub struct JobQueue {
-        pub handle: mpsc::Sender<JobQueueMessage>,
-        active_jobs: HashSet<Ipv4Addr>,
-        input: mpsc::Receiver<JobQueueMessage>, // From: geolocate::request_geolocation()
-        output: Option<mpsc::Sender<Ipv4Addr>>, // To:   actors::Dispatcher.input
+impl JobQueueAdapter {
+    fn new(
+        input: mpsc::UnboundedReceiver<Job>, 
+        output: mpsc::Sender<JobQueueMessage>
+    ) -> Self {
+        JobQueueAdapter { input, output }
     }
-
-    pub enum JobQueueMessage {
-        Insert { ip: Ipv4Addr },
-        Remove { ip: Ipv4Addr },
-    }
-
-    impl JobQueue {
-        pub fn new() -> Self {
-            let (tx, rx) = mpsc::channel(128);
-            JobQueue { 
-                handle: tx,
-                active_jobs: HashSet::new(),
-                input: rx,
-                output: None,
-            }
-        }
-        pub fn outputs_to(&mut self, tx: mpsc::Sender<Ipv4Addr>) {
-            self.output = Some(tx)
-        }
-        async fn handle_message(&mut self, msg: JobQueueMessage)  {
-            let output = self.output.as_ref().unwrap();
-            match msg {
-                JobQueueMessage::Insert{ ip } => {
-                    // Filter out requests that are already pending
-                    if self.active_jobs.insert(ip) == true {
-                        output.send(ip).await.unwrap();
-                    }
-                },
-                JobQueueMessage::Remove{ ip } => {
-                    self.active_jobs.remove(&ip);
-                },
-            }
-        }
-        pub async fn start(mut self) {
-            assert!(self.output.is_some());
-            while let Some(msg) = self.input.recv().await {
-                self.handle_message(msg).await;
-            }
+        async fn start(mut self) {
+        while let Some(incoming_job) = self.input.recv().await {
+            self.output.send(JobQueueMessage::Insert(incoming_job)).await.unwrap();
         }
     }
+}
 
-    /// Dispatches a given request (or set of requests) as either a 
-    /// BATCH or SINGLE query to Ip-Api.
-    pub struct Dispatcher {
-        pub handle: mpsc::Sender<Ipv4Addr>,
-        client: reqwest::Client,
-        input: mpsc::Receiver<Ipv4Addr>,        // From: JobQueue.output
-        output: Option<mpsc::Sender<(Ipv4Addr, ip_api::schema::IpApiResponse)>> // To: Joiner.input
+enum JobQueueMessage {
+    Insert(Job),
+    Remove(Ipv4Addr),
+}
+
+/// Manages the set of pending jobs. Denies new jobs that match
+/// an already-pending job.
+struct JobQueueManager {
+    active_jobs: HashSet<Ipv4Addr>,
+    input: mpsc::Receiver<JobQueueMessage>,
+    output: mpsc::Sender<Job>,
+}
+
+impl JobQueueManager {
+    fn new(
+        input: mpsc::Receiver<JobQueueMessage>, 
+        output: mpsc::Sender<Job>
+    ) -> Self {
+        let active_jobs = HashSet::new();
+        Self { active_jobs, input, output }
     }
-
-    impl Dispatcher {
-        pub fn new() -> Self {
-            let (tx, rx) = mpsc::channel(128);
-            let client = reqwest::Client::new();
-            Dispatcher { 
-                handle: tx,
-                client,
-                input: rx,
-                output: None,
-            }
+    async fn start(mut self) {
+        while let Some(msg) = self.input.recv().await {
+            self.handle_message(msg).await;
         }
-        pub fn outputs_to(&mut self, tx: mpsc::Sender<(Ipv4Addr, ip_api::schema::IpApiResponse)>) {
-            self.output = Some(tx)
-        }
-        pub async fn start(mut self) {
-            assert!(self.output.is_some());
-
-            // TODO: Replace this with the actual rate limit
-            let mut period = tokio::time::interval(std::time::Duration::from_secs(4));
-            loop {
-                period.tick().await;
-
-                let mut jobs = Vec::new();
-                let num_jobs = self.input.recv_many(&mut jobs, 100).await;
-                if num_jobs > 3 {
-                    self.batch(jobs.drain(..).as_slice());
-                } else {
-                    for job in jobs.drain(..) {
-                        self.single(job);
-                    }
+    }
+    async fn handle_message(&mut self, msg: JobQueueMessage) {
+        match msg {
+            JobQueueMessage::Insert(job) => {
+                if self.active_jobs.insert(job.ip) == true {
+                    self.output.send(job).await
+                        .expect("Sending job to Dispatcher");
                 }
             }
-        }
-        fn batch(&self, ips: &[Ipv4Addr]) {
-            tokio::spawn({
-                let tx = self.output.as_ref().unwrap().clone();
-                let client = self.client.clone();
-                async move {
-                    if let Ok(responses) = ip_api::batch(ips, client).await {
-                        for response in responses {
-                            let response_ip = Ipv4Addr::from_str(&response.query).unwrap();
-                            tx.send((response_ip, response)).await.unwrap();
-                        }
-                    }
-                }
-            });
-        }
-        fn single(&self, ip: Ipv4Addr) {
-
-        }
-    }
-
-    pub struct Joiner {
-        pub handle: mpsc::Sender<(Ipv4Addr, ip_api::schema::IpApiResponse)>,
-        cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>,
-        input: mpsc::Receiver<(Ipv4Addr, ip_api::schema::IpApiResponse)>,
-        output: Option<mpsc::Sender<JobQueueMessage>>,
-    }
-
-    impl Joiner {
-        pub fn new(cache: Arc<Mutex<HashMap<Ipv4Addr, Locator>>>) -> Self {
-            let (tx, rx) = mpsc::channel(128);
-            Joiner {
-                handle: tx,
-                cache,
-                input: rx,
-                output: None,
-            }
-        }
-        pub fn outputs_to(&mut self, tx: mpsc::Sender<JobQueueMessage>) {
-            self.output = Some(tx)
-        }
-        async fn handle_message(&mut self, (ip, response): (Ipv4Addr, ip_api::schema::IpApiResponse)) {
-            let locator = Locator::from(response);
-            self.cache.lock().unwrap().insert(ip, locator);
-            self.output.as_ref().unwrap().send(JobQueueMessage::Remove{ip}).await.unwrap();
-        }
-        pub async fn start(mut self) {
-            assert!(self.output.is_some());
-            while let Some(msg) = self.input.recv().await {
-                self.handle_message(msg).await;
+            JobQueueMessage::Remove(ip) => {
+                self.active_jobs.remove(&ip);
             }
         }
     }
 }
-*/
+
+/// Dispatches jobs to either BATCH or SINGLE queries.
+/// TODO: - in accordance with rate limit
+struct Dispatcher {
+    job_buffer: Vec<Job>,
+    client: reqwest::Client,
+    input: mpsc::Receiver<Job>,
+    output: mpsc::Sender<(Job, api::schema::Response)>,
+}
+
+impl Dispatcher {
+    fn new(
+        input: mpsc::Receiver<Job>, 
+        output: mpsc::Sender<(Job, api::schema::Response)>,
+    ) -> Self {
+        let job_buffer = Vec::new();
+        let client = reqwest::Client::new();
+        Self { job_buffer, client, input, output }
+    }
+        async fn start(mut self) {
+        let timeout = time::Duration::from_secs(1);
+        loop {
+            tokio::select! {
+                Some(job) = self.input.recv() => {
+                    self.job_buffer.push(job);
+                },
+                _ = time::sleep(timeout), if !self.job_buffer.is_empty() => {
+                    self.dispatch_jobs();
+                }
+            }
+        }
+    }
+    fn dispatch_jobs(&mut self) {
+        use itertools::Itertools;
+        let batches = self.job_buffer
+            .drain(..)
+            .into_iter()
+            .chunks(100)
+            .into_iter()
+            .map(|chunk| chunk.collect())
+            .collect::<Vec<Vec<Job>>>();
+        
+        for batch in batches {
+            if batch.len() > 3 {
+                self.spawn_batch(batch);
+            } else {
+                for job in batch {
+                    self.spawn_single(job);
+                }
+            }
+        }
+    }
+    fn spawn_batch(&self, jobs: Vec<Job>) {
+        tokio::spawn({
+            let ips = jobs.iter().map(|job| job.ip).collect::<Vec<Ipv4Addr>>();
+            let client = self.client.clone();
+            let output = self.output.clone();
+            async move {
+                if let Ok(responses) = api::batch(&ips, client).await {
+                    for (response, job) in responses.zip(jobs) {
+                        assert_eq!(response.query, job.ip.to_string());
+                        output.send((job, response)).await
+                            .expect("Sending completed job to Joiner");
+                    }
+                }
+            }
+        });
+    }
+    fn spawn_single(&self, job: Job) {
+        tokio::spawn({
+            let ip = job.ip;
+            let client = self.client.clone();
+            let output = self.output.clone();
+            async move {
+                if let Ok(response) = api::single(&ip, client).await {
+                    assert_eq!(response.query, job.ip.to_string());
+                    output.send((job, response)).await
+                        .expect("Sending completed job to Joiner");
+                }
+            }
+        });
+    }
+}
+
+/// Joins completed API queries and returns them to the initial caller.
+/// Also issues commands to the JobQueue for removal.
+struct Joiner {
+    input: mpsc::Receiver<(Job, api::schema::Response)>,
+    output: mpsc::Sender<JobQueueMessage>,
+}
+
+impl Joiner {
+        fn new(
+        input: mpsc::Receiver<(Job, api::schema::Response)>,
+        output: mpsc::Sender<JobQueueMessage>,
+    ) -> Self {
+        Self { input, output }
+    }  
+        async fn start(mut self) {
+        while let Some((job, response)) = self.input.recv().await {
+            job.tx.send(response)
+                .expect("Returning Response to initial caller.");
+            self.output.send(JobQueueMessage::Remove(job.ip)).await
+                .expect("Issuing removal command to JobQueue");
+        }
+    }
+}
