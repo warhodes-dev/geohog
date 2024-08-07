@@ -1,34 +1,25 @@
-use std::{borrow::BorrowMut, cell::RefCell, net::{IpAddr, Ipv4Addr}};
-
+use std::net::{IpAddr, Ipv4Addr};
 use anyhow::{bail, Result};
-
 use netstat2::{
     iterate_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, SocketInfo,
     TcpSocketInfo,
 };
 use sysinfo::{self, ProcessRefreshKind};
 
-use geolocate::{Geolocation, GeolocationClient, Locator};
-use tokio::sync::{broadcast, mpsc};
-
-pub mod public_ip;
-pub mod geolocate;
+pub mod ip_api;
 
 pub struct Netstat {
     connections: Vec<Connection>,
     sysinfo: sysinfo::System,
-    geolocation_client: GeolocationClient,
 }
 
 impl Netstat {
     pub fn new() -> Self {
         let connections = vec![];
         let sysinfo = sysinfo::System::new();
-        let geolocation_client = GeolocationClient::new();
         Netstat {
             connections,
             sysinfo,
-            geolocation_client,
         }
     }
 
@@ -61,6 +52,8 @@ impl Netstat {
 
         Ok(())
     }
+
+
 }
 
 
@@ -111,10 +104,6 @@ impl Connection {
                 },
             }
         }
-    }
-
-    pub fn geolocation(&self, geo_client: &mut GeolocationClient) -> Option<Locator> {
-        geo_client.geolocate(&self.remote_address)
     }
 
     pub fn display(&self) -> ConnectionDisplay {

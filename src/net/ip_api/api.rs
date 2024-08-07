@@ -1,4 +1,5 @@
 //! REST API endpoints for Ip-Api (www.ip-api.com)
+
 use std::net::Ipv4Addr;
 use anyhow::Result;
 
@@ -6,7 +7,7 @@ const DEFAULT_FIELDS: &str = "status,message,continent,continentCode,\
                             country,countryCode,region,regionName,city,\
                             lat,lon,timezone,isp,query";
 
-/// Queries a single IP address, returning a single geolocation.
+/// Queries a single IP address through the `/` (single) endpoint, returning a single geolocation.
 /// Rate limit: 45/min
 pub async fn single(ip: &Ipv4Addr, client: reqwest::Client) -> Result<schema::Response> {
     tracing::info!("{ip:15}: Issuing SINGLE query to IpApi...");
@@ -19,7 +20,7 @@ pub async fn single(ip: &Ipv4Addr, client: reqwest::Client) -> Result<schema::Re
     Ok(response)
 }
 
-/// Queries a batch of up to 100 IP addresses, returning an array of geolocations in order.
+/// Queries a batch of up to 100 IP addresses through the `/batch` endpoint, returning an iterator of geolocations (in same order).
 /// Rate limit: 15/min
 pub async fn batch(ips: &[Ipv4Addr], client: reqwest::Client) -> Result<impl Iterator<Item = schema::Response>> {
     tracing::info!("({:13}): Issuing BATCH query to IpApi...", format!("{} jobs", ips.len()));
@@ -37,6 +38,7 @@ pub mod schema {
     use serde::Deserialize;
 
     #[derive(Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct Response {
         pub query: String,
         #[serde(flatten)]
@@ -51,6 +53,7 @@ pub mod schema {
     }
 
     #[derive(Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct Error {
         pub message: String,
     }

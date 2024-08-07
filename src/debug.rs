@@ -1,12 +1,9 @@
-use std::ops::Deref;
-
 use clap::Parser;
 
 use geohog::{
     config::Config,
     log,
-    net::{Connection, Netstat},
-    net::geolocate::{Geolocation, GeolocationClient, Locator}
+    net::{ip_api::{self, Locator}, Netstat},
 };
 
 #[tokio::main]
@@ -14,7 +11,7 @@ async fn main() {
     let config = Config::parse();
     log::setup_trace(&config);
 
-    fn print_geolocations<'a>(netstat: &mut Netstat, geo_client: &mut GeolocationClient) {
+    fn print_geolocations<'a>(netstat: &mut Netstat, geo_client: &mut ip_api::Client) {
         println!("=== Geolocated Sockets ===");
         println!(
             "{:<7} {:<21} {:<14} {:<8} {:<8} {:<12} {:<7} {:<15}",
@@ -48,11 +45,15 @@ async fn main() {
     }
 
     let mut netstat = Netstat::new();
-    let mut geo_client = GeolocationClient::new();
+    let mut geo_client = ip_api::Client::new();
 
     loop {
         println!("\n\n------------ *** Refreshing Socket Table *** ------------\n\n");
         netstat.refresh().unwrap();
+        netstat.connections()
+            .for_each(|conn| {
+                geo_client.request(conn.remote_address);
+            });
 
         for _ in 0..5 {
             print_geolocations(&mut netstat, &mut geo_client);
